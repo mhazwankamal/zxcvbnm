@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".VODGrid.Book_Activity"
+    android:background="@drawable/main_menu_bg">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="2dp"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="left"
+
+                android:layout_weight="0.5">
+
+            <ImageView
+                android:layout_width="435px"
+                android:layout_height="200dp"
+                android:background="#2d2d2d"
+                android:id="@+id/bookthumbnail"
+                android:scaleType="centerCrop"/>
+
+                <Button
+                    android:id="@+id/playvodbttn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/playbutton_focus"
+                    android:padding="10dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="#ffffff"
+                    android:text="@string/playMovie"/>
+                <Button
+                    android:id="@+id/backbttn"
+                    android:layout_width="300px"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/playbutton_focus"
+                    android:padding="5dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="#ffffff"
+                    android:text="@string/back"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="450px"
+                android:background="#F2ffffff"
+                android:elevation="5dp"
+                android:padding="10dp"
+                android:layout_gravity="left"
+                android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txttitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Book Title"
+                android:layout_marginTop="0dp"
+                android:textSize="28sp"
+                android:textColor="#000000"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/txtCat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="#787878"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:id="@+id/txtDesc"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="Description"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+    </android.support.v4.widget.NestedScrollView>
+
+
+</LinearLayout>

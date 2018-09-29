@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".main_menu"
+    android:background="@drawable/main_menu_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="#77ffffff"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:elevation="5dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="2dp"
+                    android:src="@drawable/ic_account_circle_black_24dp" />
+
+                <TextView
+                    android:id="@+id/usernameTxt"
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:text="mhazwankamal"
+                    android:textSize="15dp" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/ic_access_time_black_24dp" />
+
+                <TextView
+                    android:id="@+id/expiry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="6dp"
+                    android:text="0 days left"
+                    android:textSize="15dp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+
+
+
+            <LinearLayout
+                android:id="@+id/VODLL"
+                android:layout_width="350px"
+                android:layout_height="350px"
+                android:layout_marginRight="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:background="@drawable/cardview_focus"
+                android:gravity="center">
+
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="200px"
+                        android:src="@drawable/vod_icon" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/vodbutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#fff"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:textSize="15dp"
+                        android:text="VOD"
+                        android:background="#00000000"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+
+
+
+            <LinearLayout
+                android:id="@+id/livettlclick"
+                android:layout_width="350px"
+                android:layout_height="350px"
+                android:layout_marginRight="30dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:background="@drawable/cardview_focus"
+                android:gravity="center">
+
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="200px"
+                        android:src="@drawable/live_tv" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/livetvbutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#fff"
+                        android:textSize="15dp"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:text="LIVE TV"
+                        android:background="#00000000"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+
+
+            <LinearLayout
+                android:id="@+id/SETTINGLL"
+                android:layout_width="350px"
+                android:layout_height="350px"
+                android:orientation="vertical"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/cardview_focus"
+                android:gravity="center">
+
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="200px"
+                        android:src="@drawable/set_icon" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/settingbutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#fff"
+                        android:textSize="15dp"
+                        android:text="SETTING"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:background="#00000000"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

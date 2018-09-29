@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".redbox_grid_activity"
+    android:background="@drawable/main_menu_bg">
+
+    <LinearLayout
+        android:id="@+id/categoryvod"
+        android:layout_width="122px"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#ffffff">
+
+        <SearchView
+            android:id="@+id/SearchChannel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </SearchView>
+
+
+        <ListView
+            android:id="@+id/redboxvodcategorlist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/vodlisting"
+        android:layout_width="122px"
+        android:layout_marginLeft="30px"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:background="#33000000">
+
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_id"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+
+    </LinearLayout>
+
+
+
+
+
+
+</LinearLayout>
