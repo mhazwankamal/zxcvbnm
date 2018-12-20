@@ -10,16 +10,19 @@ public class Book {
     private String Url ;
     private String Sypnopsis;
     private String Thumbnail ;
+    private String Id;
 
     public Book() {
     }
 
-    public Book(String title, String category, String url, String thumbnail,String sypnopsis) {
+    public Book(String title, String category, String url, String thumbnail,String sypnopsis,String id) {
         Title = title;
         Category = category;
         Url = url;
         Thumbnail = thumbnail;
         Sypnopsis = sypnopsis;
+        Id=id;
+
 
     }
 
@@ -44,6 +47,11 @@ public class Book {
         return Thumbnail;
     }
 
+    public String getId() {
+        return Id;
+    }
+
+
 
     public void setTitle(String title) {
         Title = title;
@@ -64,4 +72,10 @@ public class Book {
     public void setThumbnail(String thumbnail) {
         Thumbnail = thumbnail;
     }
+
+    public void setId(String id) {
+        Id = id;
+    }
+
+
 }

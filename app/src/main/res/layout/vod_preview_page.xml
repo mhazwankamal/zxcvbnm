@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.FitWindowsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/backgroundMovie"
+    android:background="#ffffff"
+    android:layout_height="match_parent"
+    tools:context=".VODGrid.Book_Activity"
+   >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:background="#CC000000"
+            android:padding="40dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="top" >
+
+                <TextView
+                    android:id="@+id/txttitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Book Title"
+                    android:layout_marginTop="0dp"
+                    android:fontFamily="@font/roboto_bold"
+                    android:textSize="28sp"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/txtCat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category"
+                    android:textColor="#FF0000"
+                    android:fontFamily="@font/roboto_bold"
+                    android:layout_marginTop="5dp"/>
+
+                <TextView
+                    android:id="@+id/txtDesc"
+                    android:textSize="14sp"
+                    android:textColor="#C0C0C0"
+                    android:layout_marginTop="9dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:text="Description"/>
+
+                <ImageButton
+                    android:id="@+id/playvodbttn"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/playvlcbutton_focus"
+                    android:padding="5dp"
+                    android:textSize="14dp"
+                    style="@style/ExoMediaButton.Play"
+                    android:layout_marginTop="15dp"
+
+                    />
+
+
+
+
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+
+
+
+
+</android.support.v7.widget.FitWindowsFrameLayout>

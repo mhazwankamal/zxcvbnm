@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.FitWindowsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/backgroundMovie"
     android:layout_height="match_parent"
     tools:context=".VODGrid.Book_Activity"
-    android:background="@drawable/main_menu_bg">
+   >
+
+
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -28,15 +31,15 @@
                 android:layout_weight="0.5">
 
             <ImageView
-                android:layout_width="435px"
-                android:layout_height="200dp"
+                android:layout_width="145dp"
+                android:layout_height="150dp"
                 android:background="#2d2d2d"
                 android:id="@+id/bookthumbnail"
                 android:scaleType="centerCrop"/>
 
                 <Button
                     android:id="@+id/playvodbttn"
-                    android:layout_width="wrap_content"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/playbutton_focus"
                     android:padding="10dp"
@@ -45,7 +48,7 @@
                     android:text="@string/playMovie"/>
                 <Button
                     android:id="@+id/backbttn"
-                    android:layout_width="300px"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/playbutton_focus"
                     android:padding="5dp"
@@ -60,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="450px"
-                android:background="#F2ffffff"
+                android:background="#80ffffff"
                 android:elevation="5dp"
                 android:padding="10dp"
                 android:layout_gravity="left"
@@ -104,4 +107,4 @@
     </android.support.v4.widget.NestedScrollView>
 
 
-</LinearLayout>
+</android.support.v7.widget.FitWindowsFrameLayout>

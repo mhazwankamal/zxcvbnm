@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main_menu"
+    tools:context="mmanager.scnx5.com.authorization.logout_main"
     android:background="@drawable/main_menu_bg">
 
     <LinearLayout

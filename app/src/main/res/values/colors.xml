@@ -13,10 +13,19 @@
     <color name="card_focus">#59ffffff</color>
     <color name="card_press">#ffffff</color>
 
-    <color name="vodcard_default">#ffffff</color>
-    <color name="vodcard_focus">#ded000</color>
-    <color name="vodcard_press">#8b8b8a</color>
+    <color name="livecard_default">#00000000</color>
+    <color name="livecard_focus">#dfc700</color>
+    <color name="livecard_press">#dfc700</color>
+
+    <color name="vodcard_default">#00000000</color>
+    <color name="vodcard_focus">#FF0000</color>
+    <color name="vodcard_press">#FF0000</color>
 
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
+    <color name="grey">#C8C8C8</color>
+    <color name="red">#ee0404</color>
+
+    <color name="positive">#FF4081</color>
+    <color name="negative">#FF5733</color>
 </resources>

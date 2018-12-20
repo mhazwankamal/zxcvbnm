@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".check_authorization"
+    tools:context="mmanager.scnx5.com.authorization.check_authorization"
     android:background="@drawable/actionbar_background">
 
     <LinearLayout

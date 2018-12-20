@@ -3,55 +3,116 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="mmanager.scnx5.com.mitvmanager">
 
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
+        android:name=".layar3"
         android:allowBackup="true"
+        android:banner="@mipmap/ic_launcher"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="c97d4c8632b6243380f5a76dd23b0512" />
 
         <service android:name=".FloatingMiTV" />
 
-        <activity android:name=".login_activity">
+        <activity android:name="mmanager.scnx5.com.login.login_activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".check_authorization" />
+        <activity android:name="mmanager.scnx5.com.authorization.check_authorization" />
         <activity
-            android:name=".main_menu"
+            android:name="mmanager.scnx5.com.authorization.logout_main"
+            android:configChanges="orientation|screenSize|layoutDirection"
             android:screenOrientation="landscape" />
+        <activity android:name="mmanager.scnx5.com.authorization.newui_logout_main"
+            android:configChanges="orientation|screenSize|layoutDirection"
+           ></activity>
         <activity
-            android:name=".vod_grid_activity"
+            android:name=".VODGrid.vod_grid_activity"
+            android:configChanges="orientation|screenSize|layoutDirection"
             android:screenOrientation="landscape" />
         <activity
             android:name=".VODGrid.Book_Activity"
+            android:configChanges="orientation|screenSize|layoutDirection"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".redbox_grid_activity"
+            android:name=".RedBoxGrid.redbox_grid_activity"
+            android:configChanges="orientation|screenSize|layoutDirection"
             android:screenOrientation="landscape" />
         <activity
             android:name=".livetv_menu"
+            android:configChanges="orientation|screenSize|layoutDirection"
             android:screenOrientation="landscape" />
-        <activity android:name=".Exoplayer.exoplayer_layar" android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".Exoplayer.exoplayer_layar"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".Exoplayer.exoplayer_layar_vod"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".Exoplayer.android_player_vod"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".Exoplayer.vlc_player_livetv"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".Exoplayer.VLC_VOD_RTMP"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:screenOrientation="landscape" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="75ee24d6c3cc3bdd4ca097dcea5ef25f701231f1" />
+
+        <receiver android:name=".ShutdownReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name="mmanager.scnx5.com.authorization.user_setting"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:screenOrientation="landscape"></activity>
     </application>
 
 </manifest>

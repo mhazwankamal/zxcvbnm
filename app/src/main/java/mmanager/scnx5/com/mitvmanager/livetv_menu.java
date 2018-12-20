@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import mmanager.scnx5.com.mitvmanager.RedBoxGrid.redbox_grid_activity;
+import mmanager.scnx5.com.mitvmanager.VODGrid.vod_grid_activity;
+
 public class livetv_menu extends AppCompatActivity {
     private RequestPermissionHandler mRequestPermissionHandler;
     public String personID="No-one",uniqueID="";
@@ -101,7 +104,7 @@ public class livetv_menu extends AppCompatActivity {
                 Intent i=new Intent(getApplicationContext(), redbox_grid_activity.class);
                 startActivity(i);
 
-               // new main_menu.PrepareVODdata().execute("","");
+               // new logout_main.PrepareVODdata().execute("","");
             }
         });
 
@@ -172,7 +175,7 @@ public class livetv_menu extends AppCompatActivity {
             String contentMitvtxt = "";
 
 
-            contentMitvtxt = getURL("http://scnx5.sytes.net/mitv/apps/getmitv.php");
+            contentMitvtxt = getURL("https://layar3.com/apps/getmitv.php");
 
             //  checkPermissionWriteExtStorage();
             // checkPermissionReadPhoneState();
@@ -282,7 +285,7 @@ public class livetv_menu extends AppCompatActivity {
     private class PrepareVODdata extends AsyncTask<String, String, String>
     {
         String json;
-      // ProgressDialog pdLoading = new ProgressDialog(main_menu.this);
+      // ProgressDialog pdLoading = new ProgressDialog(logout_main.this);
 
 
         @Override

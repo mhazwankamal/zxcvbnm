@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/vlc_player_mainbackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#000000"
+    tools:context=".Exoplayer.VLC_VOD_RTMP">
+
+    <SurfaceView
+        android:id="@+id/surface"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="20dp"
+        android:paddingRight="20dp">
+
+    <TextView
+        android:id="@+id/vlc_moviestaticname"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="top"
+        android:gravity="center"
+        android:fontFamily="@font/roboto_regular"
+        android:textStyle="bold"
+        android:textSize="11dp"
+        android:textColor="#80ffffff"
+        android:text="MOVIE NAME"/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/vlc_play"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@drawable/playvlcbutton_focus"
+        style="@style/ExoMediaButton.Play"/>
+
+    <ImageButton
+        android:id="@+id/vlc_pause"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@drawable/playbutton_focus"
+        style="@style/ExoMediaButton.Pause"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+    <com.tuyenmonkey.mkloader.MKLoader
+        android:id="@+id/loading_spinner_vlc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:mk_type="TwinFishesSpinner"
+        app:mk_color="#ffffff"
+    />
+
+    <TextView
+        android:id="@+id/vlc_buffering_text"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:shadowDx="1.5"
+        android:shadowDy="1.3"
+        android:shadowRadius="1.6"
+        android:fontFamily="@font/roboto_regular"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        android:textColor="#ffffff"
+        android:text="Buffering"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal">
+
+    <TextView
+        android:id="@+id/vlc_subtitles"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:shadowDx="1.5"
+        android:shadowDy="1.3"
+        android:shadowRadius="1.6"
+        android:fontFamily="@font/roboto_regular"
+        android:textStyle="bold"
+        android:textSize="44px"
+        android:textColor="#ffffff"
+        android:text="Subtitles"/>
+
+    </LinearLayout>
+
+
+
+    <FrameLayout
+        android:id="@+id/osdscreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/vlc_now_watching_bg">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            >
+
+
+            <LinearLayout
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/l3_new_logo2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="@font/roboto_bold"
+                        android:text="Layar3"
+                        android:textColor="#e8e8e8" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="Now Watching"
+                    android:textColor="#e8e8e8"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/vlc_movie_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="MOVIE NAME"
+                    android:textColor="#ffffff"
+                    android:textSize="30dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/vlc_movie_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="FILEM"
+                    android:textColor="#f90000"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:paddingLeft="20dp"
+            android:layout_gravity="bottom"
+            android:paddingRight="20dp"
+            android:orientation="vertical"
+           >
+
+            <ImageView
+                android:id="@+id/previewImage_vlc"
+                android:layout_width="150dp"
+                android:layout_height="100dp"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/vlc_currentposition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:fontFamily="@font/roboto_regular"
+                android:text="0:00"/>
+
+            <android.support.v7.widget.AppCompatSeekBar
+                android:id="@+id/vlc_seekBar"
+                android:progressDrawable="@drawable/style_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:maxHeight="3dp"
+                android:minHeight="3dp"
+                android:background="@drawable/seekbar_vlc_vod_selected"
+                android:max="100"
+                android:thumb="@drawable/thumbsvlc_selector"
+                android:thumbTint="@color/red" />
+
+            <TextView
+                android:id="@+id/vlc_movieduration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:fontFamily="@font/roboto_regular"
+                android:text="0:00:00"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </FrameLayout>
+
+</FrameLayout>

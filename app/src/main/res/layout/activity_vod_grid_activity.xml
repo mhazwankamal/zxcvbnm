@@ -4,9 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".vod_grid_activity"
+    tools:context=".VODGrid.vod_grid_activity"
     android:background="@drawable/main_menu_bg">
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#cc000000">
     <LinearLayout
         android:id="@+id/categoryvod"
         android:layout_width="122px"
@@ -25,7 +28,9 @@
         <ListView
             android:id="@+id/vodcategorlist"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:listSelector="@drawable/vod_category_focus"
+            >
         </ListView>
 
 
@@ -51,7 +56,7 @@
 
 
 
-
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -1,56 +1,62 @@
 package mmanager.scnx5.com.mitvmanager.RedBoxGrid;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
+import mmanager.scnx5.com.abcsesscxz;
+import mmanager.scnx5.com.abcyxoorp;
 import mmanager.scnx5.com.mitvmanager.Exoplayer.exoplayer_layar;
+import mmanager.scnx5.com.mitvmanager.Exoplayer.vlc_player_livetv;
 import mmanager.scnx5.com.mitvmanager.R;
+
 import mmanager.scnx5.com.mitvmanager.VODGrid.Book;
-import mmanager.scnx5.com.mitvmanager.VODGrid.Book_Activity;
 import mmanager.scnx5.com.mitvmanager.getURL;
-import mmanager.scnx5.com.mitvmanager.redbox_grid_activity;
 
 public class RecyclerViewAdapterRB extends RecyclerView.Adapter<mmanager.scnx5.com.mitvmanager.RedBoxGrid.RecyclerViewAdapterRB.MyViewHolderRB> {
 
     private Context mContext ;
-    private List<Book> mData ;
+    private List<LiveBook> mData ;
+    private String token;
+    private String server;
+    private String Json;
 
 
-
-    public RecyclerViewAdapterRB(Context mContext, List<Book> mData) {
+    public RecyclerViewAdapterRB(Context mContext, List<LiveBook> mData,String token,String server,String json) {
         this.mContext = mContext;
         this.mData = mData;
+        this.token = token;
+        this.server=server;
+        this.Json=json;
     }
 
     @Override
     public mmanager.scnx5.com.mitvmanager.RedBoxGrid.RecyclerViewAdapterRB.MyViewHolderRB onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view ;
+        View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
-        view = mInflater.inflate(R.layout.cardveiw_item_book,parent,false);
+        double width= Resources.getSystem().getDisplayMetrics().widthPixels;
+        if (width < 1920){
+            view = mInflater.inflate(R.layout.cardveiw_item_book_720p, parent, false);
+
+        }else {
+            view = mInflater.inflate(R.layout.cardveiw_item_book, parent, false);
+        }
         return new mmanager.scnx5.com.mitvmanager.RedBoxGrid.RecyclerViewAdapterRB.MyViewHolderRB(view);
     }
 
@@ -64,7 +70,7 @@ public class RecyclerViewAdapterRB extends RecyclerView.Adapter<mmanager.scnx5.c
         // Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL(picURL).getContent());
         String picURL=mData.get(position).getThumbnail();
         //  holder.img_book_thumbnail.setImage(picURL);
-        Picasso.with(mContext).load(picURL).into(holder.img_book_thumbnail);
+        Glide.with(mContext).load(picURL).into(holder.img_book_thumbnail);
 
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -81,19 +87,32 @@ public class RecyclerViewAdapterRB extends RecyclerView.Adapter<mmanager.scnx5.c
                 if (Sypnopsis.equalsIgnoreCase("REDBOX") ||Sypnopsis.equalsIgnoreCase("M4K") || Sypnopsis.equalsIgnoreCase("LIVENET")
                         || Sypnopsis.equalsIgnoreCase("HLS")) {
 
-                    Intent intent = new Intent(mContext, exoplayer_layar.class);
+                    abcyxoorp a =new abcyxoorp();
+                    abcsesscxz b=new abcsesscxz();
 
-                    // passing data to the book activity
-                    intent.putExtra("Title", mData.get(position).getTitle());
-                    intent.putExtra("Url", mData.get(position).getUrl());
-                    intent.putExtra("Thumbnail", mData.get(position).getThumbnail());
-                    intent.putExtra("Sypnopsis", mData.get(position).getSysnopsis());
-                    intent.putExtra("Category", mData.get(position).getCategory());
-                    intent.putExtra("liveTV", "rb");
+
+                        Intent intent = new Intent(mContext, exoplayer_layar.class);
+
+                        // passing data to the book activity
+
+                        intent.putExtra("cid", mData.get(position).getId());
+                        intent.putExtra("Title", mData.get(position).getTitle());
+                        intent.putExtra("Url", mData.get(position).getUrl());
+                        intent.putExtra("Thumbnail", mData.get(position).getThumbnail());
+                        intent.putExtra("Sypnopsis", mData.get(position).getSysnopsis());
+                        intent.putExtra("Category", mData.get(position).getCategory());
+                        intent.putExtra("liveTV", "rb");
+                        intent.putExtra("tk", token);
+                        intent.putExtra("server", server);
+                        intent.putExtra("json", Json);
+                        intent.putExtra("channelPos", position);
+                        intent.putExtra("premium", mData.get(position).getPremium());
+
                     //  Toast.makeText(mContext,"test",Toast.LENGTH_LONG).show();
-                    // start the activity
+                        // start the activity
 
-                    mContext.startActivity(intent);
+                        mContext.startActivity(intent);
+
                 }else {
 
                     Intent intent = new Intent(Intent.ACTION_VIEW);

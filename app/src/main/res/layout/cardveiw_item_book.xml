@@ -3,6 +3,7 @@
 
 
     android:foreground="?android:attr/selectableItemBackground"
+    android:id="@+id/cardidgrid"
     android:layout_width="300px"
     android:layout_height="350px"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
@@ -17,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/vodcardview_focus"
+        android:background="@drawable/livetvcardview_focus"
 
         >
 
@@ -28,7 +29,7 @@
             android:layout_marginTop="15px"
             android:layout_marginLeft="15px"
             android:layout_marginRight="15px"
-            android:background="#2d2d2d"
+            android:background="#ffffff"
             android:scaleType="centerCrop" />
 
         <TextView

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/actionbar_background"
     android:orientation="vertical"
-    tools:context=".login_activity">
+    tools:context="mmanager.scnx5.com.login.login_activity">
 
     <LinearLayout
 
@@ -155,38 +155,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Need helps regarding Layar3? Please contact"
+            android:text="Ceiling price for Layar3 is RM 20 per month. Please kindly report to portallayartiga@gmail.com if you pay above this value per month."
             android:layout_marginTop="50dp"
             android:textAlignment="center"
             android:textColor="#fff"
             android:layout_gravity="center"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
 
-        <ImageView
-         android:layout_width="20dp"
-         android:layout_height="20dp"
-         android:src="@drawable/telegram_app"
-         android:layout_gravity="center"
-         android:layout_weight="1"
-         />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@Menyu5 @MHA"
-            android:textAlignment="center"
-
-            android:textColor="#9D9D9D" />
-    </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Version 2.0"
+            android:text="@string/version"
             android:layout_marginTop="50dp"
             android:textColor="#fff"
             android:layout_gravity="center"/>

@@ -118,7 +118,7 @@
                         android:clickable="false"
                         android:focusable="false"
                         android:textSize="15dp"
-                        android:text="RED BOX"
+                        android:text="LAYAR3"
                         android:background="#00000000"/>
                 </LinearLayout>
 

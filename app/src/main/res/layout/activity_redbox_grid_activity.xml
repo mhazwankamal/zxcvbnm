@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".redbox_grid_activity"
+    tools:context=".RedBoxGrid.redbox_grid_activity"
     android:background="@drawable/main_menu_bg">
 
     <LinearLayout
@@ -25,7 +25,10 @@
         <ListView
             android:id="@+id/redboxvodcategorlist"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:listSelector="@drawable/litvetv_category_focus"
+          >
+
         </ListView>
 
 
