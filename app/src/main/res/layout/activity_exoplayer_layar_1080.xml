@@ -182,11 +182,17 @@
         android:background="@drawable/exoplayer_switch_channel_background">
 
         <LinearLayout
-            android:layout_width="1390px"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginLeft="200px"
+
             android:layout_marginTop="40px">
+
+            <LinearLayout
+                android:id="@+id/epg_ll_switchchannel"
+                android:layout_width="1190px"
+                android:layout_marginLeft="200px"
+                android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/transition_category"
@@ -219,49 +225,9 @@
 
                 ></android.support.v7.widget.RecyclerView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/categoryvod"
-                    android:layout_width="122px"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:background="#ffffff">
-
-                    <ListView
-                        android:id="@+id/redboxvodcategorlist"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:listSelector="@drawable/litvetv_category_focus"
-                        >
-
-                    </ListView>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/vodlisting"
-                    android:layout_width="122px"
-                    android:layout_marginLeft="30px"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_gravity="right"
-                    android:background="#33000000">
-
-
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/recyclerview_id"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
-
-
-                </LinearLayout>
-
-
             </LinearLayout>
+
+
 
 
         </LinearLayout>
@@ -269,6 +235,55 @@
 
     </FrameLayout>
 
+
+    <LinearLayout
+        android:id="@+id/gridview_channelswitch_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:background="@drawable/exoplayer_switch_channel_background"
+        >
+
+        <LinearLayout
+            android:id="@+id/categoryvod"
+            android:layout_width="350px"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="50dp">
+
+            <ListView
+                android:id="@+id/redboxvodcategorlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:nextFocusRight="@id/cardview_id"
+                android:listSelector="@drawable/litvetv_category_focus"
+                >
+
+            </ListView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/vodlisting"
+            android:layout_width="1380px"
+            android:layout_marginLeft="30px"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="left"
+            android:background="#00000000">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_id"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/header"

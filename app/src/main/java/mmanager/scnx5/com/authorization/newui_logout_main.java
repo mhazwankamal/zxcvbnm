@@ -381,7 +381,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 sliderView.setImageUrl(ImageSlideData.getJSONObject(i).getString("url"));
                 Log.d("Image" + i,"Image =" + ImageSlideData.getJSONObject(i).getString("url"));
 
-                sliderView.setImageScaleType(ImageView.ScaleType.CENTER_CROP);
+                sliderView.setImageScaleType(ImageView.ScaleType.FIT_XY);
                 sliderView.setDescription(ImageSlideData.getJSONObject(i).getString("title"));
                 final int finalI = i;
                 sliderView.setOnSliderClickListener(new SliderView.OnSliderClickListener() {
@@ -1042,9 +1042,9 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
     public void smoothScrollDuration(final ScrollView sv,final View v,Integer duration,Integer speed){
 
-        ObjectAnimator objectAnimator = ObjectAnimator.ofInt(sv, "scrollY", 0, getCenterScrollView(v)).setDuration(duration);
-        objectAnimator.start();
-     //   sv.smoothScrollTo(0, getCenterScrollView( v));
+       // ObjectAnimator objectAnimator = ObjectAnimator.ofInt(sv, "scrollY", 0, getCenterScrollView(v)).setDuration(duration);
+       // objectAnimator.start();
+        sv.smoothScrollTo(0, getCenterScrollView( v));
         /*
 
         final Integer Scrollviewfocus_last = pref.getInt("ScrollViewFocusPosition", 0);

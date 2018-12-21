@@ -13,11 +13,11 @@
     <color name="card_focus">#59ffffff</color>
     <color name="card_press">#ffffff</color>
 
-    <color name="livecard_default">#00000000</color>
+    <color name="livecard_default">#FFF0F5</color>
     <color name="livecard_focus">#dfc700</color>
     <color name="livecard_press">#dfc700</color>
 
-    <color name="vodcard_default">#00000000</color>
+    <color name="vodcard_default">#80000000</color>
     <color name="vodcard_focus">#FF0000</color>
     <color name="vodcard_press">#FF0000</color>
 

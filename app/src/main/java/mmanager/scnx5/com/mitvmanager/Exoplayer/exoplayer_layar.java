@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.BoringLayout;
@@ -31,10 +32,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import android.widget.Toast;
@@ -113,6 +117,8 @@ import mmanager.scnx5.com.mitvmanager.R;
 
 
 import mmanager.scnx5.com.mitvmanager.RedBoxGrid.LiveBook;
+import mmanager.scnx5.com.mitvmanager.RedBoxGrid.RecyclerViewAdapterRB;
+import mmanager.scnx5.com.mitvmanager.RedBoxGrid.redbox_grid_activity;
 import mmanager.scnx5.com.mitvmanager.getURL;
 import mmanager.scnx5.com.mitvmanager.log_;
 import mmanager.scnx5.com.mitvmanager.old_getURL;
@@ -204,6 +210,11 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private String CurrentchannelViews,ua="",host="none",port;
     private Boolean Exoplayingstate=false;
     private FrameLayout switchChannel;
+    private ListView listviewCat;
+    private LinearLayout epg_ll_switchChannel;
+    private  RecyclerViewAdapterRBExo myAdapterRBExo;
+    private RecyclerView ChannelListingGridView;
+    private LinearLayout gridview_channelswitch_frame;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -294,6 +305,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
         HeaderPlayer.setVisibility(View.GONE);
         FrameHeaderMenu.setVisibility(View.GONE);
+
        /* play.setVisibility(View.GONE);
         pause.setVisibility(View.GONE);*/
 
@@ -326,6 +338,12 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         ChannelViews = (TextView)findViewById(R.id.views);
         premiumText=(LinearLayout)findViewById(R.id.premium);
 
+        epg_ll_switchChannel = (LinearLayout)findViewById(R.id.epg_ll_switchchannel);
+        ChannelListingGridView = (RecyclerView)findViewById(R.id.recyclerview_id);
+        listviewCat = (ListView) findViewById(R.id.redboxvodcategorlist);
+        gridview_channelswitch_frame=(LinearLayout)findViewById(R.id.gridview_channelswitch_frame);
+        gridview_channelswitch_frame.setVisibility(View.GONE);
+        
         ChannelCategory = (TextView)findViewById(R.id.recyclerview_channel_category_top) ;
         myrvRBSwitchChannel= (RecyclerView) findViewById(R.id.recyclerview_channel_category);
 
@@ -406,10 +424,11 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             public void onClick(View view) {
                 dlog.log_d(debug,"test click","click");
                 if (epgframeopen) {
-                    frameSwitchChannel.setVisibility(View.VISIBLE);
+   //                 frameSwitchChannel.setVisibility(View.VISIBLE);
 //                myrvRB.setVisibility(View.VISIBLE);
-                    myrvRBSwitchChannel.setVisibility(View.VISIBLE);
-                    myrvRBSwitchChannel.scrollToPosition(channelPosition);
+                    gridview_channelswitch_frame.setVisibility(View.VISIBLE);
+  //                  myrvRBSwitchChannel.setVisibility(View.VISIBLE);
+    //                myrvRBSwitchChannel.scrollToPosition(channelPosition);
                    editor.putInt("channelPos",channelPosition);
                    editor.apply();
                     HeaderPlayer.setVisibility(View.GONE);
@@ -596,6 +615,13 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             HeaderPlayer.setVisibility(View.VISIBLE);
             FrameHeaderMenu.setVisibility(View.VISIBLE);
             handler.postDelayed(showBuffered,1);
+        }else if(gridview_channelswitch_frame.getVisibility() == VISIBLE){
+
+            gridview_channelswitch_frame.setVisibility(View.GONE);
+            HeaderPlayer.setVisibility(View.VISIBLE);
+            FrameHeaderMenu.setVisibility(View.VISIBLE);
+            handler.postDelayed(showBuffered,1);
+
         } else {
             Intent i =new Intent();
             i.setClassName(exoplayer_layar.this,menu_navigation.getHomeActivity());
@@ -2104,6 +2130,67 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             }
 
 
+
+            ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.listview,VODCat);
+            listviewCat.setAdapter(adapter);
+
+
+            listviewCat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    String CurrentCategory=VODCat.get(i).toString();
+                    String id,name,logoPath,url,category,sypnopsis,premium,ProgInfo1,ProgInfo2;
+                    Integer epgid;
+                    EPG=new ArrayList<>();
+                    for (i=0;i<VODJsonName.size();i++){
+                        id =VODJsonId.get(i).toString();
+                        name=VODJsonName.get(i).toString();
+                        category=VODJsonCategory.get(i).toString();
+                        logoPath=VODJsonLogoPath.get(i).toString();
+                        url=VODJsonUrl.get(i).toString();
+                        sypnopsis=VODJsonsypnopsis.get(i).toString();
+                        premium=VODJsonpremium.get(i).toString();
+                        epgid=VODJsonepg.get(i);
+                        ProgInfo1=VODJsonprograminfo.get(i).toString();
+                        ProgInfo2=VODJsonprograminfo2.get(i).toString();
+                        // try {
+                        // bitmap = BitmapFactory.decodeStream((InputStream)new URL(logoPath).getContent());
+                        //} catch (IOException e) {
+                        //      e.printStackTrace();
+                        //  }
+                        if(CurrentCategory.equalsIgnoreCase(category)){
+                            EPG.add(new ExoBook(name, category, url, logoPath, sypnopsis,id,premium,epgid,ProgInfo1,ProgInfo2));
+
+
+                        }
+                    }
+
+                    myAdapterRBExo = new RecyclerViewAdapterRBExo(exoplayer_layar.this,EPG);
+                    ChannelListingGridView.setLayoutManager(new GridLayoutManager(getApplicationContext(),4));
+                    ChannelListingGridView.setAdapter(myAdapterRBExo);
+
+                    // MyAdapterRBSwitchChannel=new RecyclerViewAdapterSwitchChannelExoPlayer(exoplayer_layar.this,EPG);
+                    // myrvRBSwitchChannel.setAdapter(MyAdapterRBSwitchChannel);
+
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+
+            myAdapterRBExo = new RecyclerViewAdapterRBExo(exoplayer_layar.this,EPG);
+            ChannelListingGridView.setLayoutManager(new GridLayoutManager(getApplicationContext(),4));
+            ChannelListingGridView.setAdapter(myAdapterRBExo);
+
+
             ChannelCategory.setText(Watchcategory);
 
 
@@ -2154,6 +2241,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 FrameHeaderMenu.setVisibility(View.VISIBLE);
                 handler.postDelayed(showBuffered, 1);
                 switchChannel.requestFocus();
+                epg_ll_switchChannel.setVisibility(View.GONE);
                 /*pause.setVisibility(View.VISIBLE);*/
 
                 //  simpleExoPlayerView.showController();

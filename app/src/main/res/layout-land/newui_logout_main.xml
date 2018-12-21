@@ -225,10 +225,12 @@
                             android:focusable="false">
                         <com.smarteist.autoimageslider.SliderLayout
                             android:layout_width="match_parent"
-                            android:layout_height="300dp"
+                            android:layout_height="match_parent"
                             android:focusable="true"
+
                             android:nextFocusUp="@id/menu_home_ll"
                             android:layout_alignParentTop="true"
+
                             android:id="@+id/imageSlider"/>
                        </com.dd.ShadowLayout>
                     </FrameLayout>
