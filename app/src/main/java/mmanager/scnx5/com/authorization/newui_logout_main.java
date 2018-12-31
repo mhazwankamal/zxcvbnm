@@ -46,8 +46,11 @@ import android.widget.Toast;
 
 import com.alkathirikhalid.util.ConnectionAppCompactActivity;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.bumptech.glide.module.AppGlideModule;
 import com.dcastalia.localappupdate.DownloadApk;
 import com.github.javiersantos.appupdater.AppUpdater;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
@@ -179,28 +182,34 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
        LinearLayout movie_menu=(LinearLayout)findViewById(R.id.home_menu_movie);
        LinearLayout setting_menu=(LinearLayout)findViewById(R.id.menu_settings_ll);
        FrameLayout rootView=(FrameLayout)findViewById(R.id.root);
-       LinearLayout backgroundImage=(LinearLayout) findViewById(R.id.image_background);
+       FrameLayout backgroundImage=(FrameLayout) findViewById(R.id.image_background);
 
-       Glide.with(this).asBitmap().load("https://i.redd.it/7ro90p5ug1l11.jpg").into(new SimpleTarget<Bitmap>() {
+
+
+       Glide.with(this)
+            .asBitmap()
+            .load("https://static.standard.co.uk/s3fs-public/thumbnails/image/2017/02/28/14/cesarazpilicueta-chelsea-swansea-280217.jpg?w968")
+            .apply(RequestOptions.centerCropTransform())
+            .into(new SimpleTarget<Bitmap>() {
            @Override
            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                backgroundImage.setBackground(new BitmapDrawable(resource));
            }
        });
 
-       Glide.with(this).load("https://layar3.com/apps/home/l3_background_new.jpg")
-               .into(new SimpleTarget<Drawable>() {
-               @Override
-               public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                    rootView.setBackground(resource);
-               }
-               });
+//       Glide.with(this).load("https://layar3.com/apps/home/l3_background_new.jpg")
+//               .into(new SimpleTarget<Drawable>() {
+//               @Override
+//               public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+//                    rootView.setBackground(resource);
+//               }
+//               });
 
-               sliderLayout = (SliderLayout) findViewById(R.id.imageSlider);
-        sliderLayout.setIndicatorAnimation(SliderLayout.Animations.NONE); //set indicator animation by using SliderLayout.Animations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
-        sliderLayout.setScrollTimeInSec(5); //set scroll delay in seconds :
-
-        setSliderViews();
+//        sliderLayout = (SliderLayout) findViewById(R.id.imageSlider);
+//        sliderLayout.setIndicatorAnimation(SliderLayout.Animations.NONE); //set indicator animation by using SliderLayout.Animations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+//        sliderLayout.setScrollTimeInSec(5); //set scroll delay in seconds :
+//
+//        setSliderViews();
 
         LayoutInflater LInfla=getLayoutInflater();
         View v=LInfla.inflate(R.layout.welcome_user,(ViewGroup)findViewById(R.id.custom_toast));
@@ -407,8 +416,8 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
 
 
-        editor.putInt("ScrollViewFocusPosition",getCenterScrollView(sliderLayout));
-        editor.apply();
+//        editor.putInt("ScrollViewFocusPosition",getCenterScrollView(sliderLayout));
+       // editor.apply();
 
        new newui_logout_main.loadJsonLiveTV().execute();
 
@@ -725,6 +734,19 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
             else {
 
+                RecyclerView test=(RecyclerView)findViewById(R.id.rc_live_event) ;
+
+                List <LiveEventBook> livebook=new ArrayList<>();
+
+                livebook.add(new LiveEventBook("LIVE","","","SUN,29 DEC 2018","10:00PM","MANCHESTER UTD VS CHEALSEA",1));
+
+                RecyclerViewAdapterHomeLiveEvent rtest;
+
+                rtest = new RecyclerViewAdapterHomeLiveEvent(newui_logout_main.this,livebook,server,tk,Json);
+
+                test.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
+                test.setAdapter(rtest);
+
                 myrvrb.setVisibility(View.VISIBLE);
 
                 myAdapterHomeLastWatch = new RecyclerViewAdapterHomeLastWatch(newui_logout_main.this, VODRecentChannel, server, tk, Json);
@@ -909,20 +931,20 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 myrvMP.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
                 myrvMP.setAdapter(myAdapterHomeMostPopular);
 
-                sliderLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-                        if (b) {
-
-                            home_scroll.smoothScrollTo(0,-300);
-                            //smoothScrollDuration(home_scroll,sliderLayout,duration,speed);
-                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(sliderLayout));
-                            editor.apply();
-
-
-                        }
-                    }
-                });
+//                sliderLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//                    @Override
+//                    public void onFocusChange(View view, boolean b) {
+//                        if (b) {
+//
+//                            home_scroll.smoothScrollTo(0,-300);
+//                            //smoothScrollDuration(home_scroll,sliderLayout,duration,speed);
+//                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(sliderLayout));
+//                            editor.apply();
+//
+//
+//                        }
+//                    }
+//                });
 
 
                 lastWatching_ll.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -1226,6 +1248,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
         return super.onKeyDown(keyCode, event);
     }
+
 
 
 }
