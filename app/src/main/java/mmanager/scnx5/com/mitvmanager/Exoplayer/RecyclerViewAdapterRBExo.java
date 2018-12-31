@@ -44,12 +44,18 @@ public class RecyclerViewAdapterRBExo extends RecyclerView.Adapter<RecyclerViewA
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
         double width= Resources.getSystem().getDisplayMetrics().widthPixels;
-        if (width < 1920){
-            view = mInflater.inflate(R.layout.cardveiw_item_book_720p, parent, false);
+
+        if (width > 2200 && width < 3000){
+            view = mInflater.inflate(R.layout.cardveiw_item_book_1440, parent, false);
+
+        }else if (width > 1280 && width < 2200){
+            view = mInflater.inflate(R.layout.cardveiw_item_book, parent, false);
 
         }else {
-            view = mInflater.inflate(R.layout.cardveiw_item_book, parent, false);
+            view = mInflater.inflate(R.layout.cardveiw_item_book_720p, parent, false);
         }
+
+
         return new RecyclerViewAdapterRBExo.MyViewHolderRB(view);
     }
 

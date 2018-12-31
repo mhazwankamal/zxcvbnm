@@ -5,7 +5,6 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home_background"
     android:keepScreenOn="true"
     tools:context="mmanager.scnx5.com.authorization.newui_logout_main">
 
@@ -36,32 +35,7 @@
             android:layout_gravity="center"
             android:gravity="center">
 
-            <LinearLayout
-                android:id="@+id/menu_home_ll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/home_menu_card_selector"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:nextFocusLeft="@id/menu_home_ll"
-                android:nextFocusDown="@id/imageSlider"
-                android:padding="8dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:shadowDx="1.5"
-                    android:shadowDy="1.3"
-                    android:shadowRadius="1.6"
-                    android:text="HOME"
-
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/menu_livetv"
@@ -144,52 +118,15 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right">
 
-            <LinearLayout
-                android:padding="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-
-                android:orientation="vertical"
-
-                >
-
-
-
-
-
-                <TextView
-                    android:id="@+id/welcome_user"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:shadowDx="1.5"
-                    android:shadowDy="1.3"
-                    android:shadowRadius="1.6"
-                    android:textSize="14dp"
-                    android:text="Logged as username!"
-                    android:textColor="#fff"
-                    android:textStyle="bold" />
-
-
-
-
-
-
-
-            </LinearLayout>
-        </LinearLayout>
 
     </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:nextFocusUp="@id/menu_livetv"
+        android:focusable="false"
         android:layout_marginTop="32dp">
 
 
@@ -200,11 +137,14 @@
             android:layout_height="match_parent"
             android:layout_marginTop="15dp"
             android:orientation="vertical"
+            android:focusable="false"
+            android:nextFocusUp="@id/menu_livetv"
 
             android:padding="10dp">
 
             <ScrollView
                 android:id="@+id/scroll_home"
+                android:nextFocusUp="@id/menu_livetv"
 
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -212,6 +152,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:nextFocusUp="@id/menu_livetv"
+                    android:focusable="false"
                     android:orientation="vertical">
 
                     <FrameLayout
@@ -228,7 +170,7 @@
                             android:layout_height="match_parent"
                             android:focusable="true"
 
-                            android:nextFocusUp="@id/menu_home_ll"
+                            android:nextFocusUp="@id/menu_livetv"
                             android:layout_alignParentTop="true"
 
                             android:id="@+id/imageSlider"/>

@@ -446,7 +446,7 @@ public class vod_grid_activity extends AppCompatActivity {
             //this method will be running on UI thread
             pdLoading.dismiss();
 
-            ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.listview,VODCat);
+            ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.listview_vod,VODCat);
             listView.setAdapter(adapter);
             GridLayoutManager GridVOD;
             GridVOD=new GridLayoutManager(getApplicationContext(),4);

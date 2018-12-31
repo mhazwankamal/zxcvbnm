@@ -4,7 +4,7 @@
 
     android:foreground="?android:attr/selectableItemBackground"
     android:id="@+id/cardidgrid"
-    android:layout_width="300px"
+    android:layout_width="280px"
     android:layout_height="300px"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
@@ -29,7 +29,7 @@
             android:id="@+id/book_img_id"
             android:layout_width="match_parent"
             android:layout_height="225px"
-            android:layout_marginTop="15px"
+            android:layout_marginTop="2px"
             android:layout_marginLeft="15px"
             android:layout_marginRight="15px"
             android:background="#00ffffff"
@@ -38,11 +38,11 @@
         <TextView
             android:id="@+id/book_title_id"
             android:layout_width="match_parent"
-            android:layout_height="58px"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Book Title"
-            android:textColor="#2d2d2d"
-            android:textSize="13sp" />
+            android:textColor="#fff"
+            android:textSize="11sp" />
 
     </LinearLayout>
 

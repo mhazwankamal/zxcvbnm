@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:resize_mode="fill"
-        app:show_buffering="true"
+        app:show_buffering="when_playing"
 app:use_controller="false"
         />
 
@@ -28,13 +28,19 @@ app:use_controller="false"
 
         <LinearLayout
             android:layout_width="30dp"
-            android:layout_height="25dp"
+            android:layout_height="40dp"
             android:layout_gravity="left"
+            android:gravity="center"
             android:padding="0dp">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="0dp"
+                android:layout_gravity="left"
+                android:id="@+id/logo_l3_exo"
+                android:layout_width="22dp"
+                android:layout_height="30dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/l3_grayscale_logo" />
 
 
@@ -174,6 +180,13 @@ app:use_controller="false"
         android:background="@drawable/exoplayer_switch_channel_background">
 
         <LinearLayout
+            android:id="@+id/epg_ll_switchchannel"
+            android:layout_width="920px"
+            android:layout_marginLeft="100px"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
             android:id="@+id/transition_category"
             android:layout_width="920px"
             android:layout_marginLeft="100px"
@@ -201,14 +214,63 @@ app:use_controller="false"
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_channel_category"
-            android:layout_marginTop="110px"
             android:layout_marginLeft="100px"
             android:layout_width="920px"
             android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
 
+        </LinearLayout>
 
 
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/gridview_channelswitch_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:background="@drawable/exoplayer_switch_channel_background"
+        >
+
+        <LinearLayout
+            android:id="@+id/categoryvod"
+            android:layout_width="300px"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp">
+
+            <ListView
+                android:id="@+id/redboxvodcategorlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:nextFocusRight="@id/cardview_id"
+                android:listSelector="@drawable/litvetv_category_focus"
+                >
+
+            </ListView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/vodlisting"
+            android:layout_width="780px"
+            android:layout_marginLeft="20px"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="left"
+            android:background="#00000000">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_id"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
     <LinearLayout
@@ -368,8 +430,8 @@ app:use_controller="false"
 
                 <FrameLayout
                     android:id="@+id/switch_channel_exo"
-                    android:layout_width="80px"
-                    android:layout_height="80px"
+                    android:layout_width="60px"
+                    android:layout_height="60px"
                     android:layout_margin="5dp"
                     android:layout_gravity="center"
                     android:clickable="true"
@@ -384,6 +446,34 @@ app:use_controller="false"
                         android:focusable="false"
                         android:layout_gravity="center"
                         android:background="@drawable/icons8_imac_24"/>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/switch_channel_exo_epg"
+                    android:layout_width="60px"
+                    android:layout_height="60px"
+                    android:layout_margin="5dp"
+                    android:layout_gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/exo_media_button_selector"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_gravity="center"
+                        android:text="EPG"
+                        android:shadowDx="1.5"
+                        android:shadowDy="1.3"
+                        android:shadowRadius="1.6"
+                        android:fontFamily="@font/roboto_regular"
+                        android:textStyle="bold"
+                        android:textColor="#dbdbdb"
+                        android:textSize="20px"
+                        />
+
                 </FrameLayout>
 
                 <com.google.android.exoplayer2.ui.DefaultTimeBar

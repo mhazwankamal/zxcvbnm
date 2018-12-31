@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:resize_mode="fill"
-            app:show_buffering="true"
+            app:show_buffering="when_playing"
 
               />
 

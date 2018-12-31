@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
          app:resize_mode="fit"
         app:controller_layout_id="@layout/custom_control"
-        app:show_buffering="true" />
+        app:show_buffering="when_playing" />
 
 
 

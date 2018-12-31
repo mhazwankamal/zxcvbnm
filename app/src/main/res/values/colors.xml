@@ -8,14 +8,17 @@
     <color name="button_focused">#26697A</color>
     <color name="button_default">#750303</color>
 
+    <color name="osd_default">#59000000</color>
+    <color name="osd_focus">#59ffffff</color>
+    <color name="osd_press">#ffffff</color>
 
     <color name="card_default">#59000000</color>
     <color name="card_focus">#59ffffff</color>
     <color name="card_press">#ffffff</color>
 
-    <color name="livecard_default">#FFF0F5</color>
-    <color name="livecard_focus">#dfc700</color>
-    <color name="livecard_press">#dfc700</color>
+    <color name="livecard_default">#40FFF0F5</color>
+    <color name="livecard_focus">#D00015</color>
+    <color name="livecard_press">#D00015</color>
 
     <color name="vodcard_default">#80000000</color>
     <color name="vodcard_focus">#FF0000</color>

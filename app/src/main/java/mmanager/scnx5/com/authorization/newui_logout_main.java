@@ -9,7 +9,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +20,8 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,7 +32,9 @@ import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -39,6 +46,8 @@ import android.widget.Toast;
 
 import com.alkathirikhalid.util.ConnectionAppCompactActivity;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.dcastalia.localappupdate.DownloadApk;
 import com.github.javiersantos.appupdater.AppUpdater;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
@@ -129,6 +138,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private String remainingdays="";
     private Boolean loadingPage=false;
     private  SliderLayout sliderLayout;
+    private LinearLayout  liveTV_menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,24 +175,64 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
        lastWatching_ll = (LinearLayout) findViewById(R.id.lastwatching_ll);
        trending_channel_ll=(LinearLayout)findViewById(R.id.trending_channel_ll);
        most_popular_ll=(LinearLayout)findViewById(R.id.most_popular_ll);
-       LinearLayout liveTV_menu=(LinearLayout)findViewById(R.id.menu_livetv);
+       liveTV_menu=(LinearLayout)findViewById(R.id.menu_livetv);
        LinearLayout movie_menu=(LinearLayout)findViewById(R.id.home_menu_movie);
        LinearLayout setting_menu=(LinearLayout)findViewById(R.id.menu_settings_ll);
+       FrameLayout rootView=(FrameLayout)findViewById(R.id.root);
+       LinearLayout backgroundImage=(LinearLayout) findViewById(R.id.image_background);
 
-        sliderLayout = (SliderLayout)findViewById(R.id.imageSlider);
+       Glide.with(this).asBitmap().load("https://i.redd.it/7ro90p5ug1l11.jpg").into(new SimpleTarget<Bitmap>() {
+           @Override
+           public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+               backgroundImage.setBackground(new BitmapDrawable(resource));
+           }
+       });
+
+       Glide.with(this).load("https://layar3.com/apps/home/l3_background_new.jpg")
+               .into(new SimpleTarget<Drawable>() {
+               @Override
+               public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                    rootView.setBackground(resource);
+               }
+               });
+
+               sliderLayout = (SliderLayout) findViewById(R.id.imageSlider);
         sliderLayout.setIndicatorAnimation(SliderLayout.Animations.NONE); //set indicator animation by using SliderLayout.Animations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
         sliderLayout.setScrollTimeInSec(5); //set scroll delay in seconds :
 
         setSliderViews();
 
-       TextView username_welcome=(TextView)findViewById(R.id.welcome_user);
-       //TextView modeldevice=(TextView)findViewById(R.id.userDevice);
+        LayoutInflater LInfla=getLayoutInflater();
+        View v=LInfla.inflate(R.layout.welcome_user,(ViewGroup)findViewById(R.id.custom_toast));
+
+
+        TextView username_welcome=(TextView)v.findViewById(R.id.welcome_user);
+        ImageView profile_pic =(ImageView)v.findViewById(R.id.welcome_profile_pic);
+        //TextView modeldevice=(TextView)findViewById(R.id.userDevice);
        //TextView appsVersion=(TextView)findViewById(R.id.LayarAppsversion);
 
        String version= getString(R.string.version);
 
+       Glide.with(this).load("https://www.ienglishstatus.com/wp-content/uploads/2018/04/Anonymous-Whatsapp-profile-picture.jpg").into(profile_pic);
        username_welcome.setText("WELCOME " + personID.toUpperCase());
-     //  modeldevice.setText("via " + Build.MANUFACTURER + " " + Build.MODEL);
+
+       Toast toast=new Toast(getApplicationContext());
+       toast.setGravity(Gravity.BOTTOM,0,100);
+       toast.setDuration(Toast.LENGTH_LONG);
+       toast.setView(v);
+        new CountDownTimer(1000,1000) {
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                toast.show();
+            }
+        }.start();
+
+       //  modeldevice.setText("via " + Build.MANUFACTURER + " " + Build.MODEL);
      //  appsVersion.setText("on Layar3 -" + version);
 
 
@@ -370,7 +420,6 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         JSONObject objectPremium = null;
         try {
             getImageUrls = wget.getURL(server + "apps/home/getImageSlideShow.json");
-            Log.d("Image","Image =" +getImageUrls);
             objectPremium = new JSONObject(String.valueOf(getImageUrls));
             JSONArray ImageSlideData = (JSONArray) objectPremium.getJSONArray("data");
 
@@ -379,7 +428,6 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 SliderView sliderView = new SliderView(this);
 
                 sliderView.setImageUrl(ImageSlideData.getJSONObject(i).getString("url"));
-                Log.d("Image" + i,"Image =" + ImageSlideData.getJSONObject(i).getString("url"));
 
                 sliderView.setImageScaleType(ImageView.ScaleType.FIT_XY);
                 sliderView.setDescription(ImageSlideData.getJSONObject(i).getString("title"));
@@ -589,11 +637,13 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         protected String doInBackground(String... params) {
 
             try {
-                JsonRecentChannels=wget.getURL(server + "apps/home/getlastrecentchannel.php?user="+tk);
+                JsonRecentChannels=wget.getURL(server + "apps/home/getlastrecentchannel2.php?user="+tk);
 
              } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Log.d("JsonRecent","L =" + JsonRecentChannels);
 
             if (JsonRecentChannels.equalsIgnoreCase("none") ) {
 
@@ -864,7 +914,8 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                     public void onFocusChange(View view, boolean b) {
                         if (b) {
 
-                            smoothScrollDuration(home_scroll,sliderLayout,duration,speed);
+                            home_scroll.smoothScrollTo(0,-300);
+                            //smoothScrollDuration(home_scroll,sliderLayout,duration,speed);
                             editor.putInt("ScrollViewFocusPosition",getCenterScrollView(sliderLayout));
                             editor.apply();
 
@@ -877,14 +928,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 lastWatching_ll.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View view, boolean b) {
-                        Log.d("LinearLayout", "Focus" + String.valueOf(b));
 
                         if (b) {
 
 
 
 
-                            Log.d("position trending", "pos=" + String.valueOf(myrvTC.getChildAdapterPosition(myrvTC.getFocusedChild())));
 
                             myrvrb.setAdapter(myAdapterHomeLastWatch);
                             myrvTC.setAdapter(myAdapterHomeTrend);
@@ -918,8 +967,6 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                     public void onFocusChange(View view, boolean b) {
                         if (b) {
 
-
-                            Log.d("position last watch ", "pos=" + String.valueOf(myrvrb.getChildAdapterPosition(myrvTC.getFocusedChild())));
 
                             myrvrb.setAdapter(myAdapterHomeLastWatch);
                             myrvTC.setAdapter(myAdapterHomeTrend);
@@ -969,7 +1016,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
 
 
-            sliderLayout.requestFocus();
+            liveTV_menu.requestFocus();
             /*SnapHelper SH=new LinearSnapHelper();
 
             SH.attachToRecyclerView(myrvrb);*/

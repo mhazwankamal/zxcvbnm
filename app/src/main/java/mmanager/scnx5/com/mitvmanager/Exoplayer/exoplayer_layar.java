@@ -7,11 +7,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -78,6 +80,7 @@ import com.google.android.exoplayer2.upstream.DefaultAllocator;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultLoadErrorHandlingPolicy;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 
@@ -181,7 +184,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private String username, passwrd, updateinfo;
     private Boolean stoprunnable=false;
     private log_ dlog=new log_();
-    private Boolean debug=true;
+    private Boolean debug=false;
     private vd452ax3 b=new vd452ax3();
     public RecyclerView myrvRB,myrvRBSwitchChannel;
     public RecyclerViewAdapterCategoryExoPlayer myAdapterRB;
@@ -209,12 +212,17 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private Boolean switchChannelExoPlayer;
     private String CurrentchannelViews,ua="",host="none",port;
     private Boolean Exoplayingstate=false;
-    private FrameLayout switchChannel;
+    private FrameLayout switchChannel,epg_channel;
     private ListView listviewCat;
     private LinearLayout epg_ll_switchChannel;
     private  RecyclerViewAdapterRBExo myAdapterRBExo;
     private RecyclerView ChannelListingGridView;
     private LinearLayout gridview_channelswitch_frame;
+    private ImageView logo_l3;
+    private CountDownTimer showToggleCount;
+    private Boolean exoplayertimerun=false;
+    private double width,height;
+    private Boolean httperror=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -225,7 +233,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
         super.onCreate(savedInstanceState);
 
-        double width= Resources.getSystem().getDisplayMetrics().widthPixels;
+        width= Resources.getSystem().getDisplayMetrics().widthPixels;
         dlog.log_d(debug,"height",String.valueOf(width));
         if (width > 1920){
             setContentView(R.layout.activity_exoplayer_layar_1440);
@@ -238,6 +246,8 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             setContentView(R.layout.activity_exoplayer_layar_720);
             dlog.log_d(debug,"contentView","720");
         }
+
+
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -330,6 +340,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         firststart = true;
         frameSwitchChannel= (FrameLayout) findViewById(R.id.frame_exo_switch_channel);
         switchChannel = (FrameLayout) findViewById(R.id.switch_channel_exo);
+        epg_channel = (FrameLayout) findViewById(R.id.switch_channel_exo_epg);
         simpleExoPlayerView = findViewById(R.id.exoplayer);
 
         myTimeBar=(TimeBar)findViewById(R.id.timebarexoplayer);
@@ -356,11 +367,16 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         channeltimeline=(TextView)findViewById(R.id.channel_timeline);
 
         InternetSpeed=(ImageView)findViewById(R.id.internet_speed);
-
+      //  logo_l3=(ImageView)findViewById(R.id.logo_l3_exo);
+       // logo_l3.setVisibility(View.GONE);
         //menu navigation
         LinearLayout menu_home_button=(LinearLayout)findViewById(R.id.menu_home_ll);
         LinearLayout movie_menu=(LinearLayout)findViewById(R.id.home_menu_movie);
         LinearLayout setting_menu=(LinearLayout)findViewById(R.id.menu_settings_ll);
+
+
+
+
 
         menu_home_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -440,6 +456,27 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             }
         });
 
+        epg_channel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (epgframeopen) {
+                    frameSwitchChannel.setVisibility(View.VISIBLE);
+//                    myrvRB.setVisibility(View.VISIBLE);
+                    //gridview_channelswitch_frame.setVisibility(View.VISIBLE);
+                    myrvRBSwitchChannel.setVisibility(View.VISIBLE);
+                    myrvRBSwitchChannel.scrollToPosition(channelPosition);
+                    editor.putInt("channelPos",channelPosition);
+                    editor.apply();
+                    HeaderPlayer.setVisibility(View.GONE);
+                    FrameHeaderMenu.setVisibility(View.GONE);
+
+                    // new exoplayer_layar.LoadVODInBookList().execute();
+                }
+
+            }
+        });
+
       /*  play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -474,6 +511,10 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         FloatWinIntent.putExtra("server", server);
         startService(FloatWinIntent);
   */
+
+
+
+
         setOnGestureListeners();
     }
 
@@ -539,6 +580,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         }
 */
         setupProxy(false);
+        handler.removeCallbacks(ExoPlayerTimer);
         handler.removeCallbacks(showBuffered);
      //   trimCache();
     }
@@ -546,19 +588,20 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-
+        if(showToggleCount!=null)
+        showToggleCount.cancel();
         if (Integer.parseInt(Build.VERSION.SDK) > 5
                 && keyCode == KeyEvent.KEYCODE_BACK
                 && event.getRepeatCount() == 0) {
-            Log.d("CDA", "onKeyDown Called");
             onBackPressed();
+
             return true;
         }
 
         if (Integer.parseInt(Build.VERSION.SDK) > 5
                 && keyCode == KeyEvent.KEYCODE_DPAD_CENTER
                 && event.getRepeatCount() == 0) {
-            Log.d("CDA", "onKeyDown Called");
+
             toggleShowController();
             return true;
         }
@@ -566,7 +609,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         if (Integer.parseInt(Build.VERSION.SDK) > 5
                 && keyCode == KeyEvent.KEYCODE_ENTER
                 && event.getRepeatCount() == 0) {
-            Log.d("CDA", "onKeyDown Called");
+
             toggleShowController();
             return true;
         }
@@ -601,7 +644,6 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
     @Override
     public void onBackPressed() {
-        Log.d("CDA", "onBackPressed Called");
         if (HeaderPlayer.getVisibility() == VISIBLE) {
             HeaderPlayer.setVisibility(View.GONE);
             FrameHeaderMenu.setVisibility(View.GONE);
@@ -736,6 +778,8 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             @Override
             public void onClick() {
                 super.onClick();
+                if(showToggleCount!=null)
+                showToggleCount.cancel();
                 toggleShowController();
 
                 // User tapped once (This is what you want)
@@ -756,7 +800,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
         if (set) {
 
-            if(!switchChannelExoPlayer || host.equalsIgnoreCase("none")) {
+            if (!switchChannelExoPlayer || host.equalsIgnoreCase("none")) {
                 abdyxoorp z = new abdyxoorp();
 
 
@@ -773,21 +817,29 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                     e.printStackTrace();
                 }
 
-         /*   ch = oldwget.getURL(server + z.xyxoprup() + ".php?tk=" + tk);*/
+                /*   ch = oldwget.getURL(server + z.xyxoprup() + ".php?tk=" + tk);*/
+                if (ch != null) {
+                    String[] separ = ch.split(":");
+                    host = separ[0];
+                    port = separ[1];
+                } else {
 
-            String[] separ = ch.split(":");
-            host=separ[0];
-            port=separ[1];
+                    Toast.makeText(exoplayer_layar.this, "There is something wrong with your internet connection.", Toast.LENGTH_SHORT);
+                    return;
+                }
+
+            }
+                System.setProperty("http.proxyHost", host);
+                System.setProperty("http.proxyPort", port);
+
+            Log.d("testProxy","C=" + String.valueOf(switchChannelExoPlayer) + " and " + host);
+        }
+            else {
+                System.setProperty("http.proxyHost", "");
+                System.setProperty("http.proxyPort", "");
+
             }
 
-
-            System.setProperty("http.proxyHost", host);
-            System.setProperty("http.proxyPort", port);
-        } else {
-            System.setProperty("http.proxyHost", "");
-            System.setProperty("http.proxyPort", "");
-
-        }
     }
 
     private void initializePlayer() {
@@ -848,7 +900,6 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         if (playWhenReady && playbackState == Player.STATE_READY) {
             counter = 0;
             allowOSD=true;
-
             Exoplayingstate=true;
             if (pdLoading != null && pdLoading.isShowing()) {
 
@@ -914,8 +965,9 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 Log.e("ERROR TYPE_SOURCE", "TYPE_SOURCE: " + error.getSourceException().getMessage());
 
                 if (player != null) {
-                    player.release();
-                    player = null;
+                 //   player.stop();
+                    //player.release();
+                    //player = null;
                 }
 
         /*        if(counter==0){
@@ -937,14 +989,15 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                     timerCountDownBuffering = counter * 1000 + 1;
 
-                    sourceerrorTimer=new CountDownTimer(timerCountDownBuffering, timerCountDownBuffering) {
+                    sourceerrorTimer=new CountDownTimer(1000, 1000) {
 
                         public void onTick(long millisUntilFinished) {
                         }
 
                         public void onFinish() {
-
-                            new exoplayer_layar.checkLatestApps().execute();
+                            player.prepare(videoSource);
+                            player.setPlayWhenReady(true);
+                            //new exoplayer_layar.checkLatestApps().execute();
 
                         }
 
@@ -961,6 +1014,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                       //  setupProxy(false);
                         //new exoplayer_layar.StartChannel().execute();
 
+                        /*
                         new MaterialStyledDialog.Builder(exoplayer_layar.this)
                                 .setTitle("SOURCE ERROR!")
                                 .setStyle(Style.HEADER_WITH_TITLE)
@@ -983,9 +1037,11 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                                 //.setNeutralText(...)
                                 //.onNeutral(...)
                                 .show();
+                                    */
+                        CustomDialogSourceErrorClass cdde=new CustomDialogSourceErrorClass(exoplayer_layar.this);
+                        cdde.show();
 
-
-                        simpleExoPlayerView.setShowBuffering(false);
+                        simpleExoPlayerView.setShowBuffering(PlayerView.SHOW_BUFFERING_NEVER);
 
 
                         //   finish();
@@ -1081,45 +1137,47 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
             /* updateJSON = oldwget.getURL(server + "apps/update/update-changelog.json");
              */
-
-            JSONObject GetDataJSONUpdate;
-            try {
-                GetDataJSONUpdate = new JSONObject(String.valueOf(updateJSON));
-                Integer AppsVersion = GetDataJSONUpdate.getInt("latestVersionCode");
-
+            if(updateJSON != null) {
+                JSONObject GetDataJSONUpdate;
                 try {
-                    PackageInfo pInfo = context.getPackageManager().getPackageInfo(getPackageName(), 0);
-                    Integer version = pInfo.versionCode;
+                    GetDataJSONUpdate = new JSONObject(String.valueOf(updateJSON));
+                    Integer AppsVersion = GetDataJSONUpdate.getInt("latestVersionCode");
 
-                    if (AppsVersion > version) {
+                    try {
+                        PackageInfo pInfo = context.getPackageManager().getPackageInfo(getPackageName(), 0);
+                        Integer version = pInfo.versionCode;
 
-                        String forceUpdate = null;
-                        try {
+                        if (AppsVersion > version) {
 
-                            forceUpdate = wget.getURL(server + "apps/exoplayer/force_update.php");
+                            String forceUpdate = null;
+                            try {
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                                forceUpdate = wget.getURL(server + "apps/exoplayer/force_update.php");
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            /* forceUpdate = oldwget.getURL(server + "apps/exoplayer/force_update.php");
+                             */
+                            if (forceUpdate.equalsIgnoreCase("yes")) {
+                                falseVersion = true;
+                            }
+
+
                         }
 
-                        /* forceUpdate = oldwget.getURL(server + "apps/exoplayer/force_update.php");
-                         */
-                        if (forceUpdate.equalsIgnoreCase("yes")) {
-                            falseVersion = true;
-                        }
-
-
-
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
                     }
 
-                } catch (PackageManager.NameNotFoundException e) {
+
+                } catch (JSONException e) {
+
                     e.printStackTrace();
                 }
-
-
-            } catch (JSONException e) {
-
-                e.printStackTrace();
+            } else {
+                httperror=true;
             }
             return "";
 
@@ -1128,44 +1186,64 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         @Override
         protected void onPostExecute(String result) {
 
-            if (falseVersion){
-
-                // Toast.makeText(exoplayer_layar.this,"Your application version is outdated. Please update!",Toast.LENGTH_LONG).show();
-                // finish();
-                new MaterialStyledDialog.Builder(exoplayer_layar.this)
-                        .setTitle("OLD APPLICATION VERSION DETECTED!")
-                        .setStyle(Style.HEADER_WITH_TITLE)
-                        .setDescription("You are using old application version. Please update to the latest version.")
-                        .setPositiveText("OK")
-
-                        .withDarkerOverlay(true)
-                        .withIconAnimation(true)
-                        .setHeaderColor(R.color.red)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                releaseall();
-                                finish();
-
-                                Log.d("MaterialStyledDialogs", "Do something!");
-                            }
-                        })
-                        //.setNegativeText(...)
-                        //.onNegative(...)
-                        //.setNeutralText(...)
-                        //.onNeutral(...)
-                        .show();
-
+            if (httperror) {
+                Toast.makeText(exoplayer_layar.this,"There is something wrong with your internet connection.",Toast.LENGTH_LONG).show();
                 return;
-            } else {
+            }  else {
 
-                new exoplayer_layar.checkForMaxConnection().execute();
+                if (falseVersion) {
 
+                    // Toast.makeText(exoplayer_layar.this,"Your application version is outdated. Please update!",Toast.LENGTH_LONG).show();
+                    // finish();
+              /*      new MaterialStyledDialog.Builder(exoplayer_layar.this)
+                            .setTitle("OLD APPLICATION VERSION DETECTED!")
+                            .setStyle(Style.HEADER_WITH_TITLE)
+                            .setDescription("You are using old application version. Please update to the latest version.")
+                            .setPositiveText("OK")
+
+                            .withDarkerOverlay(true)
+                            .withIconAnimation(true)
+                            .setHeaderColor(R.color.red)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    releaseall();
+                                    finish();
+
+                                }
+                            })
+                            //.setNegativeText(...)
+                            //.onNegative(...)
+                            //.setNeutralText(...)
+                            //.onNeutral(...)
+                            .show();
+                            */
+                    CustomLatestApkVersion clav=new CustomLatestApkVersion(exoplayer_layar.this);
+                    clav.show();
+                    //return;
+                } else {
+
+                    new exoplayer_layar.checkForMaxConnection().execute();
+
+                }
             }
-
         }
 
     }
+
+    public void exit_dueto_oldversion(){
+       // Toast.makeText()
+        Intent i =new Intent();
+        i.setClassName(exoplayer_layar.this,menu_navigation.getHomeActivity());
+        i.putExtra("PersonID", username);
+        i.putExtra("token", tk);
+        i.putExtra("server", server);
+        startActivity(i);
+        releaseall();
+        finishAffinity();
+
+    }
+
 
     private class checkForMaxConnection extends AsyncTask<String,String,String>
     {
@@ -1201,27 +1279,33 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
             dlog.log_d(debug, "serverString", server + "apps/exoplayer/update_onlinev3.php?mac_address=" + Macaddress + "&username=" + username + "&model=" + DeviceModel + "&channel=" + channelid + "&opt=livetv");
             firststart = false;
-            JSONObject GetDataJSONOnline;
-            dlog.log_d(debug, "jsonMax", checkMaxConnectionn);
-            try {
-                GetDataJSONOnline = new JSONObject(String.valueOf(checkMaxConnectionn));
-                String onlineStatus = GetDataJSONOnline.getString("token");
 
-                if (onlineStatus.equalsIgnoreCase("max")) {
-                    maxConnection = true;
+            if(checkMaxConnectionn != null) {
 
-                    firstDevice=GetDataJSONOnline.getString("device0");
-                    SecounDevice=GetDataJSONOnline.getString("device1");
+                JSONObject GetDataJSONOnline;
+                dlog.log_d(debug, "jsonMax", checkMaxConnectionn);
+                try {
+                    GetDataJSONOnline = new JSONObject(String.valueOf(checkMaxConnectionn));
+                    String onlineStatus = GetDataJSONOnline.getString("token");
+
+                    if (onlineStatus.equalsIgnoreCase("max")) {
+                        maxConnection = true;
+
+                        firstDevice = GetDataJSONOnline.getString("device0");
+                        SecounDevice = GetDataJSONOnline.getString("device1");
 
 
-                } else {
-                    CurrentchannelViews = String.valueOf(GetDataJSONOnline.getInt("view"));
-                    //CurrentchannelViews ="n/a";
+                    } else {
+                        CurrentchannelViews = String.valueOf(GetDataJSONOnline.getInt("view"));
+                        //CurrentchannelViews ="n/a";
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } else {
+                httperror=true;
             }
             return "";
 
@@ -1230,40 +1314,49 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         @Override
         protected void onPostExecute(String result) {
 
-            if (maxConnection){
-
-                //  Toast.makeText(exoplayer_layar.this,"Max connection devices detected!",Toast.LENGTH_LONG).show();
-                // finish();
-                new MaterialStyledDialog.Builder(exoplayer_layar.this)
-                        .setTitle("MAX CONNECTION")
-                        .setStyle(Style.HEADER_WITH_TITLE)
-                        .setDescription("Please logout from any of of these devices:\n1. " + firstDevice + "\n2. " + SecounDevice)
-                        .setPositiveText("OK")
-                        .withDarkerOverlay(true)
-                        .withIconAnimation(true)
-                        .setHeaderColor(R.color.red)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                releaseall();
-                                finish();
-
-                                //   Log.d("MaterialStyledDialogs", "Do something!");
-                            }
-                        })
-                        //.setNegativeText(...)
-                        //.onNegative(...)
-                        //.setNeutralText(...)
-                        //.onNeutral(...)
-                        .show();
-
+            if(httperror){
+                Toast.makeText(exoplayer_layar.this,"There is something wrong with your internet connection.",Toast.LENGTH_LONG).show();
                 return;
+
             } else {
 
-                new exoplayer_layar.StartChannel().execute();
+                if (maxConnection) {
 
+                    //  Toast.makeText(exoplayer_layar.this,"Max connection devices detected!",Toast.LENGTH_LONG).show();
+                    // finish();
+                    /*
+                    new MaterialStyledDialog.Builder(exoplayer_layar.this)
+                            .setTitle("MAX CONNECTION")
+                            //.setStyle(Style.HEADER_WITH_TITLE)
+                            .setDescription("Please logout from any of of these devices:\n1. " + firstDevice + "\n2. " + SecounDevice)
+                            .setPositiveText("OK")
+                            .withDarkerOverlay(true)
+                            .withIconAnimation(true)
+                            .setHeaderColor(R.color.red)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    releaseall();
+                                    finish();
+
+                                    //   Log.d("MaterialStyledDialogs", "Do something!");
+                                }
+                            })
+                            //.setNegativeText(...)
+                            //.onNegative(...)
+                            //.setNeutralText(...)
+                            //.onNeutral(...)
+                            .show();
+                        */
+                    CustomDialogMaxConnection cdmC=new CustomDialogMaxConnection(exoplayer_layar.this,firstDevice,SecounDevice);
+                    cdmC.show();
+                    return;
+                } else {
+
+                    new exoplayer_layar.StartChannel().execute();
+
+                }
             }
-
         }
 
     }
@@ -1378,6 +1471,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
 
          if(!switchChannelExoPlayer) {
+                epgJson=null;
              try {
                  epgJson = wget.getURL(server + "apps/epg/all_epg.txt");
 
@@ -1494,7 +1588,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             }
 
 */
-            maxretrybuffer =3;
+            maxretrybuffer =5;
 
                 player = ExoPlayerFactory.newSimpleInstance(exoplayer_layar.this, trackSelector);
 
@@ -1593,14 +1687,13 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 String layar3 = "layar3.com";
 
                 if (Url.toLowerCase().contains(layar3.toLowerCase())) {
-
                     setupProxy(true);
                 } else {
                     setupProxy(false);
                 }
 
             videoSource = null;
-                videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
+              //  videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
             switch (type) {
                 case C.TYPE_DASH:
                     DataSource.Factory manifestDataSourceFactory =
@@ -1616,7 +1709,11 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                     //    Toast.makeText(exoplayer_layar.this,"DASH" + String.valueOf(type),Toast.LENGTH_SHORT).show();
                     break;
                 case C.TYPE_HLS:
-                    videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
+                    DefaultLoadErrorHandlingPolicy df=new DefaultLoadErrorHandlingPolicy();
+
+                   // videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
+                    videoSource=new HlsMediaSource.Factory(dataSourceFactory).setLoadErrorHandlingPolicy(df).createMediaSource(videoUri);
+
                     player.prepare(videoSource);
                     player.setPlayWhenReady(true);
                     //  Toast.makeText(exoplayer_layar.this,"HLS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
@@ -1666,9 +1763,46 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             resolution.setVisibility(View.GONE);
 
 
-           // handler.postDelayed(showBuffered, 1);
+                HeaderPlayer.setVisibility(View.VISIBLE);
+                FrameHeaderMenu.setVisibility(View.VISIBLE);
+                handler.postDelayed(showBuffered, 1);
+                switchChannel.requestFocus();
+                epg_ll_switchChannel.setVisibility(View.VISIBLE);
 
-            if(!switchChannelExoPlayer)
+                showToggleCount = new CountDownTimer(5000,50) {
+                    @Override
+                    public void onTick(long l) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                       if(HeaderPlayer.getVisibility() == VISIBLE){
+                        HeaderPlayer.setVisibility(View.GONE);
+                        FrameHeaderMenu.setVisibility(View.GONE);
+                        handler.removeCallbacks(showBuffered);}
+                       // switchChannel.requestFocus();
+                       // epg_ll_switchChannel.setVisibility(View.GONE);
+
+                    }
+                }.start();
+
+                // handler.postDelayed(showBuffered, 1);
+
+                Long now=System.currentTimeMillis();
+
+                editor.putLong("lastChangeChannel",now/1000);
+                editor.apply();
+
+                if(exoplayertimerun)
+                handler.removeCallbacks(ExoPlayerTimer);
+
+                handler.postDelayed(ExoPlayerTimer,1);
+
+
+
+            if(!switchChannelExoPlayer )
             new exoplayer_layar.LoadVODInBookList().execute();
 
         }
@@ -1700,6 +1834,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         switchChannelExoPlayer=true;
         setupProxy(false);
         frameSwitchChannel.setVisibility(View.GONE);
+        gridview_channelswitch_frame.setVisibility(View.GONE);
         this.channelid=channelid;
         Url =url;
         thumbnail=imgUrl;
@@ -1708,7 +1843,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         logoutResponse="";
         firststart=true;
         channelPosition=cposition;
-
+        counter=0;
         //initializePlayer();
         new exoplayer_layar.checkLatestApps().execute();
 
@@ -1727,6 +1862,70 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
     }
 
+    private Runnable ExoPlayerTimer = new Runnable() {
+        @Override
+        public void run() {
+
+            exoplayertimerun=true;
+
+            long lastPlay=pref.getLong("lastChangeChannel",0);
+
+            long currentTime = System.currentTimeMillis()/1000;
+
+
+            if(currentTime - lastPlay > 14400){
+           //   if(currentTime - lastPlay > 5){
+
+                CustomDialogClass cdd=new CustomDialogClass(exoplayer_layar.this);
+                cdd.show();
+
+            }else {
+                handler.postDelayed(ExoPlayerTimer,300000);
+               // handler.postDelayed(ExoPlayerTimer,5000);
+            }
+
+        }
+    };
+
+    public void RunExoPlayerTimerBack(){
+
+        Long now=System.currentTimeMillis();
+
+        editor.putLong("lastChangeChannel",now/1000);
+        editor.apply();
+
+        handler.postDelayed(ExoPlayerTimer,1);
+
+    }
+
+    public void properlyLogout(){
+
+        logoutResponse = "none";
+
+        try {
+            logoutResponse = wget.getURL(server + "apps/exoplayer/update_offlinev3.php?mac_address=" + Macaddress + "&username=" + username + "&channel=" + channelid);
+
+            if (logoutResponse.equalsIgnoreCase("out")){
+                Intent i =new Intent();
+                i.setClassName(exoplayer_layar.this,menu_navigation.getHomeActivity());
+                i.putExtra("PersonID", username);
+                i.putExtra("token", tk);
+                i.putExtra("server", server);
+                startActivity(i);
+                releaseall();
+                finishAffinity();
+            } else {
+                Toast.makeText(exoplayer_layar.this,"There is something wrong with your internet connection.",Toast.LENGTH_LONG);
+                if(player != null)
+                    player.stop();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 /*
     private Runnable updatePlayTime = new Runnable() {
 
@@ -1883,187 +2082,190 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
           //  String json= wget.getURL(server + "apps/livetv/vd452ax3.php");
           //  String json= wget.getURL(server+b.rvd452ax3()+".php?tk="+tk);
 
+            if(epgJson != null) {
 
-            try {
-                JSONObject objectPremium = new JSONObject(String.valueOf(json));
-                JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
+                try {
+                    JSONObject objectPremium = new JSONObject(String.valueOf(json));
+                    JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
 
-                JSONObject objectPremium2 = new JSONObject(String.valueOf(epgJson));
-                JSONArray EPGdata = (JSONArray) objectPremium2.getJSONArray("data");
+                    JSONObject objectPremium2 = new JSONObject(String.valueOf(epgJson));
+                    JSONArray EPGdata = (JSONArray) objectPremium2.getJSONArray("data");
 
-                SETVODJsonCategory = new LinkedHashSet<String>();
-                VODJsonId = new ArrayList<String>();
-                VODJsonName = new ArrayList<String>();
-                VODJsonLogoPath = new ArrayList<String>();
-                VODJsonUrl = new ArrayList<String>();
-                VODJsonCategory = new ArrayList<String>();
-                VODJsonsypnopsis = new ArrayList<String>();
-                VODJsonpremium=new ArrayList<String>();
-                VODJsonepg=new ArrayList<Integer>();
-                VODJsonprograminfo=new ArrayList<String>();
-                VODJsonprograminfo2=new ArrayList<String>();
-                //Toast.makeText(getApplicationContext(),VODname,Toast.LENGTH_LONG).show();
-                String VODid,VODname,VODlogo,VODurl,VODcategory,VODsypnopsis,VODPremium,prinfo="",prinfo2="";
-                Integer Epgid;
-                Boolean found;
-                for (int i = 0; i < VodData.length(); i++) {
-                    VODid=VodData.getJSONObject(i).getString("id");
-                    VODname = VodData.getJSONObject(i).getString("name");
-                    VODlogo = VodData.getJSONObject(i).getString("logoPath");
-                    VODurl = VodData.getJSONObject(i).getString("playUrl");
-                    VODcategory = VodData.getJSONObject(i).getString("genre");
-                    VODsypnopsis = VodData.getJSONObject(i).getString("sypnopsis");
-                    VODPremium = VodData.getJSONObject(i).getString("premium");
-                    Epgid =VodData.getJSONObject(i).getInt("epg");
-                    found=false;
-                    noWorkingEPG=false;
-                //    dlog.log_d(debug, "EPGID", String.valueOf(Epgid));
+                    SETVODJsonCategory = new LinkedHashSet<String>();
+                    VODJsonId = new ArrayList<String>();
+                    VODJsonName = new ArrayList<String>();
+                    VODJsonLogoPath = new ArrayList<String>();
+                    VODJsonUrl = new ArrayList<String>();
+                    VODJsonCategory = new ArrayList<String>();
+                    VODJsonsypnopsis = new ArrayList<String>();
+                    VODJsonpremium = new ArrayList<String>();
+                    VODJsonepg = new ArrayList<Integer>();
+                    VODJsonprograminfo = new ArrayList<String>();
+                    VODJsonprograminfo2 = new ArrayList<String>();
+                    //Toast.makeText(getApplicationContext(),VODname,Toast.LENGTH_LONG).show();
+                    String VODid, VODname, VODlogo, VODurl, VODcategory, VODsypnopsis, VODPremium, prinfo = "", prinfo2 = "";
+                    Integer Epgid;
+                    Boolean found;
+                    for (int i = 0; i < VodData.length(); i++) {
+                        VODid = VodData.getJSONObject(i).getString("id");
+                        VODname = VodData.getJSONObject(i).getString("name");
+                        VODlogo = VodData.getJSONObject(i).getString("logoPath");
+                        VODurl = VodData.getJSONObject(i).getString("playUrl");
+                        VODcategory = VodData.getJSONObject(i).getString("genre");
+                        VODsypnopsis = VodData.getJSONObject(i).getString("sypnopsis");
+                        VODPremium = VodData.getJSONObject(i).getString("premium");
+                        Epgid = VodData.getJSONObject(i).getInt("epg");
+                        found = false;
+                        noWorkingEPG = false;
+                        //    dlog.log_d(debug, "EPGID", String.valueOf(Epgid));
 
-                    prinfo="No working EPGhazwan-hazwan-";
-                    prinfo2="No working EPGhazwan-hazwan-";
+                        prinfo = "No working EPGhazwan-hazwan-";
+                        prinfo2 = "No working EPGhazwan-hazwan-";
 
-                   if (Epgid != 0){
+                        if (Epgid != 0) {
 
-                        for (int j = 0; j < EPGdata.length(); j++) {
-
-
-                            Integer PID = EPGdata.getJSONObject(j).getInt("pid");
-
-                         //   dlog.log_d(debug, "Check EPG ID", String.valueOf(Epgid) + "vs" + String.valueOf(PID));
+                            for (int j = 0; j < EPGdata.length(); j++) {
 
 
-                            if((Epgid - PID)== 0) {
+                                Integer PID = EPGdata.getJSONObject(j).getInt("pid");
 
-                                JSONArray EPGArray = (JSONArray) EPGdata.getJSONObject(j).getJSONArray("egp");
+                                //   dlog.log_d(debug, "Check EPG ID", String.valueOf(Epgid) + "vs" + String.valueOf(PID));
 
-                                for (int k = 0; k < EPGArray.length(); k++) {
 
-                                    Long Now = System.currentTimeMillis()/1000;
-                                    String ts = Now.toString();
+                                if ((Epgid - PID) == 0) {
 
-                                    String program = EPGArray.getJSONObject(k).getString("program");
-                                    String start = EPGArray.getJSONObject(k).getString("play");
-                                    String end = EPGArray.getJSONObject(k).getString("end");
+                                    JSONArray EPGArray = (JSONArray) EPGdata.getJSONObject(j).getJSONArray("egp");
 
-                                    Long EpgStart=Long.parseLong(start);
-                                    Long EpgEnd=Long.parseLong(end);
-                                   // dlog.log_d(debug, "current", String.valueOf(Now));
-                                   // dlog.log_d(debug, "CheckEPG", String.valueOf(EpgStart) + "<" + String.valueOf(Now) + "<" + String.valueOf(EpgEnd));
+                                    for (int k = 0; k < EPGArray.length(); k++) {
 
-                                   if(EpgStart < Now && Now < EpgEnd) {
-                                       // dlog.log_d(debug, "CheckEPG", String.valueOf(EpgStart) + "<" + String.valueOf(Now) + "<" + String.valueOf(EpgEnd));
+                                        Long Now = System.currentTimeMillis() / 1000;
+                                        String ts = Now.toString();
 
-                                    //    dlog.log_d(debug, "program", program);
-                                  //      dlog.log_d(debug, "program", start);
-                                   //     dlog.log_d(debug, "program", end);
-                                        if (k <= EPGArray.length() - 2) {
-                                            String program2 = EPGArray.getJSONObject(k + 1).getString("program");
-                                            String start2 = EPGArray.getJSONObject(k + 1).getString("play");
-                                            String end2 = EPGArray.getJSONObject(k + 1).getString("end");
+                                        String program = EPGArray.getJSONObject(k).getString("program");
+                                        String start = EPGArray.getJSONObject(k).getString("play");
+                                        String end = EPGArray.getJSONObject(k).getString("end");
+
+                                        Long EpgStart = Long.parseLong(start);
+                                        Long EpgEnd = Long.parseLong(end);
+                                        // dlog.log_d(debug, "current", String.valueOf(Now));
+                                        // dlog.log_d(debug, "CheckEPG", String.valueOf(EpgStart) + "<" + String.valueOf(Now) + "<" + String.valueOf(EpgEnd));
+
+                                        if (EpgStart < Now && Now < EpgEnd) {
+                                            // dlog.log_d(debug, "CheckEPG", String.valueOf(EpgStart) + "<" + String.valueOf(Now) + "<" + String.valueOf(EpgEnd));
+
+                                            //    dlog.log_d(debug, "program", program);
+                                            //      dlog.log_d(debug, "program", start);
+                                            //     dlog.log_d(debug, "program", end);
+                                            if (k <= EPGArray.length() - 2) {
+                                                String program2 = EPGArray.getJSONObject(k + 1).getString("program");
+                                                String start2 = EPGArray.getJSONObject(k + 1).getString("play");
+                                                String end2 = EPGArray.getJSONObject(k + 1).getString("end");
                                       /*      dlog.log_d(debug, "program", program2);
                                             dlog.log_d(debug, "program", start2);
                                             dlog.log_d(debug, "program", end2);*/
-                                            prinfo2=program2 + "hazwan" + start2 + "hazwan" + end2;
+                                                prinfo2 = program2 + "hazwan" + start2 + "hazwan" + end2;
+                                            } else {
+                                                String program2 = "No working EPG";
+                                                String start2 = "-";
+                                                String end2 = "-";
+
+                                                prinfo2 = program2 + "hazwan" + start2 + "hazwan" + end2;
+
+                                            }
+
+                                            prinfo = program + "hazwan" + start + "hazwan" + end;
+
+                                            if (VODid.equalsIgnoreCase(channelid)) {
+
+
+                                                SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
+                                                formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+                                                String startPlay = formatter.format(new Date(Long.parseLong(start) * 1000));
+                                                String endPlay = formatter.format(new Date(Long.parseLong(end) * 1000));
+
+                                                programName = program;
+                                                playStarCurrent = startPlay;
+                                                playEndCurrent = endPlay;
+
+                                            }
+
+                                            break;
                                         } else {
-                                            String program2 = "No working EPG";
-                                            String start2 = "-";
-                                            String end2 = "-";
 
-                                            prinfo2=program2 + "hazwan" + start2 + "hazwan" + end2;
+                                            program = EPGArray.getJSONObject(0).getString("program");
+                                            start = EPGArray.getJSONObject(0).getString("play");
+                                            end = EPGArray.getJSONObject(0).getString("end");
+
+
+                                            String program2 = EPGArray.getJSONObject(1).getString("program");
+                                            String start2 = EPGArray.getJSONObject(1).getString("play");
+                                            String end2 = EPGArray.getJSONObject(1).getString("end");
+
+                                            prinfo = program + "hazwan" + start + "hazwan" + end;
+
+                                            if (VODid.equalsIgnoreCase(channelid)) {
+
+                                                SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
+                                                formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+                                                String startPlay = formatter.format(new Date(Long.parseLong(start) * 1000));
+                                                String endPlay = formatter.format(new Date(Long.parseLong(end) * 1000));
+
+                                                programName = program;
+                                                playStarCurrent = startPlay;
+                                                playEndCurrent = endPlay;
+
+                                            }
+                                            prinfo2 = program2 + "hazwan" + start2 + "hazwan" + end2;
 
                                         }
 
-                                       prinfo=program + "hazwan" + start + "hazwan" + end;
 
-                                        if (VODid.equalsIgnoreCase(channelid)){
-
-
-                                            SimpleDateFormat formatter=new SimpleDateFormat("hh:mm");
-                                            formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
-                                            String startPlay=formatter.format(new Date(Long.parseLong(start) * 1000));
-                                            String endPlay=formatter.format(new Date(Long.parseLong(end) * 1000));
-
-                                            programName=program;
-                                            playStarCurrent=startPlay;
-                                            playEndCurrent=endPlay;
-
-                                        }
-
-                                        break;
-                                    } else {
-
-                                       program = EPGArray.getJSONObject(0).getString("program");
-                                       start = EPGArray.getJSONObject(0).getString("play");
-                                       end = EPGArray.getJSONObject(0).getString("end");
-
-
-                                       String program2 = EPGArray.getJSONObject(1).getString("program");
-                                       String start2 = EPGArray.getJSONObject(1).getString("play");
-                                       String end2 = EPGArray.getJSONObject(1).getString("end");
-
-                                       prinfo=program + "hazwan" + start + "hazwan" + end;
-
-                                       if (VODid.equalsIgnoreCase(channelid)) {
-
-                                           SimpleDateFormat formatter = new SimpleDateFormat("hh:mm");
-                                           formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
-                                           String startPlay = formatter.format(new Date(Long.parseLong(start) * 1000));
-                                           String endPlay = formatter.format(new Date(Long.parseLong(end) * 1000));
-
-                                           programName = program;
-                                           playStarCurrent = startPlay;
-                                           playEndCurrent = endPlay;
-
-                                       }
-                                       prinfo2=program2 + "hazwan" + start2 + "hazwan" + end2;
-
-                                   }
-
-
+                                    }
+                                    found = true;
                                 }
-                                found=true;
+                                if (found)
+                                    break;
                             }
-                            if(found)
-                            break;
+
+                        } else {
+                            prinfo = "No working EPGhazwan-hazwan-";
+                            prinfo2 = "No working EPGhazwan-hazwan-";
+
+                            if (VODid.equalsIgnoreCase(channelid)) {
+                                noWorkingEPG = true;
+                            }
+
                         }
 
-                    } else {
-                        prinfo="No working EPGhazwan-hazwan-";
-                        prinfo2="No working EPGhazwan-hazwan-";
+                        VODJsonId.add(VODid);
+                        VODJsonName.add(VODname);
+                        VODJsonLogoPath.add(VODlogo);
+                        VODJsonUrl.add(VODurl);
+                        VODJsonCategory.add(VODcategory);
+                        VODJsonsypnopsis.add(VODsypnopsis);
+                        VODJsonpremium.add(VODPremium);
+                        VODJsonepg.add(Epgid);
+                        VODJsonprograminfo.add(prinfo);
+                        VODJsonprograminfo2.add(prinfo2);
+                        SETVODJsonCategory.add(VODcategory);
 
-                        if (VODid.equalsIgnoreCase(channelid)) {
-                            noWorkingEPG=true;
-                        }
 
                     }
 
-                    VODJsonId.add(VODid);
-                    VODJsonName.add(VODname);
-                    VODJsonLogoPath.add(VODlogo);
-                    VODJsonUrl.add(VODurl);
-                    VODJsonCategory.add(VODcategory);
-                    VODJsonsypnopsis.add(VODsypnopsis);
-                    VODJsonpremium.add(VODPremium);
-                    VODJsonepg.add(Epgid);
-                    VODJsonprograminfo.add(prinfo);
-                    VODJsonprograminfo2.add(prinfo2);
-                    SETVODJsonCategory.add(VODcategory);
 
-
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                // Toast.makeText(getApplicationContext(),objectPremium.getBoolean("state"),Toast.LENGTH_LONG).show();
+
+
+                //   myrvRB = (RecyclerView) findViewById(R.id.recyclerview_channel_category_top);
+                //   myAdapterRB = new RecyclerViewAdapterCategoryExoPlayer(exoplayer_layar.this,VODCat);
+            } else {
+                httperror=true;
             }
-
-
-            // Toast.makeText(getApplicationContext(),objectPremium.getBoolean("state"),Toast.LENGTH_LONG).show();
-
-
-
-         //   myrvRB = (RecyclerView) findViewById(R.id.recyclerview_channel_category_top);
-         //   myAdapterRB = new RecyclerViewAdapterCategoryExoPlayer(exoplayer_layar.this,VODCat);
 
             return "";
 
@@ -2082,19 +2284,25 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                // myrvRB.setAdapter(myAdapterRB);
               //  myrvRB.setVisibility(View.GONE);
 
-            String id,name,logoPath,url,category,sypnopsis,premium,ProgInfo1,ProgInfo2;
-            Integer epgid;
+            if (httperror){
+                Toast.makeText(exoplayer_layar.this,"There is something wrong with your internet connection.",Toast.LENGTH_LONG).show();
+                return;
+
+            }else {
+
+                String id, name, logoPath, url, category, sypnopsis, premium, ProgInfo1, ProgInfo2;
+                Integer epgid;
 
 
-            VODCat=new ArrayList<String>();
+                VODCat = new ArrayList<String>();
 
-            for (String s : SETVODJsonCategory) {
-         //       Log.d("SETVODJsonCategory",s);
+                for (String s : SETVODJsonCategory) {
+                    //       Log.d("SETVODJsonCategory",s);
 
-                VODCat.add(s);
+                    VODCat.add(s);
 
 
-            }
+                }
 
 
 
@@ -2106,112 +2314,119 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
 */
 
-            EPG=new ArrayList<>();
-            for (int i=0;i<VODJsonName.size();i++){
-                id =VODJsonId.get(i).toString();
-                name=VODJsonName.get(i).toString();
-                category=VODJsonCategory.get(i).toString();
-                logoPath=VODJsonLogoPath.get(i).toString();
-                url=VODJsonUrl.get(i).toString();
-                sypnopsis=VODJsonsypnopsis.get(i).toString();
-                premium=VODJsonpremium.get(i).toString();
-                epgid=VODJsonepg.get(i);
-                ProgInfo1=VODJsonprograminfo.get(i).toString();
-                ProgInfo2=VODJsonprograminfo2.get(i).toString();
-                // try {
-                // bitmap = BitmapFactory.decodeStream((InputStream)new URL(logoPath).getContent());
-                //} catch (IOException e) {
-                //      e.printStackTrace();
-                //  }
-                if(Watchcategory.equalsIgnoreCase(category)){
-                    EPG.add(new ExoBook(name, category, url, logoPath, sypnopsis,id,premium,epgid,ProgInfo1,ProgInfo2));
+                EPG = new ArrayList<>();
+                for (int i = 0; i < VODJsonName.size(); i++) {
+                    id = VODJsonId.get(i).toString();
+                    name = VODJsonName.get(i).toString();
+                    category = VODJsonCategory.get(i).toString();
+                    logoPath = VODJsonLogoPath.get(i).toString();
+                    url = VODJsonUrl.get(i).toString();
+                    sypnopsis = VODJsonsypnopsis.get(i).toString();
+                    premium = VODJsonpremium.get(i).toString();
+                    epgid = VODJsonepg.get(i);
+                    ProgInfo1 = VODJsonprograminfo.get(i).toString();
+                    ProgInfo2 = VODJsonprograminfo2.get(i).toString();
+                    // try {
+                    // bitmap = BitmapFactory.decodeStream((InputStream)new URL(logoPath).getContent());
+                    //} catch (IOException e) {
+                    //      e.printStackTrace();
+                    //  }
+                    if (Watchcategory.equalsIgnoreCase(category)) {
+                        EPG.add(new ExoBook(name, category, url, logoPath, sypnopsis, id, premium, epgid, ProgInfo1, ProgInfo2));
 
-                }
-            }
-
-
-
-            ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.listview,VODCat);
-            listviewCat.setAdapter(adapter);
-
-
-            listviewCat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                    String CurrentCategory=VODCat.get(i).toString();
-                    String id,name,logoPath,url,category,sypnopsis,premium,ProgInfo1,ProgInfo2;
-                    Integer epgid;
-                    EPG=new ArrayList<>();
-                    for (i=0;i<VODJsonName.size();i++){
-                        id =VODJsonId.get(i).toString();
-                        name=VODJsonName.get(i).toString();
-                        category=VODJsonCategory.get(i).toString();
-                        logoPath=VODJsonLogoPath.get(i).toString();
-                        url=VODJsonUrl.get(i).toString();
-                        sypnopsis=VODJsonsypnopsis.get(i).toString();
-                        premium=VODJsonpremium.get(i).toString();
-                        epgid=VODJsonepg.get(i);
-                        ProgInfo1=VODJsonprograminfo.get(i).toString();
-                        ProgInfo2=VODJsonprograminfo2.get(i).toString();
-                        // try {
-                        // bitmap = BitmapFactory.decodeStream((InputStream)new URL(logoPath).getContent());
-                        //} catch (IOException e) {
-                        //      e.printStackTrace();
-                        //  }
-                        if(CurrentCategory.equalsIgnoreCase(category)){
-                            EPG.add(new ExoBook(name, category, url, logoPath, sypnopsis,id,premium,epgid,ProgInfo1,ProgInfo2));
-
-
-                        }
                     }
-
-                    myAdapterRBExo = new RecyclerViewAdapterRBExo(exoplayer_layar.this,EPG);
-                    ChannelListingGridView.setLayoutManager(new GridLayoutManager(getApplicationContext(),4));
-                    ChannelListingGridView.setAdapter(myAdapterRBExo);
-
-                    // MyAdapterRBSwitchChannel=new RecyclerViewAdapterSwitchChannelExoPlayer(exoplayer_layar.this,EPG);
-                    // myrvRBSwitchChannel.setAdapter(MyAdapterRBSwitchChannel);
-
                 }
-            });
 
 
+                width = Resources.getSystem().getDisplayMetrics().widthPixels;
+                ArrayAdapter adapter = null;
+                dlog.log_d(debug, "height", String.valueOf(width));
+                if (width > 1920) {
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.exoplayer_listview, VODCat);
+
+                    dlog.log_d(debug, "contentView", "1440");
+                } else if (width > 1280) {
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.exoplayer_listview, VODCat);
+
+                    dlog.log_d(debug, "contentView", "1080");
+
+                } else {
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.exoplayer_listview_720, VODCat);
+
+                    dlog.log_d(debug, "contentView", "720");
+                }
+
+                listviewCat.setAdapter(adapter);
 
 
+                listviewCat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                        String CurrentCategory = VODCat.get(i).toString();
+                        String id, name, logoPath, url, category, sypnopsis, premium, ProgInfo1, ProgInfo2;
+                        Integer epgid;
+                        EPG = new ArrayList<>();
+                        for (i = 0; i < VODJsonName.size(); i++) {
+                            id = VODJsonId.get(i).toString();
+                            name = VODJsonName.get(i).toString();
+                            category = VODJsonCategory.get(i).toString();
+                            logoPath = VODJsonLogoPath.get(i).toString();
+                            url = VODJsonUrl.get(i).toString();
+                            sypnopsis = VODJsonsypnopsis.get(i).toString();
+                            premium = VODJsonpremium.get(i).toString();
+                            epgid = VODJsonepg.get(i);
+                            ProgInfo1 = VODJsonprograminfo.get(i).toString();
+                            ProgInfo2 = VODJsonprograminfo2.get(i).toString();
+                            // try {
+                            // bitmap = BitmapFactory.decodeStream((InputStream)new URL(logoPath).getContent());
+                            //} catch (IOException e) {
+                            //      e.printStackTrace();
+                            //  }
+                            if (CurrentCategory.equalsIgnoreCase(category)) {
+                                EPG.add(new ExoBook(name, category, url, logoPath, sypnopsis, id, premium, epgid, ProgInfo1, ProgInfo2));
 
 
+                            }
+                        }
+
+                        myAdapterRBExo = new RecyclerViewAdapterRBExo(exoplayer_layar.this, EPG);
+                        ChannelListingGridView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
+                        ChannelListingGridView.setAdapter(myAdapterRBExo);
+
+                        // MyAdapterRBSwitchChannel=new RecyclerViewAdapterSwitchChannelExoPlayer(exoplayer_layar.this,EPG);
+                        // myrvRBSwitchChannel.setAdapter(MyAdapterRBSwitchChannel);
+
+                    }
+                });
 
 
+                myAdapterRBExo = new RecyclerViewAdapterRBExo(exoplayer_layar.this, EPG);
+                ChannelListingGridView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 4));
+                ChannelListingGridView.setAdapter(myAdapterRBExo);
 
 
-
-            myAdapterRBExo = new RecyclerViewAdapterRBExo(exoplayer_layar.this,EPG);
-            ChannelListingGridView.setLayoutManager(new GridLayoutManager(getApplicationContext(),4));
-            ChannelListingGridView.setAdapter(myAdapterRBExo);
+                ChannelCategory.setText(Watchcategory);
 
 
-            ChannelCategory.setText(Watchcategory);
+                MyAdapterRBSwitchChannel = new RecyclerViewAdapterSwitchChannelExoPlayer(exoplayer_layar.this, EPG);
 
-
-                MyAdapterRBSwitchChannel=new RecyclerViewAdapterSwitchChannelExoPlayer(exoplayer_layar.this,EPG);
-
-                myrvRBSwitchChannel.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.VERTICAL,false));
+                myrvRBSwitchChannel.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
                 myrvRBSwitchChannel.setAdapter(MyAdapterRBSwitchChannel);
-                myrvRBSwitchChannel.setVisibility(View.GONE);
 
-                if(noWorkingEPG){
+                if (noWorkingEPG) {
                     channeltimeline.setText("-");
                     nowShowingProgram.setText("No working EPG");
 
-                }else {
+                } else {
                     channeltimeline.setText(playStarCurrent + "-" + playEndCurrent);
                     nowShowingProgram.setText(programName);
 
                 }
 
-            epgframeopen=true;
+                epgframeopen = true;
 
+            }
         }
 
     }
@@ -2236,12 +2451,15 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
 
 
-            if (HeaderPlayer.getVisibility() == View.GONE && frameSwitchChannel.getVisibility() == View.GONE) {
+            if (HeaderPlayer.getVisibility() == View.GONE && frameSwitchChannel.getVisibility() == View.GONE && gridview_channelswitch_frame.getVisibility() == View.GONE) {
+
+
+
                 HeaderPlayer.setVisibility(View.VISIBLE);
                 FrameHeaderMenu.setVisibility(View.VISIBLE);
                 handler.postDelayed(showBuffered, 1);
                 switchChannel.requestFocus();
-                epg_ll_switchChannel.setVisibility(View.GONE);
+                epg_ll_switchChannel.setVisibility(View.VISIBLE);
                 /*pause.setVisibility(View.VISIBLE);*/
 
                 //  simpleExoPlayerView.showController();
@@ -2523,9 +2741,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
 
         MyAdapterRBSwitchChannel=new RecyclerViewAdapterSwitchChannelExoPlayer(exoplayer_layar.this,EPG);
-
         myrvRBSwitchChannel.setAdapter(MyAdapterRBSwitchChannel);
-        myrvRBSwitchChannel.setVisibility(View.GONE);
 
         if(noWorkingEPG){
             channeltimeline.setText("-");
