@@ -5,7 +5,6 @@ public class LiveEventBook {
 
     private String TitleType;
     private String BackgroundImage;
-    private String Url ;
     private String Date;
     private String Time ;
     private String Title;
@@ -16,10 +15,9 @@ public class LiveEventBook {
     public LiveEventBook() {
     }
 
-    public LiveEventBook(String TitleTypes, String BackgroundImages, String urls, String Dates, String Times, String Titles, Integer ids) {
+    public LiveEventBook(String TitleTypes, String BackgroundImages, String Dates, String Times, String Titles, Integer ids) {
         TitleType = TitleTypes;
         BackgroundImage = BackgroundImages;
-        Url = urls;
         Date = Dates;
         Time = Times;
         Title=Titles;
@@ -35,10 +33,6 @@ public class LiveEventBook {
 
     public String getBackgroundImage() {
         return BackgroundImage;
-    }
-
-    public String getUrl() {
-        return Url;
     }
 
     public String getDate() {
@@ -67,10 +61,6 @@ public class LiveEventBook {
 
     public void setBackgroundImage(String BackgroundImages) {
         BackgroundImage = BackgroundImages;
-    }
-
-    public void setUrl(String url) {
-        Url = url;
     }
 
     public void setDate(String Dates) {

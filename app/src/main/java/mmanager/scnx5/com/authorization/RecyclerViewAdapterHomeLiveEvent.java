@@ -66,6 +66,10 @@ public class RecyclerViewAdapterHomeLiveEvent extends RecyclerView.Adapter<Recyc
     @Override
     public void onBindViewHolder(RecyclerViewAdapterHomeLiveEvent.MyViewHolderRB holder, final int position) {
 
+        holder.title.setText(mData.get(position).getTitle());
+        holder.time.setText(mData.get(position).getTime());
+        holder.date.setText(mData.get(position).getDate());
+
 
     }
 
@@ -81,8 +85,7 @@ public class RecyclerViewAdapterHomeLiveEvent extends RecyclerView.Adapter<Recyc
 
     public static class MyViewHolderRB extends RecyclerView.ViewHolder {
 
-        TextView channelname,channelcategory;
-        ImageView img_book_thumbnail;
+        TextView title,time,date;
 
 
         //CardView cardView ;
@@ -90,9 +93,9 @@ public class RecyclerViewAdapterHomeLiveEvent extends RecyclerView.Adapter<Recyc
         public MyViewHolderRB(final View itemView) {
             super(itemView);
 
-            channelname = (TextView) itemView.findViewById(R.id.lastwatching_channelname) ;
-            channelcategory= (TextView) itemView.findViewById(R.id.lastwatching_channelcategory) ;
-            img_book_thumbnail = (ImageView) itemView.findViewById(R.id.lastwatching_logo);
+            title = (TextView) itemView.findViewById(R.id.Title_live) ;
+            time= (TextView) itemView.findViewById(R.id.live_time) ;
+            date = (TextView) itemView.findViewById(R.id.live_date);
             cardView =(FrameLayout) itemView.findViewById(R.id.home_last_watching);
          /*   Animation anim = AnimationUtils.loadAnimation(itemView.getContext(),R.anim.scale_out_tv);
             itemView.startAnimation(anim);
@@ -111,6 +114,10 @@ public class RecyclerViewAdapterHomeLiveEvent extends RecyclerView.Adapter<Recyc
                         Animation anim = AnimationUtils.loadAnimation(itemView.getContext(),R.anim.scale_in_tv);
                         itemView.startAnimation(anim);
                         anim.setFillAfter(true);
+
+                        ((newui_logout_main)itemView.getContext()).setLiveImageBackground("");
+
+
                      //   Log.d("Onfocus","focused");
                     }else {
                         Animation anim = AnimationUtils.loadAnimation(itemView.getContext(),R.anim.scale_out_tv);

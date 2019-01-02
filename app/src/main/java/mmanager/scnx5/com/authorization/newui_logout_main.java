@@ -106,8 +106,9 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private Handler handler = new Handler();
     private boolean writepermission=false;
     private getURL wget=new getURL();
-    private String JsonRecentChannels,JsonTrendingChannel,JsonMostPopular;
+    private String Jsonliveandevent,JsonRecentChannels,JsonTrendingChannel,JsonMostPopular;
     public List<HomeTrendBook> VODTrendingChannel,VODRecentChannel,VODMostPopular;
+    public List<LiveEventBook> BookLiveEvent;
     public List<AllBook> AllChannelCategory;
     public List<String> VODJsonId;
     public List<String> VODJsonName;
@@ -118,11 +119,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     public List<String> VODJsonpremium;
     public List<Integer> VODJsonEPG;
   //  private RecyclerView myrvRB,myrvTrend;
-    private RecyclerView myrvMP,myrvTC,myrvrb;
+    private RecyclerView myLiveEvent,myrvMP,myrvTC,myrvrb;
     private RecyclerViewAdapterHomeTrend myAdapterHomeYW,getMyAdapterHomeTC;
     RecyclerViewAdapterHomeTrend myAdapterHomeTrend;
     RecyclerViewAdapterHomeLastWatch myAdapterHomeLastWatch;
     RecyclerViewAdapterHomeMostPopular myAdapterHomeMostPopular;
+    RecyclerViewAdapterHomeLiveEvent myAdapterHomeLiveEvent;
     private RecyclerViewVerticalAdapterHome myAdapterHomeVertical;
     private Boolean debug=true;
     private LinearLayout ll_last_watching;
@@ -132,13 +134,14 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private Integer scrollPosLastWatching=0;
     private Boolean lastwatching_ll_focus=false;
     private SharedPreferences pref;
-    private MKLoader threepulse1,threepulse2,threepulse3;
+    private MKLoader threepulse0,threepulse1,threepulse2,threepulse3;
     private SharedPreferences.Editor editor;
     private ScrollView home_scroll;
     private vd452ax3 b=new vd452ax3();
     private String Json;
     private get_menu_classs_navigation menu_navigation=new get_menu_classs_navigation();
     private String remainingdays="";
+    public FrameLayout backgroundImage;
     private Boolean loadingPage=false;
     private  SliderLayout sliderLayout;
     private LinearLayout  liveTV_menu;
@@ -168,7 +171,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         pref = getApplicationContext().getSharedPreferences("HomeUI", MODE_PRIVATE);
         editor = pref.edit();
        // myrvYW = (RecyclerView) findViewById(R.id.li_lastwatching_channel);
-       threepulse1 =(MKLoader) findViewById(R.id.loading_spinner_home);
+      threepulse1 =(MKLoader) findViewById(R.id.loading_spinner_home);
        threepulse2=(MKLoader) findViewById(R.id.loading_spinner_home2);
        threepulse3=(MKLoader) findViewById(R.id.loading_spinner_home3);
        home_scroll=(ScrollView) findViewById(R.id.scroll_home);
@@ -182,13 +185,13 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
        LinearLayout movie_menu=(LinearLayout)findViewById(R.id.home_menu_movie);
        LinearLayout setting_menu=(LinearLayout)findViewById(R.id.menu_settings_ll);
        FrameLayout rootView=(FrameLayout)findViewById(R.id.root);
-       FrameLayout backgroundImage=(FrameLayout) findViewById(R.id.image_background);
+       backgroundImage=(FrameLayout) findViewById(R.id.image_background);
 
 
 
        Glide.with(this)
             .asBitmap()
-            .load("https://static.standard.co.uk/s3fs-public/thumbnails/image/2017/02/28/14/cesarazpilicueta-chelsea-swansea-280217.jpg?w968")
+            .load("https://cdn.vox-cdn.com/thumbor/1SAyOuWgq-UU8TW8pTwm0CS0dhY=/0x0:1812x2537/1200x800/filters:focal(874x490:1162x778)/cdn.vox-cdn.com/uploads/chorus_image/image/61395291/1025893030.jpg.0.jpg")
             .apply(RequestOptions.centerCropTransform())
             .into(new SimpleTarget<Bitmap>() {
            @Override
@@ -423,6 +426,23 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
     }
 
+    public void setLiveImageBackground(String picurl){
+
+        Glide.with(this)
+                .asBitmap()
+                .load(picurl)
+                .apply(RequestOptions.centerCropTransform())
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        backgroundImage.setBackground(new BitmapDrawable(resource));
+                    }
+                });
+
+
+
+    }
+
     private void setSliderViews() {
 
         String getImageUrls="";
@@ -561,6 +581,106 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
     }
 
+//    private class loadliveandevent extends AsyncTask<String,String,String>
+//    {
+//        String TitleType, BackgroundImage, Date, Time, Title;
+//        Integer id;
+//        String httpconnectionreturn="run";
+//
+//
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            loadingPage=false;
+//            threepulse0.setVisibility(View.VISIBLE);
+//            threepulse1.setVisibility(View.VISIBLE);
+//            threepulse2.setVisibility(View.VISIBLE);
+//            threepulse3.setVisibility(View.VISIBLE);
+//            myLiveEvent.setVisibility(View.GONE);
+//            myrvTC.setVisibility(View.GONE);
+//            myrvMP.setVisibility(View.GONE);
+//            myrvrb.setVisibility(View.GONE);
+//            Jsonliveandevent="none";
+//        }
+//        @Override
+//        protected String doInBackground(String... params) {
+//
+//            try {
+//
+//                Jsonliveandevent = wget.getURL(server + "apps/home/getlive_event_json.php?user=" + tk);
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            if (Jsonliveandevent.equalsIgnoreCase("none")) {
+//
+//                return httpconnectionreturn="stop";
+//
+//            } else {
+//
+//
+//                try {
+//                    JSONObject objectPremium = new JSONObject(String.valueOf(JsonRecentChannels));
+//                    JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
+//
+//                    //Toast.makeText(getApplicationContext(),VODname,Toast.LENGTH_LONG).show();
+//                    for (int i = 0; i < VodData.length(); i++) {
+//                        TitleType = VodData.getJSONObject(i).getString("titleType");
+//                        BackgroundImage = VodData.getJSONObject(i).getString("backgroundImage");
+//                        Date = VodData.getJSONObject(i).getString("date");
+//                        Time = VodData.getJSONObject(i).getString("time");
+//                        Title = VodData.getJSONObject(i).getString("title");
+//                        id = VodData.getJSONObject(i).getInt("channelId");
+//
+//
+//                        BookLiveEvent.add(new LiveEventBook(TitleType, BackgroundImage, Date, Time, Title, id));
+//                    }
+//
+//                }catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//            }
+//
+//            return "";
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String result) {
+//
+//            if(httpconnectionreturn.equalsIgnoreCase("stop")){
+//                threepulse0.setVisibility(View.GONE);
+//                threepulse1.setVisibility(View.GONE);
+//                threepulse2.setVisibility(View.GONE);
+//                threepulse3.setVisibility(View.GONE);
+//
+//                Toast.makeText(newui_logout_main.this,"Something went wrong. Please check your internet connection",Toast.LENGTH_SHORT).show();
+//
+//                return;
+//            }
+//            else {
+//
+//                threepulse0.setVisibility(View.GONE);
+//
+//                myAdapterHomeLiveEvent=new RecyclerViewAdapterHomeLiveEvent (newui_logout_main.this,BookLiveEvent,server, tk, Json);
+//                myLiveEvent.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayout.HORIZONTAL,false));
+//                myLiveEvent.setAdapter(myAdapterHomeLiveEvent);
+//
+//                new newui_logout_main.loadJsonLiveTV().execute();
+//                editor.putString("last_watch", "false");
+//                editor.putString("most_popular", "false");
+//                editor.putString("trending", "false");
+//                editor.apply();
+//            }
+//
+//        }
+//
+//    }
+
     private class loadJsonLiveTV extends AsyncTask<String,String,String>
     {
 
@@ -572,9 +692,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             loadingPage=false;
-            threepulse1.setVisibility(View.VISIBLE);
-            threepulse2.setVisibility(View.VISIBLE);
-            threepulse3.setVisibility(View.VISIBLE);
+
             myrvTC.setVisibility(View.GONE);
             myrvMP.setVisibility(View.GONE);
             myrvrb.setVisibility(View.GONE);
@@ -605,6 +723,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         protected void onPostExecute(String result) {
 
           if(httpconnectionreturn.equalsIgnoreCase("stop")){
+
                 threepulse1.setVisibility(View.GONE);
                 threepulse2.setVisibility(View.GONE);
                 threepulse3.setVisibility(View.GONE);
@@ -734,18 +853,6 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
             else {
 
-                RecyclerView test=(RecyclerView)findViewById(R.id.rc_live_event) ;
-
-                List <LiveEventBook> livebook=new ArrayList<>();
-
-                livebook.add(new LiveEventBook("LIVE","","","SUN,29 DEC 2018","10:00PM","MANCHESTER UTD VS CHEALSEA",1));
-
-                RecyclerViewAdapterHomeLiveEvent rtest;
-
-                rtest = new RecyclerViewAdapterHomeLiveEvent(newui_logout_main.this,livebook,server,tk,Json);
-
-                test.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-                test.setAdapter(rtest);
 
                 myrvrb.setVisibility(View.VISIBLE);
 
