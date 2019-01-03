@@ -6,186 +6,279 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
+    android:background="@drawable/home_background"
     tools:context="mmanager.scnx5.com.authorization.newui_logout_main">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
 
-        android:padding="5dp">
-
-        <LinearLayout
-            android:layout_width="30dp"
-            android:layout_height="25dp"
-            android:layout_gravity="left"
-            android:padding="0dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/l3_grayscale_logo" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:gravity="center">
-
-
-
-            <LinearLayout
-                android:id="@+id/menu_livetv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/home_menu_card_selector"
-                android:clickable="true"
-                android:focusable="true"
-
-                android:gravity="center"
-                android:nextFocusDown="@id/lastwatching_ll"
-                android:padding="8dp">
-
-                <TextView
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:shadowDx="1.5"
-                    android:shadowDy="1.3"
-                    android:shadowRadius="1.6"
-                    android:text="LIVE TV"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/home_menu_movie"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/home_menu_card_selector"
-                android:clickable="true"
-                android:focusable="true"
-
-                android:gravity="center"
-                android:nextFocusDown="@id/lastwatching_ll"
-                android:padding="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:shadowDx="1.5"
-                    android:shadowDy="1.3"
-                    android:shadowRadius="1.6"
-                    android:text="MOVIES"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/menu_settings_ll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/home_menu_card_selector"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:nextFocusRight="@id/menu_settings_ll"
-                android:nextFocusDown="@id/lastwatching_ll"
-                android:padding="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_regular"
-                    android:shadowDx="1.5"
-                    android:shadowDy="1.3"
-                    android:shadowRadius="1.6"
-                    android:text="SETTINGS"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-
-
-    </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:nextFocusUp="@id/menu_livetv"
-        android:focusable="false"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="0dp">
 
+        <ScrollView
+            android:id="@+id/scroll_home"
 
-
-
-        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="15dp"
-            android:orientation="vertical"
-            android:focusable="false"
-            android:nextFocusUp="@id/menu_livetv"
-
-            android:padding="10dp">
-
-            <ScrollView
-                android:id="@+id/scroll_home"
-                android:nextFocusUp="@id/menu_livetv"
-
+            android:layout_height="match_parent">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:orientation="vertical"
+                >
+
+                <FrameLayout
+                    android:id="@+id/image_background"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="550dp"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:background="@drawable/exoplayer_header_background"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <LinearLayout
+                                android:layout_width="30dp"
+                                android:layout_height="25dp"
+                                android:layout_gravity="left"
+                                android:padding="0dp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/l3_grayscale_logo" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:gravity="center">
+
+
+                                <LinearLayout
+                                    android:id="@+id/menu_livetv"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="10dp"
+                                    android:background="@drawable/home_menu_card_selector"
+                                    android:clickable="true"
+                                    android:focusable="true"
+
+                                    android:gravity="center"
+                                    android:nextFocusDown="@id/lastwatching_ll"
+                                    android:padding="8dp">
+
+                                    <TextView
+
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/roboto_regular"
+                                        android:shadowDx="1.5"
+                                        android:shadowDy="1.3"
+                                        android:shadowRadius="1.6"
+                                        android:text="LIVE TV"
+                                        android:textColor="#FFFFFF"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/home_menu_movie"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="10dp"
+                                    android:background="@drawable/home_menu_card_selector"
+                                    android:clickable="true"
+                                    android:focusable="true"
+
+                                    android:gravity="center"
+                                    android:nextFocusDown="@id/lastwatching_ll"
+                                    android:padding="8dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/roboto_regular"
+                                        android:shadowDx="1.5"
+                                        android:shadowDy="1.3"
+                                        android:shadowRadius="1.6"
+                                        android:text="MOVIES"
+                                        android:textColor="#FFFFFF"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/menu_settings_ll"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/home_menu_card_selector"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center"
+                                    android:nextFocusRight="@id/menu_settings_ll"
+                                    android:nextFocusDown="@id/lastwatching_ll"
+                                    android:padding="8dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/roboto_regular"
+                                        android:shadowDx="1.5"
+                                        android:shadowDy="1.3"
+                                        android:shadowRadius="1.6"
+                                        android:text="SETTINGS"
+                                        android:textColor="#FFFFFF"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="350dp"
+                        android:orientation="vertical"
+                        android:background="@drawable/exoplayer_osd_background"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:id="@+id/liveEvent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:focusable="true"
+                            android:layout_marginTop="0dp"
+                            android:orientation="vertical"
+                            android:padding="5dp"
+                            >
+
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="5dp"
+                                android:layout_marginTop="10dp"
+
+
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="371dp"
+                                    android:layout_height="133dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/live_event_tittle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_marginTop="0dp"
+                                        android:fontFamily="@font/roboto_regular"
+                                        android:shadowDx="1.5"
+                                        android:shadowDy="1.3"
+                                        android:shadowRadius="1.6"
+                                        android:text="LIVERPOOL VS CHEALSEA"
+                                        android:textAlignment="center"
+                                        android:textColor="#fff"
+                                        android:textSize="25sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/live_date"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:fontFamily="@font/roboto_regular"
+                                        android:shadowDx="1.5"
+                                        android:shadowDy="1.3"
+                                        android:shadowRadius="1.6"
+                                        android:text="THU,28TH DEC 2018"
+                                        android:textAlignment="center"
+                                        android:textColor="#C2C0C0"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/live_time"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:fontFamily="@font/roboto_regular"
+                                        android:shadowDx="1.5"
+                                        android:shadowDy="1.3"
+                                        android:shadowRadius="1.6"
+                                        android:text="10:00PM"
+                                        android:textColor="#C2C0C0"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/image_scroll_indicator"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+
+                                    android:gravity="center"
+                                    android:orientation="horizontal"
+                                    >
+
+
+
+
+
+                                </LinearLayout>
+
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:nextFocusUp="@id/menu_livetv"
-                    android:focusable="false"
-                    android:orientation="vertical">
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:orientation="horizontal"
-                        android:focusable="false">
-                        <com.dd.ShadowLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:focusable="false">
-                        <com.smarteist.autoimageslider.SliderLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:focusable="true"
-
-                            android:nextFocusUp="@id/menu_livetv"
-                            android:layout_alignParentTop="true"
-
-                            android:id="@+id/imageSlider"/>
-                       </com.dd.ShadowLayout>
-                    </FrameLayout>
-
-
+                    android:layout_marginTop="0dp"
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
                     <LinearLayout
                         android:id="@+id/lastwatching_ll"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:focusable="true"
-                        android:layout_marginTop="15dp"
-                        android:nextFocusUp="@id/menu_home_ll"
+                        android:layout_marginTop="0dp"
                         android:orientation="vertical"
                         android:padding="5dp"
                         >
@@ -208,10 +301,11 @@
                             app:mk_type="ThreePulse"
                             app:mk_color="#ffffff"
                             />
+
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/li_lastwatching_channel"
                             android:layout_width="match_parent"
-                           android:layout_height="180dp"
+                            android:layout_height="180dp"
                             android:layout_marginLeft="5dp"
                             android:layout_marginTop="5dp"></android.support.v7.widget.RecyclerView>
                     </LinearLayout>
@@ -290,13 +384,14 @@
                         android:layout_height="100dp"></LinearLayout>
 
                 </LinearLayout>
-                
-                
-
-            </ScrollView>
 
 
-        </LinearLayout>
+            </LinearLayout>
+
+
+        </ScrollView>
+
+
 
     </FrameLayout>
 

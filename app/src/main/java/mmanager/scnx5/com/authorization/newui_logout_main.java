@@ -223,6 +223,27 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         //TextView modeldevice=(TextView)findViewById(R.id.userDevice);
        //TextView appsVersion=(TextView)findViewById(R.id.LayarAppsversion);
 
+
+        //Image Slider Function
+
+
+        LinearLayout ll_livenet_container=(LinearLayout)findViewById(R.id.liveEvent);
+
+        ll_livenet_container.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+
+            }
+        });
+
+        LinearLayout ll_image_indicator=(LinearLayout)findViewById(R.id.image_scroll_indicator);
+        ImageView imageView = new ImageView(this);
+        imageView.setImageResource(R.drawable.icons8_circle_select);
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        ll_image_indicator.addView(imageView);
+
+
        String version= getString(R.string.version);
 
        Glide.with(this).load("https://www.ienglishstatus.com/wp-content/uploads/2018/04/Anonymous-Whatsapp-profile-picture.jpg").into(profile_pic);
@@ -422,7 +443,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 //        editor.putInt("ScrollViewFocusPosition",getCenterScrollView(sliderLayout));
        // editor.apply();
 
-       new newui_logout_main.loadJsonLiveTV().execute();
+       new newui_logout_main.loadliveandevent().execute();
 
     }
 
@@ -581,105 +602,103 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
     }
 
-//    private class loadliveandevent extends AsyncTask<String,String,String>
-//    {
-//        String TitleType, BackgroundImage, Date, Time, Title;
-//        Integer id;
-//        String httpconnectionreturn="run";
-//
-//
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            loadingPage=false;
-//            threepulse0.setVisibility(View.VISIBLE);
-//            threepulse1.setVisibility(View.VISIBLE);
-//            threepulse2.setVisibility(View.VISIBLE);
-//            threepulse3.setVisibility(View.VISIBLE);
-//            myLiveEvent.setVisibility(View.GONE);
-//            myrvTC.setVisibility(View.GONE);
-//            myrvMP.setVisibility(View.GONE);
-//            myrvrb.setVisibility(View.GONE);
-//            Jsonliveandevent="none";
-//        }
-//        @Override
-//        protected String doInBackground(String... params) {
-//
-//            try {
-//
-//                Jsonliveandevent = wget.getURL(server + "apps/home/getlive_event_json.php?user=" + tk);
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            if (Jsonliveandevent.equalsIgnoreCase("none")) {
-//
-//                return httpconnectionreturn="stop";
-//
-//            } else {
-//
-//
-//                try {
-//                    JSONObject objectPremium = new JSONObject(String.valueOf(JsonRecentChannels));
-//                    JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
-//
-//                    //Toast.makeText(getApplicationContext(),VODname,Toast.LENGTH_LONG).show();
-//                    for (int i = 0; i < VodData.length(); i++) {
-//                        TitleType = VodData.getJSONObject(i).getString("titleType");
-//                        BackgroundImage = VodData.getJSONObject(i).getString("backgroundImage");
-//                        Date = VodData.getJSONObject(i).getString("date");
-//                        Time = VodData.getJSONObject(i).getString("time");
-//                        Title = VodData.getJSONObject(i).getString("title");
-//                        id = VodData.getJSONObject(i).getInt("channelId");
-//
-//
-//                        BookLiveEvent.add(new LiveEventBook(TitleType, BackgroundImage, Date, Time, Title, id));
-//                    }
-//
-//                }catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//            }
-//
-//            return "";
-//
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String result) {
-//
-//            if(httpconnectionreturn.equalsIgnoreCase("stop")){
-//                threepulse0.setVisibility(View.GONE);
-//                threepulse1.setVisibility(View.GONE);
-//                threepulse2.setVisibility(View.GONE);
-//                threepulse3.setVisibility(View.GONE);
-//
-//                Toast.makeText(newui_logout_main.this,"Something went wrong. Please check your internet connection",Toast.LENGTH_SHORT).show();
-//
-//                return;
-//            }
-//            else {
-//
-//                threepulse0.setVisibility(View.GONE);
-//
-//                myAdapterHomeLiveEvent=new RecyclerViewAdapterHomeLiveEvent (newui_logout_main.this,BookLiveEvent,server, tk, Json);
-//                myLiveEvent.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayout.HORIZONTAL,false));
-//                myLiveEvent.setAdapter(myAdapterHomeLiveEvent);
-//
-//                new newui_logout_main.loadJsonLiveTV().execute();
-//                editor.putString("last_watch", "false");
-//                editor.putString("most_popular", "false");
-//                editor.putString("trending", "false");
-//                editor.apply();
-//            }
-//
-//        }
-//
-//    }
+    private class loadliveandevent extends AsyncTask<String,String,String>
+    {
+        String TitleType, BackgroundImage, Date, Time, Title;
+        Integer id;
+        String httpconnectionreturn="run";
+
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingPage=false;
+            threepulse1.setVisibility(View.VISIBLE);
+            threepulse2.setVisibility(View.VISIBLE);
+            threepulse3.setVisibility(View.VISIBLE);
+            myrvTC.setVisibility(View.GONE);
+            myrvMP.setVisibility(View.GONE);
+            myrvrb.setVisibility(View.GONE);
+            Jsonliveandevent="none";
+        }
+        @Override
+        protected String doInBackground(String... params) {
+
+            try {
+
+                Jsonliveandevent = wget.getURL(server + "apps/home/getlive_event_json.php?user=" + tk);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("Jsonliveandevent","L =" + Jsonliveandevent);
+
+
+            if (Jsonliveandevent.equalsIgnoreCase("none")) {
+
+                return httpconnectionreturn="stop";
+
+            } else {
+
+
+                try {
+                    JSONObject objectPremium = new JSONObject(String.valueOf(Jsonliveandevent));
+                    JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
+
+                    BookLiveEvent=new ArrayList<>();
+                    //Toast.makeText(getApplicationContext(),VODname,Toast.LENGTH_LONG).show();
+                    for (int i = 0; i < VodData.length(); i++) {
+                        TitleType = VodData.getJSONObject(i).getString("titleType");
+                        BackgroundImage = VodData.getJSONObject(i).getString("backgroundImage");
+                        Date = VodData.getJSONObject(i).getString("date");
+                        Time = VodData.getJSONObject(i).getString("time");
+                        Title = VodData.getJSONObject(i).getString("title");
+                        id = VodData.getJSONObject(i).getInt("channelId");
+
+
+                        BookLiveEvent.add(new LiveEventBook(TitleType, BackgroundImage, Date, Time, Title, id));
+                    }
+
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            return "";
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            if(httpconnectionreturn.equalsIgnoreCase("stop")){
+                threepulse0.setVisibility(View.GONE);
+                threepulse1.setVisibility(View.GONE);
+                threepulse2.setVisibility(View.GONE);
+                threepulse3.setVisibility(View.GONE);
+
+                Toast.makeText(newui_logout_main.this,"Something went wrong. Please check your internet connection",Toast.LENGTH_SHORT).show();
+
+                return;
+            }
+            else {
+
+                Log.d("Count Array",String.valueOf(BookLiveEvent.size()));
+
+                new newui_logout_main.loadJsonLiveTV().execute();
+                editor.putString("last_watch", "false");
+                editor.putString("most_popular", "false");
+                editor.putString("trending", "false");
+                editor.apply();
+            }
+
+        }
+
+    }
 
     private class loadJsonLiveTV extends AsyncTask<String,String,String>
     {
@@ -733,6 +752,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
               return;
             }
             else {
+
 
               new newui_logout_main.loadrecentchannel().execute();
               editor.putString("last_watch", "false");
@@ -846,12 +866,16 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             else if(JsonRecentChannels.equalsIgnoreCase("first")){
                 lastWatching_ll.setVisibility(View.GONE);
 
+
+
                 new newui_logout_main.loadTrendingChannels().execute();
 
 
             }
 
             else {
+
+
 
 
                 myrvrb.setVisibility(View.VISIBLE);
