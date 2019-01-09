@@ -2,6 +2,7 @@ package mmanager.scnx5.com.authorization;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,6 +25,7 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,13 +34,17 @@ import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,12 +53,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alkathirikhalid.util.ConnectionAppCompactActivity;
+import com.bumptech.glide.GenericTransitionOptions;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.bumptech.glide.request.transition.DrawableCrossFadeTransition;
 import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.module.AppGlideModule;
+import com.bumptech.glide.request.transition.ViewPropertyAnimationFactory;
+import com.bumptech.glide.request.transition.ViewPropertyTransition;
 import com.dcastalia.localappupdate.DownloadApk;
 import com.github.javiersantos.appupdater.AppUpdater;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
@@ -79,6 +93,7 @@ import mmanager.scnx5.com.abcsesscxz;
 import mmanager.scnx5.com.abcvodzxc;
 import mmanager.scnx5.com.abcyxoorp;
 import mmanager.scnx5.com.decrypt.decrypt;
+import mmanager.scnx5.com.mitvmanager.Exoplayer.OnSwipeTouchListener;
 import mmanager.scnx5.com.mitvmanager.Exoplayer.exoplayer_layar;
 import mmanager.scnx5.com.mitvmanager.FloatingMiTV;
 import mmanager.scnx5.com.mitvmanager.R;
@@ -130,21 +145,27 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private LinearLayout ll_last_watching;
     private log_ dlog=new log_();
     private Integer scrollPos=-1;
-    private LinearLayout scrollingview,lastWatching_ll,trending_channel_ll,most_popular_ll;
+    private LinearLayout scrollingview,lastWatching_ll,trending_channel_ll,most_popular_ll,ll_livenet_container;
     private Integer scrollPosLastWatching=0;
     private Boolean lastwatching_ll_focus=false;
-    private SharedPreferences pref;
+    private SharedPreferences pref,pref2;
     private MKLoader threepulse0,threepulse1,threepulse2,threepulse3;
-    private SharedPreferences.Editor editor;
+    private SharedPreferences.Editor editor,editor2;
     private ScrollView home_scroll;
     private vd452ax3 b=new vd452ax3();
     private String Json;
     private get_menu_classs_navigation menu_navigation=new get_menu_classs_navigation();
     private String remainingdays="";
-    public FrameLayout backgroundImage;
+    public ImageView backgroundImage;
     private Boolean loadingPage=false;
     private  SliderLayout sliderLayout;
     private LinearLayout  liveTV_menu;
+    private LinearLayout ll_image_indicator;
+    private  TextView liveTitleEvent,live_date,live_time;
+    private Integer liveEventPos=0;
+    private Integer HomeScrollPOS=0;
+    private FrameLayout rootView;
+    CountDownTimer AutoSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +176,26 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.newui_logout_main);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+
+            LinearLayout liveEventContainer = (LinearLayout) findViewById(R.id.live_event_containter);
+            ViewGroup.MarginLayoutParams params=(ViewGroup.MarginLayoutParams) liveEventContainer.getLayoutParams();
+
+            int width= Resources.getSystem().getDisplayMetrics().widthPixels;
+            dlog.log_d(debug,"newloginheight",String.valueOf(width));
+            if (width < 1920){
+                params.topMargin=(int) (255* Resources.getSystem().getDisplayMetrics().density);
+
+            } else {
+                params.topMargin=(int) (230 * Resources.getSystem().getDisplayMetrics().density);
+
+            }
+
+
+        }
+
+        mRequestPermissionHandler = new RequestPermissionHandler();
 
         Bundle extras = getIntent().getExtras();
         if(extras !=null)
@@ -169,7 +210,9 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         JsonRecentChannels="none";
 
         pref = getApplicationContext().getSharedPreferences("HomeUI", MODE_PRIVATE);
+        pref2 = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
+        editor2=pref2.edit();
        // myrvYW = (RecyclerView) findViewById(R.id.li_lastwatching_channel);
       threepulse1 =(MKLoader) findViewById(R.id.loading_spinner_home);
        threepulse2=(MKLoader) findViewById(R.id.loading_spinner_home2);
@@ -181,32 +224,23 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
        lastWatching_ll = (LinearLayout) findViewById(R.id.lastwatching_ll);
        trending_channel_ll=(LinearLayout)findViewById(R.id.trending_channel_ll);
        most_popular_ll=(LinearLayout)findViewById(R.id.most_popular_ll);
+       ll_livenet_container=(LinearLayout)findViewById(R.id.liveEvent);
        liveTV_menu=(LinearLayout)findViewById(R.id.menu_livetv);
        LinearLayout movie_menu=(LinearLayout)findViewById(R.id.home_menu_movie);
        LinearLayout setting_menu=(LinearLayout)findViewById(R.id.menu_settings_ll);
-       FrameLayout rootView=(FrameLayout)findViewById(R.id.root);
-       backgroundImage=(FrameLayout) findViewById(R.id.image_background);
+       rootView=(FrameLayout)findViewById(R.id.root);
+
+        Glide.with(newui_logout_main.this)
+                .asBitmap()
+                .load("https://layar3.com/apps/home/l3_background_new.jpg")
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        rootView.setBackground(new BitmapDrawable(resource));
+                    }
+                });
 
 
-
-       Glide.with(this)
-            .asBitmap()
-            .load("https://cdn.vox-cdn.com/thumbor/1SAyOuWgq-UU8TW8pTwm0CS0dhY=/0x0:1812x2537/1200x800/filters:focal(874x490:1162x778)/cdn.vox-cdn.com/uploads/chorus_image/image/61395291/1025893030.jpg.0.jpg")
-            .apply(RequestOptions.centerCropTransform())
-            .into(new SimpleTarget<Bitmap>() {
-           @Override
-           public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-               backgroundImage.setBackground(new BitmapDrawable(resource));
-           }
-       });
-
-//       Glide.with(this).load("https://layar3.com/apps/home/l3_background_new.jpg")
-//               .into(new SimpleTarget<Drawable>() {
-//               @Override
-//               public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-//                    rootView.setBackground(resource);
-//               }
-//               });
 
 //        sliderLayout = (SliderLayout) findViewById(R.id.imageSlider);
 //        sliderLayout.setIndicatorAnimation(SliderLayout.Animations.NONE); //set indicator animation by using SliderLayout.Animations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
@@ -214,12 +248,8 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 //
 //        setSliderViews();
 
-        LayoutInflater LInfla=getLayoutInflater();
-        View v=LInfla.inflate(R.layout.welcome_user,(ViewGroup)findViewById(R.id.custom_toast));
 
 
-        TextView username_welcome=(TextView)v.findViewById(R.id.welcome_user);
-        ImageView profile_pic =(ImageView)v.findViewById(R.id.welcome_profile_pic);
         //TextView modeldevice=(TextView)findViewById(R.id.userDevice);
        //TextView appsVersion=(TextView)findViewById(R.id.LayarAppsversion);
 
@@ -227,33 +257,25 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         //Image Slider Function
 
 
-        LinearLayout ll_livenet_container=(LinearLayout)findViewById(R.id.liveEvent);
-
-        ll_livenet_container.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-
-            }
-        });
-
-        LinearLayout ll_image_indicator=(LinearLayout)findViewById(R.id.image_scroll_indicator);
-        ImageView imageView = new ImageView(this);
-        imageView.setImageResource(R.drawable.icons8_circle_select);
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        ll_image_indicator.addView(imageView);
 
 
-       String version= getString(R.string.version);
 
-       Glide.with(this).load("https://www.ienglishstatus.com/wp-content/uploads/2018/04/Anonymous-Whatsapp-profile-picture.jpg").into(profile_pic);
-       username_welcome.setText("WELCOME " + personID.toUpperCase());
+
+
+        LayoutInflater LInfla=getLayoutInflater();
+        View v=LInfla.inflate(R.layout.welcome_user,(ViewGroup)findViewById(R.id.custom_toast));
+        TextView username_welcome=(TextView)v.findViewById(R.id.welcome_user);
+        ImageView profile_pic =(ImageView)v.findViewById(R.id.welcome_profile_pic);
+
+        Glide.with(this).load("https://www.ienglishstatus.com/wp-content/uploads/2018/04/Anonymous-Whatsapp-profile-picture.jpg").into(profile_pic);
+        username_welcome.setText(personID.toUpperCase());
 
        Toast toast=new Toast(getApplicationContext());
-       toast.setGravity(Gravity.BOTTOM,0,100);
+       toast.setGravity(Gravity.TOP|Gravity.RIGHT,0,50);
+
        toast.setDuration(Toast.LENGTH_LONG);
        toast.setView(v);
-        new CountDownTimer(1000,1000) {
+        new CountDownTimer(1500,1000) {
             @Override
             public void onTick(long l) {
 
@@ -333,7 +355,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             @Override
             public void onClick(View view) {
                // Intent intent = new Intent(newui_logout_main.this, exoplayer_layar.class);
-
+                handler.removeCallbacks(AutoSlideMHMKRecyclerViewLiveEvent);
                 if(loadingPage) {
                     Intent intent = new Intent();
                     intent.setClassName(newui_logout_main.this, menu_navigation.getLiveTVActivity());
@@ -355,19 +377,23 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                                 intent.putExtra("Thumbnail", VodData.getJSONObject(i).getString("logoPath"));
                                 intent.putExtra("Sypnopsis", VodData.getJSONObject(i).getString("sypnopsis"));
                                 intent.putExtra("Category", VodData.getJSONObject(i).getString("genre"));
-
                                 intent.putExtra("channelPos", 0);
                                 intent.putExtra("premium", VodData.getJSONObject(i).getString("premium"));
+
+                                editor2.putString("Url",VodData.getJSONObject(i).getString("playUrl"));
+                                editor2.putString("Sypnopsis",VodData.getJSONObject(i).getString("sypnopsis"));
+                                editor2.putString("Thumbnail",VodData.getJSONObject(i).getString("logoPath"));
+                                editor2.putString("channel",VodData.getJSONObject(i).getString("name"));
+                                editor2.putString("Category",VodData.getJSONObject(i).getString("genre"));
+                                editor2.putString("cid",VodData.getJSONObject(i).getString("id"));
+                                editor2.putString("premium", VodData.getJSONObject(i).getString("premium"));
+                                editor.apply();
 
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-
-
-
 
                     }
                     else {
@@ -377,14 +403,21 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                         intent.putExtra("Thumbnail", VODRecentChannel.get(0).getThumbnail());
                         intent.putExtra("Sypnopsis", VODRecentChannel.get(0).getSysnopsis());
                         intent.putExtra("Category", VODRecentChannel.get(0).getCategory());
-
                         intent.putExtra("channelPos", 0);
                         intent.putExtra("premium", VODRecentChannel.get(0).getpremium());
+
+                        editor2.putString("Url",VODRecentChannel.get(0).getUrl());
+                        editor2.putString("Sypnopsis",VODRecentChannel.get(0).getSysnopsis());
+                        editor2.putString("Thumbnail",VODRecentChannel.get(0).getThumbnail());
+                        editor2.putString("channel",VODRecentChannel.get(0).getTitle());
+                        editor2.putString("Category", VODRecentChannel.get(0).getCategory());
+                        editor2.putString("cid",VODRecentChannel.get(0).getId());
+                        editor2.putString("premium",  VODRecentChannel.get(0).getpremium());
+                        editor.apply();
 
                     }
                     //  Toast.makeText(mContext,"test",Toast.LENGTH_LONG).show();
                     // start the activity
-                    intent.putExtra("remaining", remainingdays);
                     intent.putExtra("username", personID);
                     intent.putExtra("liveTV", "rb");
                     intent.putExtra("tk", tk);
@@ -400,12 +433,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         movie_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                handler.removeCallbacks(AutoSlideMHMKRecyclerViewLiveEvent);
                 Intent intent =new Intent();
                 intent.setClassName(newui_logout_main.this,menu_navigation.getMovieActivity());
 
                 // passing data to the book activity
-
+                intent.putExtra("username", personID);
                 intent.putExtra("tk", tk);
                 intent.putExtra("server", server);
 
@@ -420,13 +453,13 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         setting_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                handler.removeCallbacks(AutoSlideMHMKRecyclerViewLiveEvent);
                 Intent intent =new Intent();
                 intent.setClassName(newui_logout_main.this,menu_navigation.getSettingActivity());
 
                 // passing data to the book activity
 
-                intent.putExtra("remaining", remainingdays);
-                intent.putExtra("username", personID);
+                intent.putExtra("tk", tk);
                 intent.putExtra("server", server);
 
                 //  Toast.makeText(mContext,"test",Toast.LENGTH_LONG).show();
@@ -442,6 +475,9 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
 //        editor.putInt("ScrollViewFocusPosition",getCenterScrollView(sliderLayout));
        // editor.apply();
+
+
+
 
        new newui_logout_main.loadliveandevent().execute();
 
@@ -580,6 +616,63 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        handler.removeCallbacks(AutoSlideMHMKRecyclerViewLiveEvent);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        handler.removeCallbacks(AutoSlideMHMKRecyclerViewLiveEvent);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        LinearLayout liveEventContainer = (LinearLayout) findViewById(R.id.live_event_containter);
+        ViewGroup.MarginLayoutParams params=(ViewGroup.MarginLayoutParams) liveEventContainer.getLayoutParams();
+
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+
+             liveEventContainer = (LinearLayout) findViewById(R.id.live_event_containter);
+             params=(ViewGroup.MarginLayoutParams) liveEventContainer.getLayoutParams();
+
+            int width= Resources.getSystem().getDisplayMetrics().widthPixels;
+            dlog.log_d(debug,"newloginheight",String.valueOf(width));
+            if (width < 1920){
+                params.topMargin=(int) (255* Resources.getSystem().getDisplayMetrics().density);
+
+            } else {
+                params.topMargin=(int) (230 * Resources.getSystem().getDisplayMetrics().density);
+
+            }
+
+
+            Glide.with(newui_logout_main.this)
+                    .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                    .into(backgroundImage);
+            backgroundImage.setScaleType(ImageView.ScaleType.FIT_XY);
+        } else {
+
+            params.topMargin=(int) (300* Resources.getSystem().getDisplayMetrics().density);
+
+            Glide.with(newui_logout_main.this)
+                    .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                    .apply(RequestOptions.centerCropTransform())
+                    .into(backgroundImage);
+
+            backgroundImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        }
+
+
+
+    }
+
     private void checkPermissionWriteExtStorage(){
 
 
@@ -604,8 +697,8 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
     private class loadliveandevent extends AsyncTask<String,String,String>
     {
-        String TitleType, BackgroundImage, Date, Time, Title;
-        Integer id;
+        String TitleType, BackgroundImageUrl, Date, Time, Title;
+        Integer id,direction=0;
         String httpconnectionreturn="run";
 
 
@@ -633,7 +726,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 e.printStackTrace();
             }
 
-            Log.d("Jsonliveandevent","L =" + Jsonliveandevent);
+          //  Log.d("Jsonliveandevent","L =" + Jsonliveandevent);
 
 
             if (Jsonliveandevent.equalsIgnoreCase("none")) {
@@ -651,14 +744,14 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                     //Toast.makeText(getApplicationContext(),VODname,Toast.LENGTH_LONG).show();
                     for (int i = 0; i < VodData.length(); i++) {
                         TitleType = VodData.getJSONObject(i).getString("titleType");
-                        BackgroundImage = VodData.getJSONObject(i).getString("backgroundImage");
+                        BackgroundImageUrl = VodData.getJSONObject(i).getString("backgroundImage");
                         Date = VodData.getJSONObject(i).getString("date");
                         Time = VodData.getJSONObject(i).getString("time");
                         Title = VodData.getJSONObject(i).getString("title");
                         id = VodData.getJSONObject(i).getInt("channelId");
 
 
-                        BookLiveEvent.add(new LiveEventBook(TitleType, BackgroundImage, Date, Time, Title, id));
+                        BookLiveEvent.add(new LiveEventBook(TitleType, BackgroundImageUrl, Date, Time, Title, id));
                     }
 
                 }catch (JSONException e) {
@@ -672,12 +765,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
         }
 
+
         @Override
         protected void onPostExecute(String result) {
 
             if(httpconnectionreturn.equalsIgnoreCase("stop")){
-                threepulse0.setVisibility(View.GONE);
-                threepulse1.setVisibility(View.GONE);
+              threepulse1.setVisibility(View.GONE);
                 threepulse2.setVisibility(View.GONE);
                 threepulse3.setVisibility(View.GONE);
 
@@ -687,9 +780,254 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             }
             else {
 
-                Log.d("Count Array",String.valueOf(BookLiveEvent.size()));
+                backgroundImage=(ImageView) findViewById(R.id.image_background);
 
-                new newui_logout_main.loadJsonLiveTV().execute();
+
+                //setFirstImageonLoad
+//                Glide.with(newui_logout_main.this)
+//                        .asBitmap()
+//                        .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+//                        .apply(RequestOptions.centerCropTransform())
+//                        .into(new SimpleTarget<Bitmap>() {
+//                            @Override
+//                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                                backgroundImage.setAlpha(0);
+//                                backgroundImage.animate().alpha(1).setDuration(500);
+//                                backgroundImage.setBackground(new BitmapDrawable(resource));
+//                            }
+//                        });
+
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                    Glide.with(newui_logout_main.this)
+                            .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                            .into(backgroundImage);
+                    backgroundImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                } else {
+
+                    Glide.with(newui_logout_main.this)
+                            .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                            .apply(RequestOptions.centerCropTransform())
+                            .into(backgroundImage);
+                }
+
+
+                liveTitleEvent=(TextView)findViewById(R.id.live_event_tittle);
+                live_date=(TextView)findViewById(R.id.live_date);
+                live_time=(TextView)findViewById(R.id.live_time);
+
+                liveTitleEvent.setText(BookLiveEvent.get(liveEventPos).getTitle());
+                live_date.setText(BookLiveEvent.get(liveEventPos).getDate());
+                live_time.setText(BookLiveEvent.get(liveEventPos).getTime());
+
+
+                //setTitle,Date and Time
+
+
+
+                //defineLayoutforindicator
+                ll_image_indicator=(LinearLayout)findViewById(R.id.image_scroll_indicator);
+
+
+                for(int i=0;i<BookLiveEvent.size();i++) {
+
+
+                    ImageView imageView= new ImageView(newui_logout_main.this);
+                    if(i == 0) {
+                        imageView.setImageResource(R.drawable.icons8_circle_select);
+                    }
+                    else {
+                        imageView.setImageResource(R.drawable.icons8_circle_unselect);
+                    }
+
+                 imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                 ll_image_indicator.addView(imageView);
+                }
+//                ImageView imageView2 = new ImageView(newui_logout_main.this);
+//                imageView2.setImageResource(R.drawable.icons8_circle_unselect);
+//                imageView2.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//
+//                ll_image_indicator.addView(imageView2);
+//                setOnGestureListeners();
+                ll_livenet_container.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+
+                        if (b){
+                            smoothScrollDuration(home_scroll,ll_livenet_container,0);
+
+                             ll_livenet_container.setOnKeyListener(new View.OnKeyListener() {
+                                 @Override
+                                 public boolean onKey(View view, int i, KeyEvent keyEvent) {
+
+                                     if(keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+
+                                         if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT && keyEvent.getRepeatCount() == 0) {
+
+                                             direction = 2; //right
+                                             MHMKRecyclerViewLiveEvent(direction, BookLiveEvent.size());
+                                      //       Log.d("Test", String.valueOf(keyEvent));
+                                         }
+
+                                         if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT && keyEvent.getRepeatCount() == 0) {
+
+                                             direction = 1; //right
+                                             MHMKRecyclerViewLiveEvent(direction, BookLiveEvent.size());
+                                      //       Log.d("Test", String.valueOf(keyEvent));
+                                         }
+
+                                     }
+
+                                     return false;
+                                 }
+                             });
+
+
+                        }
+
+                    }
+                });
+
+
+
+                home_scroll.setOnTouchListener(new ScrollSwipeDetector(newui_logout_main.this) {
+                    static final int MIN_DISTANCE = 100;
+                    private float downX, downY, upX, upY;
+                    @Override
+                    public void onRightToLeftSwipe() {
+                        super.onRightToLeftSwipe();
+
+                        // Swipe to the right
+                        direction = 2; //right
+                        MHMKRecyclerViewLiveEvent(direction,BookLiveEvent.size());
+
+                        Log.d("Swipe", "Right");
+                    }
+
+                    @Override
+                    public void onLeftToRightSwipe() {
+                        super.onLeftToRightSwipe();
+                        direction = 1; //left
+                        MHMKRecyclerViewLiveEvent(direction,BookLiveEvent.size());
+
+                        Log.d("Swipe", "Left");
+                    }
+
+                    public void onTopToBottomSwipe() {
+                        Log.d("Swipe", "onTopToBottomSwipe!");
+
+                    }
+
+                    public void onBottomToTopSwipe() {
+                        Log.d("Swipe", "onBottomToTopSwipe!");
+
+                    }
+
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN: {
+                                downX = event.getX();
+                                downY = event.getY();
+                                //   return true;
+                            }
+                            case MotionEvent.ACTION_UP: {
+                                upX = event.getX();
+                                upY = event.getY();
+
+                                float deltaX = downX - upX;
+                                float deltaY = downY - upY;
+
+                                // swipe horizontal?
+                                if (Math.abs(deltaX) > MIN_DISTANCE) {
+                                    // left or right
+                                    if (deltaX < 0) {
+                                        this.onLeftToRightSwipe();
+                                       // return true;
+                                    }
+                                    if (deltaX > 0) {
+                                        this.onRightToLeftSwipe();
+                                        //return true;
+                                    }
+                                } else {  Log.d("Swipe", "Swipe was only " + String.valueOf(Math.abs(deltaX)) + " long, need at least " + String.valueOf(MIN_DISTANCE)); }
+
+                                    // swipe vertical?
+                                    if (Math.abs(deltaY) > MIN_DISTANCE) {
+                                        // top or down
+                                        if (deltaY < 0) {
+                                            this.onTopToBottomSwipe();
+                                           // return true;
+                                        }
+                                        if (deltaY > 0) {
+                                            this.onBottomToTopSwipe();
+                                           // return true;
+                                        }
+                                    } else { Log.d( "Swipe","Swipe was only " + String.valueOf(Math.abs(deltaX)) + " long, need at least " + String.valueOf(MIN_DISTANCE)); }
+
+                                           //  return true;
+
+
+
+                            }
+
+                        }
+                        return false;
+                    }
+
+
+
+
+
+
+            });
+
+//                backgroundImage.setOnTouchListener(new OnSwipeTouchListener(newui_logout_main.this) {
+//                    @Override
+//                    public void onSwipeRight() {
+//                        super.onSwipeRight();
+//
+//                        // Swipe to the right
+//                        direction = 2; //right
+//                        MHMKRecyclerViewLiveEvent(direction,BookLiveEvent.size());
+//                        Log.d("Swipe", "Right");
+//                    }
+//
+//                    @Override
+//                    public void onSwipeLeft() {
+//                        super.onSwipeLeft();
+//                        // Swipe to the left
+//                        direction = 1; //left
+//                        MHMKRecyclerViewLiveEvent(direction,BookLiveEvent.size());
+//                        Log.d("Swipe", "Left");
+//                    }
+//
+//                    @Override
+//                    public void onClick() {
+//                        super.onClick();
+//
+//
+//                        // User tapped once (This is what you want)
+//                    }
+//
+//                    @Override
+//                    public void onDoubleClick() {
+//                        super.onDoubleClick();
+//
+//                        // User tapped twice
+//                    }
+//
+//
+//                });
+
+
+
+
+               handler.postDelayed(AutoSlideMHMKRecyclerViewLiveEvent,100);
+
+
+
+
+                new loadJsonLiveTV().execute();
                 editor.putString("last_watch", "false");
                 editor.putString("most_popular", "false");
                 editor.putString("trending", "false");
@@ -697,6 +1035,169 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             }
 
         }
+
+    }
+
+
+    private Runnable AutoSlideMHMKRecyclerViewLiveEvent = new Runnable(){
+
+        @Override
+        public void run() {
+
+
+
+            Integer size=BookLiveEvent.size();
+
+            size=size-1;
+
+            if(liveEventPos < size){
+                liveEventPos=liveEventPos+1;
+
+            } else {
+                liveEventPos=0;
+            }
+
+
+
+
+            ll_image_indicator.removeAllViews();
+
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                Glide.with(newui_logout_main.this)
+                        .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                        .into(backgroundImage);
+            } else {
+
+                Glide.with(newui_logout_main.this)
+                        .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                        .apply(RequestOptions.centerCropTransform())
+                        .into(backgroundImage);
+            }
+
+            ObjectAnimator.ofFloat(backgroundImage, View.ALPHA, 0.2f, 1.0f).setDuration(1000).start();
+
+            liveTitleEvent.setText(BookLiveEvent.get(liveEventPos).getTitle());
+            live_date.setText(BookLiveEvent.get(liveEventPos).getDate());
+            live_time.setText(BookLiveEvent.get(liveEventPos).getTime());
+
+            for (int i = 0; i < BookLiveEvent.size(); i++) {
+
+
+                ImageView imageView = new ImageView(newui_logout_main.this);
+                if (i == liveEventPos) {
+                    imageView.setImageResource(R.drawable.icons8_circle_select);
+                } else {
+                    imageView.setImageResource(R.drawable.icons8_circle_unselect);
+                }
+
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+
+                ll_image_indicator.addView(imageView);
+            }
+
+            handler.postDelayed(this,10000);
+        }
+
+
+    };
+
+
+
+
+    private void MHMKRecyclerViewLiveEvent(Integer direction,Integer size){
+
+        Boolean change=false;
+
+        handler.removeCallbacks(AutoSlideMHMKRecyclerViewLiveEvent);
+
+        size=size-1;
+
+        if(direction == 1){
+
+            if(liveEventPos == 0){
+                liveEventPos=0;
+            } else {
+                liveEventPos=liveEventPos-1;
+                change=true;
+            }
+
+        }
+
+        if(direction == 2){
+
+            if(liveEventPos < size){
+                liveEventPos=liveEventPos+1;
+                change=true;
+            } else {
+                liveEventPos=size;
+            }
+
+        }
+
+        if(change) {
+            ll_image_indicator.removeAllViews();
+            //setFirstImageonLoad
+//            Glide.with(newui_logout_main.this)
+//                    .asBitmap()
+//                    .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+//                    .apply(RequestOptions.centerCropTransform())
+//                    .into(new SimpleTarget<Bitmap>() {
+//                        @Override
+//                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                            backgroundImage.setAlpha(0);
+//                            backgroundImage.animate().alpha(1).setDuration(500);
+//                            backgroundImage.setBackground(new BitmapDrawable(resource));
+//                        }
+//                    });
+
+
+
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                Glide.with(newui_logout_main.this)
+                        .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                        .into(backgroundImage);
+            } else {
+
+                Glide.with(newui_logout_main.this)
+                        .load(BookLiveEvent.get(liveEventPos).getBackgroundImage())
+                        .apply(RequestOptions.centerCropTransform())
+                        .into(backgroundImage);
+            }
+
+            ObjectAnimator.ofFloat(backgroundImage, View.ALPHA, 0.2f, 1.0f).setDuration(1000).start();
+
+
+
+            liveTitleEvent.setText(BookLiveEvent.get(liveEventPos).getTitle());
+            live_date.setText(BookLiveEvent.get(liveEventPos).getDate());
+            live_time.setText(BookLiveEvent.get(liveEventPos).getTime());
+
+            for (int i = 0; i < BookLiveEvent.size(); i++) {
+
+
+                ImageView imageView = new ImageView(newui_logout_main.this);
+                if (i == liveEventPos) {
+                    imageView.setImageResource(R.drawable.icons8_circle_select);
+                } else {
+                    imageView.setImageResource(R.drawable.icons8_circle_unselect);
+                }
+
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+
+                ll_image_indicator.addView(imageView);
+            }
+        }
+
+        handler.postDelayed(AutoSlideMHMKRecyclerViewLiveEvent,10000);
+
+    }
+
+
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setOnGestureListeners() {
 
     }
 
@@ -791,7 +1292,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 e.printStackTrace();
             }
 
-            Log.d("JsonRecent","L =" + JsonRecentChannels);
+          //  Log.d("JsonRecent","L =" + JsonRecentChannels);
 
             if (JsonRecentChannels.equalsIgnoreCase("none") ) {
 
@@ -1045,7 +1546,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         @Override
         protected void onPostExecute(String result) {
 
-            final Integer duration=300,speed=10;
+            final Integer duration=250,speed=10;
 
             threepulse3.setVisibility(View.GONE);
 
@@ -1095,11 +1596,11 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                          //   Log.d("Get Top last", "v=" + String.valueOf(lastWatching_ll.getTop()));
                             // ObjectAnimator.ofInt(home_scroll,"scrollY",1).setDuration(500).start();
 
-                            smoothScrollDuration(home_scroll,lastWatching_ll,duration,speed);
+                            smoothScrollDuration(home_scroll,lastWatching_ll,duration);
 
                             editor.putString("last_watch", "true");
                             editor.putString("trending", "false");
-                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(lastWatching_ll));
+                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(lastWatching_ll,duration));
 
                             editor.apply();
 
@@ -1128,12 +1629,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
                         //    Log.d("Get Top trend", "v=" + String.valueOf(trending_channel_ll.getTop()));
                             //  ObjectAnimator.ofInt(home_scroll,"scrollY",getCenterScrollView(trending_channel_ll)).setDuration(500).start();
-                            smoothScrollDuration(home_scroll,trending_channel_ll,duration,speed);
+                            smoothScrollDuration(home_scroll,trending_channel_ll,duration);
 
                             editor.putString("trending", "true");
                             editor.putString("last_watch", "false");
                             editor.putString("most_popular", "false");
-                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(trending_channel_ll));
+                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(trending_channel_ll,duration));
 
                             editor.apply();
                             //home_scroll.smoothScrollTo(0,400);
@@ -1152,12 +1653,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                             myrvTC.setAdapter(myAdapterHomeTrend);
                             myrvMP.setAdapter(myAdapterHomeMostPopular);
                          //   Log.d("Get Top most", "v=" + String.valueOf(most_popular_ll.getTop()));
-                            smoothScrollDuration(home_scroll,most_popular_ll,duration,speed);
+                            smoothScrollDuration(home_scroll,most_popular_ll,duration);
                             //ObjectAnimator.ofInt(home_scroll,"scrollY",getCenterScrollView(most_popular_ll)).setDuration(500).start();
 
                             editor.putString("trending", "false");
                             editor.putString("most_popular", "true");
-                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(most_popular_ll));
+                            editor.putInt("ScrollViewFocusPosition",getCenterScrollView(most_popular_ll,duration));
 
                             editor.apply();
                         }
@@ -1240,73 +1741,19 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
     }
 
-    public void smoothScrollDuration(final ScrollView sv,final View v,Integer duration,Integer speed){
+    public void smoothScrollDuration(final ScrollView sv,final View v,Integer gap){
 
-       // ObjectAnimator objectAnimator = ObjectAnimator.ofInt(sv, "scrollY", 0, getCenterScrollView(v)).setDuration(duration);
-       // objectAnimator.start();
-        sv.smoothScrollTo(0, getCenterScrollView( v));
-        /*
+        sv.smoothScrollTo(0, getCenterScrollView( v,gap));
 
-        final Integer Scrollviewfocus_last = pref.getInt("ScrollViewFocusPosition", 0);
-        Integer different=0;
-        final Integer toAddeachTick;
-        final boolean direction;
-        final Integer centerViewtoScroll=getCenterScrollView(v);
-        if (Scrollviewfocus_last < centerViewtoScroll){
-            different=centerViewtoScroll - Scrollviewfocus_last;
-            toAddeachTick =different / 30;
-            direction=true;
-        } else {
-            different=Scrollviewfocus_last-centerViewtoScroll;
-            toAddeachTick =-(different / 30);
-            direction=false;
-        }
-        Log.d("duration device speed","V =" + String.valueOf(duration/speed));
-        Log.d("different","V =" + String.valueOf(different));
-
-        Log.d("ToAddTick","V =" + String.valueOf(toAddeachTick));
-
-
-        new CountDownTimer(duration,speed){
-            Integer whereToScroll=Scrollviewfocus_last;
-            Integer count=0;
-            @Override
-            public void onTick(long l) {
-
-
-                whereToScroll =whereToScroll+toAddeachTick;
-
-                if(direction && whereToScroll>=centerViewtoScroll){
-                    whereToScroll=centerViewtoScroll;
-                } else if (!direction && whereToScroll <= centerViewtoScroll){
-                    whereToScroll=centerViewtoScroll;
-                }
-                Log.d("Center View","C = " + String.valueOf(centerViewtoScroll));
-
-                Log.d("To scroll to","C = " + String.valueOf(whereToScroll));
-
-
-                count=count+1;
-
-            }
-
-            @Override
-            public void onFinish() {
-
-                Log.d("Count","C = " + String.valueOf(count));
-
-            }
-        }.start();
-*/
     }
 
-    public Integer getCenterScrollView(View view){
+    public Integer getCenterScrollView(View view,Integer gap){
 
         Integer yvalue=0;
 
-        Integer Top=view.getTop();
-        Integer Bot=view.getBottom();
-        yvalue = Top - ((Bot-Top)/2);
+         yvalue=view.getTop() + (int) (gap * Resources.getSystem().getDisplayMetrics().density);
+        //Integer Bot=view.getBottom();
+      //  yvalue = Top - ((Bot-Top)/2);
 
         return yvalue;
     }

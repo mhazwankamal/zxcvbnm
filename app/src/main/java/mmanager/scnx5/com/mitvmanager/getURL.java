@@ -24,6 +24,8 @@ public class getURL {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
 
+
+
             System.setProperty("http.proxyHost", "");
             System.setProperty("http.proxyPort", "");
 

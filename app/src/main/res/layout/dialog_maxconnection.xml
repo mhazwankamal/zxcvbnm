@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:text="MAXIMUM CONNECTION"
         android:gravity="center"
+        android:layout_gravity="center"
         android:shadowDx="1.5"
         android:shadowDy="1.3"
         android:shadowRadius="1.6"

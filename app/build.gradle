@@ -35,8 +35,8 @@ android {
             minSdkVersion 19
             applicationId 'mmanager.scnx5.com.mitvmanager'
             targetSdkVersion 27
-            versionCode 21
-            versionName '3.2'
+            versionCode 24
+            versionName '4.0.0'
             ndk {
                 abiFilters "armeabi-v7a", "x86"
             }
@@ -48,8 +48,8 @@ android {
             minSdkVersion 19
             applicationId 'mmanager.scnx5.com.mitvmanager'
             targetSdkVersion 27
-            versionCode 21
-            versionName '3.2.2'
+            versionCode 24
+            versionName '4.0.0'
             ndk {
                 abiFilter "armeabi-v7a"
             }
@@ -96,6 +96,7 @@ dependencies {
     implementation 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
     implementation 'com.github.smarteist:autoimageslider:1.1.1'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

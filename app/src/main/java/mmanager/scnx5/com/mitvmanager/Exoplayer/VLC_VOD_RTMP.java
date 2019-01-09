@@ -474,7 +474,7 @@ public class VLC_VOD_RTMP extends AppCompatActivity implements IVLCVout.Callback
                     Integer version = pInfo.versionCode;
 
                     if(AppsVersion != version){
-                        falseVersion=true;
+                       // falseVersion=true;
                     }
 
                 } catch (PackageManager.NameNotFoundException e) {

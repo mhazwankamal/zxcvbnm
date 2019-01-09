@@ -10,30 +10,38 @@
     tools:context="mmanager.scnx5.com.authorization.newui_logout_main">
 
 
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="0dp">
+
+
 
         <ScrollView
             android:id="@+id/scroll_home"
 
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="0dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                >
 
                 <FrameLayout
-                    android:id="@+id/image_background"
+
 
                     android:layout_width="match_parent"
-                    android:layout_height="550dp"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <ImageView
+                        android:id="@+id/image_background"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                       />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -79,7 +87,7 @@
                                     android:focusable="true"
 
                                     android:gravity="center"
-                                    android:nextFocusDown="@id/lastwatching_ll"
+                                    android:nextFocusDown="@id/liveEvent"
                                     android:padding="8dp">
 
                                     <TextView
@@ -106,7 +114,7 @@
                                     android:focusable="true"
 
                                     android:gravity="center"
-                                    android:nextFocusDown="@id/lastwatching_ll"
+                                    android:nextFocusDown="@id/liveEvent"
                                     android:padding="8dp">
 
                                     <TextView
@@ -130,8 +138,8 @@
                                     android:clickable="true"
                                     android:focusable="true"
                                     android:gravity="center"
-                                    android:nextFocusDown="@id/lastwatching_ll"
                                     android:nextFocusRight="@id/menu_settings_ll"
+                                    android:nextFocusDown="@id/liveEvent"
                                     android:padding="8dp">
 
                                     <TextView
@@ -154,37 +162,42 @@
                     </LinearLayout>
 
 
+
+
                     <LinearLayout
+                        android:id="@+id/live_event_containter"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="350dp"
-                        android:background="@drawable/exoplayer_osd_background"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="300dp"
                         android:orientation="vertical"
+                        android:background="@drawable/exoplayer_osd_background"
                         android:padding="10dp">
 
                         <LinearLayout
-
+                            android:id="@+id/liveEvent"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:nextFocusUp="@id/menu_livetv"
+                            android:focusable="true"
+                            android:background="@drawable/home_live_event_selector"
                             android:layout_marginTop="0dp"
-
                             android:orientation="vertical"
-                            android:padding="5dp">
+                            android:padding="5dp"
+                            >
+
 
 
                             <LinearLayout
-                                android:id="@+id/liveEvent"
-                                android:focusable="true"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
                                 android:layout_marginTop="10dp"
-                                android:orientation="vertical"
 
 
-                                android:padding="5dp">
+                                android:orientation="vertical">
 
                                 <LinearLayout
-                                    android:layout_width="371dp"
+                                    android:layout_width="350dp"
                                     android:layout_height="133dp"
                                     android:layout_gravity="center"
                                     android:gravity="center"
@@ -243,7 +256,11 @@
                                     android:layout_height="match_parent"
 
                                     android:gravity="center"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    >
+
+
+
 
 
                                 </LinearLayout>
@@ -264,16 +281,22 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="0dp"
                     android:orientation="vertical"
-                    android:padding="10dp">
+                    android:background="@drawable/home_header_background"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    >
 
                     <LinearLayout
                         android:id="@+id/lastwatching_ll"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="0dp"
                         android:focusable="true"
+                        android:layout_marginTop="0dp"
                         android:orientation="vertical"
-                        android:padding="5dp">
+                        android:padding="5dp"
+                        >
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -285,14 +308,14 @@
                             android:text="YOU WERE WATCHING"
                             android:textColor="#fff"
                             android:textStyle="bold" />
-
                         <com.tuyenmonkey.mkloader.MKLoader
                             android:id="@+id/loading_spinner_home"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            app:mk_type="ThreePulse"
                             app:mk_color="#ffffff"
-                            app:mk_type="ThreePulse" />
+                            />
 
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/li_lastwatching_channel"
@@ -306,8 +329,8 @@
                         android:id="@+id/trending_channel_ll"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="10dp"
                         android:focusable="true"
+                        android:layout_marginTop="10dp"
                         android:orientation="vertical"
                         android:padding="5dp">
 
@@ -327,9 +350,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            app:mk_type="ThreePulse"
                             app:mk_color="#ffffff"
-                            app:mk_type="ThreePulse" />
-
+                            />
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/li_trending_channel"
                             android:layout_width="match_parent"
@@ -341,8 +364,8 @@
                         android:id="@+id/most_popular_ll"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="10dp"
                         android:focusable="true"
+                        android:layout_marginTop="10dp"
                         android:orientation="vertical"
                         android:padding="5dp">
 
@@ -356,15 +379,14 @@
                             android:text="MOST POPULAR CHANNELS"
                             android:textColor="#fff"
                             android:textStyle="bold" />
-
                         <com.tuyenmonkey.mkloader.MKLoader
                             android:id="@+id/loading_spinner_home3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            app:mk_type="ThreePulse"
                             app:mk_color="#ffffff"
-                            app:mk_type="ThreePulse" />
-
+                            />
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/li_most_popular"
                             android:layout_width="match_parent"
@@ -383,6 +405,7 @@
 
 
         </ScrollView>
+
 
 
     </FrameLayout>

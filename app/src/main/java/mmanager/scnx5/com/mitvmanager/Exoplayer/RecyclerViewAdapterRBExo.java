@@ -48,7 +48,7 @@ public class RecyclerViewAdapterRBExo extends RecyclerView.Adapter<RecyclerViewA
         if (width > 2200 && width < 3000){
             view = mInflater.inflate(R.layout.cardveiw_item_book_1440, parent, false);
 
-        }else if (width > 1280 && width < 2200){
+        }else if (width > 1600 && width < 2200){
             view = mInflater.inflate(R.layout.cardveiw_item_book, parent, false);
 
         }else {

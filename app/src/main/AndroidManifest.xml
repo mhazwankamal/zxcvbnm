@@ -72,7 +72,7 @@
         <activity
             android:name=".Exoplayer.exoplayer_layar"
             android:configChanges="orientation|screenSize|layoutDirection"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".Exoplayer.exoplayer_layar_vod"
             android:configChanges="orientation|screenSize|layoutDirection"
@@ -112,7 +112,7 @@
 
         <activity android:name="mmanager.scnx5.com.authorization.user_setting"
             android:configChanges="orientation|screenSize|layoutDirection"
-            android:screenOrientation="landscape"></activity>
+           ></activity>
     </application>
 
 </manifest>

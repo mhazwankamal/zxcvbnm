@@ -1,5 +1,6 @@
 package mmanager.scnx5.com.mitvmanager.Exoplayer;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -267,7 +268,6 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             json=extras.getString("json");
             channelPosition=extras.getInt("channelPos");
             premium=extras.getString("premium");
-            remainingdays=extras.getString("remaining");
             personID=extras.getString("username");
             //  Toast.makeText(getApplicationContext(),uniqueID,Toast.LENGTH_LONG).show();
         }
@@ -424,9 +424,9 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                 // passing data to the book activity
 
-                intent.putExtra("remaining", remainingdays);
-                intent.putExtra("username", personID);
+
                 intent.putExtra("server", server);
+                intent.putExtra("tk",tk);
 
                 //  Toast.makeText(mContext,"test",Toast.LENGTH_LONG).show();
                 // start the activity
@@ -645,8 +645,23 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     @Override
     public void onBackPressed() {
         if (HeaderPlayer.getVisibility() == VISIBLE) {
-            HeaderPlayer.setVisibility(View.GONE);
-            FrameHeaderMenu.setVisibility(View.GONE);
+
+            ObjectAnimator.ofFloat(HeaderPlayer, View.ALPHA, 1.0f, 0.0f).setDuration(500).start();
+            ObjectAnimator.ofFloat(FrameHeaderMenu, View.ALPHA, 1.0f, 0.0f).setDuration(500).start();
+
+            new CountDownTimer(500, 500) {
+
+                public void onTick(long millisUntilFinished) {
+                }
+
+                public void onFinish() {
+                    HeaderPlayer.setVisibility(View.GONE);
+                    FrameHeaderMenu.setVisibility(View.GONE);
+                   }
+
+            }.start();
+
+
             handler.removeCallbacks(showBuffered);
           //  simpleExoPlayerView.hideController();
 
@@ -754,6 +769,74 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
       //  myrvRB.scrollToPosition(2);
     }
 
+    public void SyncEPFWithChannelSwitch(Integer channelPos){
+
+      //  String CurrentCategory=ChannelCategory.getText().toString();
+        String VODCatName="";
+        Integer currentPos=0,totalSize=0,displayPosition=0;
+        totalSize=VODCat.size();
+//        for(int i=0;i<VODCat.size();i++){
+//            VODCatName=VODCat.get(i).toString();
+//            if(CurrentCategory.equalsIgnoreCase(VODCatName)){
+//                dlog.log_d(debug,"GetCurrentPosition",String.valueOf(i));
+//                currentPos=i;
+//                break;
+//            }
+//
+//        }
+
+
+//        if(direction.equalsIgnoreCase("right")){
+//            if(currentPos<totalSize-1) {
+//                ChannelCategory.setText(VODCat.get(currentPos + 1).toString());
+//                displayPosition=currentPos+1;
+//            } else {
+//                ChannelCategory.setText(VODCat.get(0).toString());
+//                displayPosition=0;
+//            }
+//        } else if(direction.equalsIgnoreCase("left")){
+//            if(currentPos==0){
+//                ChannelCategory.setText(VODCat.get(totalSize - 1).toString());
+//                displayPosition=totalSize-1;
+//            } else {
+//                ChannelCategory.setText(VODCat.get(currentPos - 1).toString());
+//                displayPosition=currentPos - 1;
+//            }
+//        }
+
+
+        String CurrentCategory=Watchcategory;
+        String id,name,logoPath,url,category,sypnopsis,premium,ProgInfo1,ProgInfo2;
+        Integer epgid;
+        EPG=new ArrayList<>();
+        for (int i=0;i<VODJsonName.size();i++){
+            id =VODJsonId.get(i).toString();
+            name=VODJsonName.get(i).toString();
+            category=VODJsonCategory.get(i).toString();
+            logoPath=VODJsonLogoPath.get(i).toString();
+            url=VODJsonUrl.get(i).toString();
+            sypnopsis=VODJsonsypnopsis.get(i).toString();
+            premium=VODJsonpremium.get(i).toString();
+            epgid=VODJsonepg.get(i);
+            ProgInfo1=VODJsonprograminfo.get(i).toString();
+            ProgInfo2=VODJsonprograminfo2.get(i).toString();
+            // try {
+            // bitmap = BitmapFactory.decodeStream((InputStream)new URL(logoPath).getContent());
+            //} catch (IOException e) {
+            //      e.printStackTrace();
+            //  }
+            if(CurrentCategory.equalsIgnoreCase(category)){
+                EPG.add(new ExoBook(name, category, url, logoPath, sypnopsis,id,premium,epgid,ProgInfo1,ProgInfo2));
+
+
+            }
+        }
+
+        MyAdapterRBSwitchChannel=new RecyclerViewAdapterSwitchChannelExoPlayer(exoplayer_layar.this,EPG);
+        myrvRBSwitchChannel.setAdapter(MyAdapterRBSwitchChannel);
+        myrvRBSwitchChannel.smoothScrollToPosition(channelPos);
+
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private void setOnGestureListeners() {
@@ -800,7 +883,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
         if (set) {
 
-            if (!switchChannelExoPlayer || host.equalsIgnoreCase("none")) {
+
                 abdyxoorp z = new abdyxoorp();
 
 
@@ -812,7 +895,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                 String ch = null;
                 try {
-                    ch = wget.getURL(server + z.xyxoprup() + ".php?tk=" + tk);
+                    ch = wget.getURL(server + z.xyxoprup() + ".php?tk=" + tk + "&mac=" + Macaddress);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -828,11 +911,11 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                     return;
                 }
 
-            }
+
                 System.setProperty("http.proxyHost", host);
                 System.setProperty("http.proxyPort", port);
 
-            Log.d("testProxy","C=" + String.valueOf(switchChannelExoPlayer) + " and " + host);
+
         }
             else {
                 System.setProperty("http.proxyHost", "");
@@ -1779,9 +1862,27 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                     public void onFinish() {
 
                        if(HeaderPlayer.getVisibility() == VISIBLE){
-                        HeaderPlayer.setVisibility(View.GONE);
-                        FrameHeaderMenu.setVisibility(View.GONE);
-                        handler.removeCallbacks(showBuffered);}
+
+                           ObjectAnimator.ofFloat(HeaderPlayer, View.ALPHA, 1.0f, 0.0f).setDuration(500).start();
+                           ObjectAnimator.ofFloat(FrameHeaderMenu, View.ALPHA, 1.0f, 0.0f).setDuration(500).start();
+
+                           new CountDownTimer(500, 500) {
+
+                               public void onTick(long millisUntilFinished) {
+                               }
+
+                               public void onFinish() {
+                                   HeaderPlayer.setVisibility(View.GONE);
+                                   FrameHeaderMenu.setVisibility(View.GONE);
+
+                                   handler.removeCallbacks(showBuffered);
+                               }
+
+                           }.start();
+
+
+
+                      }
                        // switchChannel.requestFocus();
                        // epg_ll_switchChannel.setVisibility(View.GONE);
 
@@ -1830,6 +1931,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         player.release();
 
         //releaseall();
+
         Sypnopsis=sypnop;
         switchChannelExoPlayer=true;
         setupProxy(false);
@@ -1843,6 +1945,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
         logoutResponse="";
         firststart=true;
         channelPosition=cposition;
+        SyncEPFWithChannelSwitch(channelPosition);
         counter=0;
         //initializePlayer();
         new exoplayer_layar.checkLatestApps().execute();
@@ -1859,6 +1962,17 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             }
 
         }.start();
+
+
+        editor.putString("Url",Url);
+        editor.putString("Sypnopsis",Sypnopsis);
+        editor.putString("Thumbnail",thumbnail);
+        editor.putString("channel",channel);
+        editor.putString("Category",Watchcategory);
+        editor.putString("cid",channelid);
+        editor.putString("premium",premium);
+        editor.apply();
+
 
     }
 
@@ -2342,16 +2456,16 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 ArrayAdapter adapter = null;
                 dlog.log_d(debug, "height", String.valueOf(width));
                 if (width > 1920) {
-                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.exoplayer_listview, VODCat);
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.listview, VODCat);
 
                     dlog.log_d(debug, "contentView", "1440");
                 } else if (width > 1280) {
-                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.exoplayer_listview, VODCat);
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.listview, VODCat);
 
                     dlog.log_d(debug, "contentView", "1080");
 
                 } else {
-                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.exoplayer_listview_720, VODCat);
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.listview_720, VODCat);
 
                     dlog.log_d(debug, "contentView", "720");
                 }
@@ -2456,7 +2570,11 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
 
                 HeaderPlayer.setVisibility(View.VISIBLE);
+                ObjectAnimator.ofFloat(HeaderPlayer, View.ALPHA, 0.2f, 1.0f).setDuration(500).start();
+
                 FrameHeaderMenu.setVisibility(View.VISIBLE);
+                ObjectAnimator.ofFloat(FrameHeaderMenu, View.ALPHA, 0.2f, 1.0f).setDuration(500).start();
+
                 handler.postDelayed(showBuffered, 1);
                 switchChannel.requestFocus();
                 epg_ll_switchChannel.setVisibility(View.VISIBLE);

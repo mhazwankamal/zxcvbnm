@@ -120,7 +120,7 @@ public class login_activity extends ConnectionAppCompactActivity {
             etEmail.setText(email);
             etPassword.setText(password);
 
-            userpass=email + "," + password;
+            userpass=email + ":" + password;
 
             if(!logout){
                 new CountDownTimer(10, 10) {
@@ -130,10 +130,10 @@ public class login_activity extends ConnectionAppCompactActivity {
 
                     public void onFinish() {
 
-                        encrypt e=new encrypt();
-                        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                        String access=userpass+","+androidId+email;
-                        String encraccess= e.encryptStr(access);
+//                        encrypt e=new encrypt();
+////                        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+////                        String access=userpass+","+androidId+email;
+////                        String encraccess= e.encryptStr(access);
 
                            new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
 
@@ -149,69 +149,7 @@ public class login_activity extends ConnectionAppCompactActivity {
 
         }
 
-       /* if(checkFileExist("userinfo.txt")){
 
-
-            File file = new File(getApplicationContext().getFilesDir(),"userinfo.txt");
-
-//Read text from file
-            StringBuilder text = new StringBuilder();
-
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String line;
-
-                while ((line = br.readLine()) != null) {
-                    text.append(line);
-                    text.append('\n');
-                }
-                br.close();
-            }
-            catch (IOException e) {
-                //You'll need to add proper error handling here
-            }
-
-            userpass=text.toString();
-            userlogin=userpass.split(",");
-         //     Toast.makeText(this,userpass, Toast.LENGTH_LONG).show();
-           etEmail.setText(userlogin[0]);
-           etPassword.setText(userlogin[1].trim());
-
-            email = etEmail.getText().toString();
-            String password = etPassword.getText().toString();
-
-            userpass=email + "," + password;
-            if(!logout){
-            new CountDownTimer(10, 10) {
-
-                public void onTick(long millisUntilFinished) {
-                }
-
-                public void onFinish() {
-
-                    encrypt e=new encrypt();
-                    String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                    String access=userpass+","+androidId+email;
-                    String encraccess= e.encryptStr(access);
-
-                    if(Build.VERSION.SDK_INT >= 121) {
-                        //only api 21 above
-                        checkDeviceTable(encraccess);
-                    }else{
-                        //only api 21 down
-                        new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
-
-                    }
-
-                    // new AsyncLogin().execute(a.xyoprup() + b.rabcauthabc() + ".php" ,userpass);
-                }
-
-            }.start();
-
-
-
-            }
-        }*/
 
 
 
@@ -220,48 +158,11 @@ public class login_activity extends ConnectionAppCompactActivity {
             @Override
             public void onClick(View view) {
 
-
-
-               /* if(checkFileExist("userinfo.txt")) {
-
-                    fileExisted=true;
-                    File file = new File(getApplicationContext().getFilesDir(), "userinfo.txt");
-                    //Read text from file
-                    StringBuilder text = new StringBuilder();
-
-                    try {
-                        BufferedReader br = new BufferedReader(new FileReader(file));
-                        String line;
-
-                        while ((line = br.readLine()) != null) {
-                            text.append(line);
-                            text.append('\n');
-                        }
-                        br.close();
-                    } catch (IOException e) {
-                        //You'll need to add proper error handling here
-                    }
-
-                    userpass = text.toString();
-                    userlogin = userpass.split(",");
-
-                }*/
-
-
-                    //   EditText personIDET =(EditText) findViewById(R.id.editText) ;
-               // String personID=personIDET.getText().toString();
-              //  Intent i = new Intent(getBaseContext(), MainActivity.class);
-               // i.putExtra("PersonID", personID);
-               // startActivity(i);
-                // Get text from email and passord field
-
-
-
                 email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
 
 
-                    userpass = email + "," + password;
+                    userpass = email + ":" + password;
                 // Initialize  AsyncLogin() class with email and password
 
                 if (email.isEmpty() || password.isEmpty()){
@@ -272,13 +173,13 @@ public class login_activity extends ConnectionAppCompactActivity {
                    //
 
 
-                    encrypt e=new encrypt();
-                    String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                    String access=email+","+password+","+androidId+email;
-                    String encraccess= e.encryptStr(access);
+//                    encrypt e=new encrypt();
+//                    String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//                    String access=email+","+password+","+androidId+email;
+//                    String encraccess= e.encryptStr(access);
 
 
-                    dLog.log_d(debug,"server",server);
+                    dLog.log_d(debug,"server",userpass);
 
 
                     new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
@@ -287,8 +188,7 @@ public class login_activity extends ConnectionAppCompactActivity {
 
 
                 }
-               // String model="test";
-              //  new AsyncLogin().execute(loginUrl,email,password,model);
+
 
             }
         });
@@ -298,33 +198,9 @@ public class login_activity extends ConnectionAppCompactActivity {
 
     }
 
-    private void successfulllogin (String nextA,String username,String passwrd){
-
-        String saveUserPass=username + "," + passwrd;
-        saveLoginToFile(saveUserPass);
 
 
-        String nextActivity=nextA;
-        Intent i =new Intent();
-        i.setClassName(login_activity.this, nextActivity);
-        i.putExtra("PersonID", email);
-        i.putExtra("token", tkn);
-        i.putExtra("server", server);
-        startActivity(i);
-    }
 
-    private void saveLoginToFile(String saveUserPass){
-        String filename ="userinfo.txt";
-        FileOutputStream outputStream;
-
-        try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(saveUserPass.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void connectedOrConnecting() {
@@ -377,7 +253,7 @@ public class login_activity extends ConnectionAppCompactActivity {
             //this method will be running on UI thread
             pdLoading.setMessage("\tLoading...");
             pdLoading.setCancelable(false);
-            pdLoading.show();
+//            pdLoading.show();
 
         }
         @Override
@@ -385,7 +261,7 @@ public class login_activity extends ConnectionAppCompactActivity {
 
             String userpassAsync=params[1];
 
-            String[] userinfo=userpassAsync.split(",");
+           // String[] userinfo=userpassAsync.split(":");
 
             try {
 
@@ -414,28 +290,28 @@ public class login_activity extends ConnectionAppCompactActivity {
 
                 encrypt e=new encrypt();
 
-                getCurrentTime getTime=new getCurrentTime();
+              //  getCurrentTime getTime=new getCurrentTime();
 
               //  Log.d("CurrentTime",getTime.getCurrentTime());
 
              //   makeJSON mkJSON = new makeJSON();
            //     DeviceUuidFactory DeviceUUIDNo = new DeviceUuidFactory(login_activity.this.getApplicationContext());
              //   String uniqueID=DeviceUUIDNo.getDeviceUuid().toString();
-                String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+               // String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-                String access=userinfo[0]+","+userinfo[1]+","+androidId+userinfo[0];
+               // String access=userinfo[0]+":"+userinfo[1];
 
                 //String JSONaccess=mkJSON.createLoginJSON(access);
 
             //    Log.d("access",access);
 
 
-                String encraccess= e.encryptStr(access);
+                String encraccess= e.encryptStr(userpassAsync);
 
                 //encraccess=encraccess + "." + userinfo[2];
 
 
-           //     Log.d("access",encraccess.trim());
+               // Log.d("access",encraccess.trim());
 
                 // Append parameters to URL
                 Uri.Builder builder = new Uri.Builder()
@@ -500,9 +376,9 @@ public class login_activity extends ConnectionAppCompactActivity {
 
             //this method will be running on UI thread
 
-            pdLoading.dismiss();
+            //pdLoading.dismiss();
 
-
+          //  Log.d("result",result);
 
             JSONObject objectPremium = null;
             String tkn="";
@@ -517,7 +393,7 @@ public class login_activity extends ConnectionAppCompactActivity {
 
                 //  String[] next=result.split(":");
 
-          //     Log.d("Resultdc",result);
+        //       Log.d("Resultdc",result);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -537,7 +413,7 @@ public class login_activity extends ConnectionAppCompactActivity {
                 login = objectPremium.getString("login");
                 if(login.equalsIgnoreCase("true")){
                     nextA = objectPremium.getString("activity");
-                    deviceid = objectPremium.getString("deviceid");
+
                  }
                 username = objectPremium.getString("username");
                 passwrd = objectPremium.getString("password");
