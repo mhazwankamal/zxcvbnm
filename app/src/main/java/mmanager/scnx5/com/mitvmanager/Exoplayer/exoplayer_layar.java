@@ -185,7 +185,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private String username, passwrd, updateinfo;
     private Boolean stoprunnable=false;
     private log_ dlog=new log_();
-    private Boolean debug=false;
+    private Boolean debug=true;
     private vd452ax3 b=new vd452ax3();
     public RecyclerView myrvRB,myrvRBSwitchChannel;
     public RecyclerViewAdapterCategoryExoPlayer myAdapterRB;
@@ -928,8 +928,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private void initializePlayer() {
         // Create a default TrackSelector
         bandwidthMeter = new DefaultBandwidthMeter();
-        videoTrackSelectionFactory =
-                new AdaptiveTrackSelection.Factory(bandwidthMeter);
+        videoTrackSelectionFactory =new AdaptiveTrackSelection.Factory(bandwidthMeter);
         trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
 
         allocator = new DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE);
@@ -1072,14 +1071,15 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                     timerCountDownBuffering = counter * 1000 + 1;
 
-                    sourceerrorTimer=new CountDownTimer(1000, 1000) {
+                    sourceerrorTimer=new CountDownTimer(500, 100) {
 
                         public void onTick(long millisUntilFinished) {
                         }
 
                         public void onFinish() {
-                            player.prepare(videoSource);
-                            player.setPlayWhenReady(true);
+                           // player.prepare(videoSource);
+                        //    player.setPlayWhenReady(true);
+                            player.retry();
                             //new exoplayer_layar.checkLatestApps().execute();
 
                         }
@@ -1671,9 +1671,9 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             }
 
 */
-            maxretrybuffer =5;
+            maxretrybuffer =2;
 
-                player = ExoPlayerFactory.newSimpleInstance(exoplayer_layar.this, trackSelector);
+               player = ExoPlayerFactory.newSimpleInstance(exoplayer_layar.this, trackSelector);
 
            /* player = ExoPlayerFactory.newSimpleInstance(exoplayer_layar.this, trackSelector, new CustomLoadControl(new CustomLoadControl.EventListener() {
                 @Override
@@ -1730,7 +1730,8 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
            String combineUrl=Url+json;
 
 
-            String VideoUrilayar3 = "layar3.com";
+
+                String VideoUrilayar3 = "layar3.com";
 
             if (combineUrl.toLowerCase().contains(VideoUrilayar3.toLowerCase())) {
                 combineUrl=combineUrl.replace("portal.layar3.com","10.10.10.10");
@@ -1739,7 +1740,9 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                 videoUri = Uri.parse(combineUrl);
 
-           dlog.log_d(debug,"Json",Url+json);
+
+
+                dlog.log_d(debug,"Json",combineUrl);
             //   startActivity(Intent.createChooser(intent, "Complete action using"));
             // Produces DataSource instances through which media data is loaded.
 //            dataSourceFactory = new DefaultDataSourceFactory(context, Util.getUserAgent(context, getPackageName()));
@@ -1755,17 +1758,18 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
              e.printStackTrace();
          }*/
 
-
-         dataSourceFactory = new DefaultDataSourceFactory(context, "3rayal");
+         dataSourceFactory = new DefaultDataSourceFactory(context, "3rayal",bandwidthMeter);
 
 
          /* dataSourceFactory = new DefaultDataSourceFactory(context, oldwget.getURL(server + x.abcxtengtyou() + EEE));
           */
 
          // Produces Extractor instances for parsing the media data.
-         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true);
 
-            int type = Util.inferContentType(videoUri);
+               // videoUri = Uri.parse("http://10.10.10.10:8888/live/mhazwankamal/1234/14012.m3u8");
+
+                int type = Util.inferContentType(videoUri);
 
                 String layar3 = "layar3.com";
 
@@ -1774,6 +1778,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 } else {
                     setupProxy(false);
                 }
+
 
             videoSource = null;
               //  videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
@@ -1796,18 +1801,19 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                    // videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
                     videoSource=new HlsMediaSource.Factory(dataSourceFactory).setLoadErrorHandlingPolicy(df).createMediaSource(videoUri);
+                    //videoSource=new HlsMediaSource(videoUri,dataSourceFactory, handler, null);
 
                     player.prepare(videoSource);
                     player.setPlayWhenReady(true);
-                    //  Toast.makeText(exoplayer_layar.this,"HLS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
+                     Toast.makeText(exoplayer_layar.this,"HLS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
 
                     break;
                 case C.TYPE_OTHER:
-                    videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
+                    videoSource =new ExtractorMediaSource.Factory(dataSourceFactory).setExtractorsFactory(extractorsFactory).createMediaSource(videoUri);
 
                     player.prepare(videoSource);
                     player.setPlayWhenReady(true);
-                    //  Toast.makeText(exoplayer_layar.this,"OTHERS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
+                      Toast.makeText(exoplayer_layar.this,"OTHERS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
 
                     break;
                 default: {
@@ -1819,6 +1825,25 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
             // Prepare the player with the source.
 
+//                new CountDownTimer(10000,1000){
+//
+//
+//                    @Override
+//                    public void onTick(long l) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFinish() {
+//                        videoUri = Uri.parse("http://10.10.10.10:8888/live/mhazwankamal/1234/14012.m3u8");
+//                         player.setPlayWhenReady(false);
+//
+//                        videoSource=new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
+//
+//                        player.setPlayWhenReady(true);
+//                       player.prepare(videoSource);
+//                    }
+//                }.start();
 
 
             simpleExoPlayerView.hideController();
