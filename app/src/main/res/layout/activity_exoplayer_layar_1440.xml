@@ -230,7 +230,7 @@ app:use_controller="false"
 
         <LinearLayout
             android:id="@+id/vodlisting"
-            android:layout_width="1580px"
+            android:layout_width="1380px"
             android:layout_marginLeft="30px"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -454,7 +454,7 @@ app:use_controller="false"
 
                 <com.google.android.exoplayer2.ui.DefaultTimeBar
                     android:id="@+id/timebarexoplayer"
-                    android:layout_width="2150px"
+                    android:layout_width="1900px"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     app:played_color="@color/white"

@@ -1805,7 +1805,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                     player.prepare(videoSource);
                     player.setPlayWhenReady(true);
-                     Toast.makeText(exoplayer_layar.this,"HLS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(exoplayer_layar.this,"HLS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
 
                     break;
                 case C.TYPE_OTHER:
@@ -1813,7 +1813,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                     player.prepare(videoSource);
                     player.setPlayWhenReady(true);
-                      Toast.makeText(exoplayer_layar.this,"OTHERS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
+                  //    Toast.makeText(exoplayer_layar.this,"OTHERS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
 
                     break;
                 default: {
