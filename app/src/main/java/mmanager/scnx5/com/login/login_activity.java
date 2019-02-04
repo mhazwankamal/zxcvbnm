@@ -44,6 +44,7 @@ import mmanager.scnx5.com.abcyxoorp;
 import mmanager.scnx5.com.authorization.newui_logout_main;
 import mmanager.scnx5.com.decrypt.decrypt;
 import mmanager.scnx5.com.encrypt.encrypt;
+import mmanager.scnx5.com.mitvmanager.DeviceUuidFactory;
 import mmanager.scnx5.com.mitvmanager.Exoplayer.exoplayer_layar;
 import mmanager.scnx5.com.mitvmanager.R;
 import mmanager.scnx5.com.mitvmanager.getURL;
@@ -113,7 +114,7 @@ public class login_activity extends ConnectionAppCompactActivity {
         email = pref.getString("username",null);
         password= pref.getString("password",null);
 
-        dLog.log_d(debug,"userShared","=" + email);
+    //    dLog.log_d(debug,"server","=" + server);
 
         if(email != null){
 
@@ -179,7 +180,7 @@ public class login_activity extends ConnectionAppCompactActivity {
 //                    String encraccess= e.encryptStr(access);
 
 
-                    dLog.log_d(debug,"server",userpass);
+                 //   dLog.log_d(debug,"server",userpass);
 
 
                     new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
@@ -295,8 +296,8 @@ public class login_activity extends ConnectionAppCompactActivity {
               //  Log.d("CurrentTime",getTime.getCurrentTime());
 
              //   makeJSON mkJSON = new makeJSON();
-           //     DeviceUuidFactory DeviceUUIDNo = new DeviceUuidFactory(login_activity.this.getApplicationContext());
-             //   String uniqueID=DeviceUUIDNo.getDeviceUuid().toString();
+                DeviceUuidFactory DeviceUUIDNo = new DeviceUuidFactory(login_activity.this.getApplicationContext());
+                String uniqueID=DeviceUUIDNo.getDeviceUuid().toString();
                // String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
                // String access=userinfo[0]+":"+userinfo[1];
@@ -307,15 +308,18 @@ public class login_activity extends ConnectionAppCompactActivity {
 
 
                 String encraccess= e.encryptStr(userpassAsync);
+                String encraccess2=e.encryptStr(uniqueID);
 
                 //encraccess=encraccess + "." + userinfo[2];
 
-
-               // Log.d("access",encraccess.trim());
+                String encraccess3 =encraccess + "." + encraccess2;
+                encraccess3=encraccess3.trim();
+             //   Log.d("access",encraccess3);
 
                 // Append parameters to URL
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("access", encraccess);
+                        .appendQueryParameter("access",encraccess3);
+
                 String query = builder.build().getEncodedQuery();
 
                 // Open connection for sending data
@@ -378,7 +382,7 @@ public class login_activity extends ConnectionAppCompactActivity {
 
             //pdLoading.dismiss();
 
-          //  Log.d("result",result);
+            //Log.d("result",result);
 
             JSONObject objectPremium = null;
             String tkn="";

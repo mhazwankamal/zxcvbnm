@@ -85,6 +85,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Timer;
@@ -104,6 +105,7 @@ import mmanager.scnx5.com.mitvmanager.RequestPermissionHandler;
 import mmanager.scnx5.com.mitvmanager.VODGrid.vod_grid_activity;
 import mmanager.scnx5.com.mitvmanager.getURL;
 import mmanager.scnx5.com.mitvmanager.log_;
+import mmanager.scnx5.com.mitvmanager.old_getURL;
 import mmanager.scnx5.com.vd452ax3;
 
 import static android.view.View.VISIBLE;
@@ -121,6 +123,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private Handler handler = new Handler();
     private boolean writepermission=false;
     private getURL wget=new getURL();
+    private old_getURL old_wget=new old_getURL();
     private String Jsonliveandevent,JsonRecentChannels,JsonTrendingChannel,JsonMostPopular;
     public List<HomeTrendBook> VODTrendingChannel,VODRecentChannel,VODMostPopular;
     public List<LiveEventBook> BookLiveEvent;
@@ -148,7 +151,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private LinearLayout scrollingview,lastWatching_ll,trending_channel_ll,most_popular_ll,ll_livenet_container;
     private Integer scrollPosLastWatching=0;
     private Boolean lastwatching_ll_focus=false;
-    private SharedPreferences pref,pref2;
+    private SharedPreferences pref,pref2,setttingPref;
     private MKLoader threepulse0,threepulse1,threepulse2,threepulse3;
     private SharedPreferences.Editor editor,editor2;
     private ScrollView home_scroll;
@@ -165,6 +168,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private Integer liveEventPos=0;
     private Integer HomeScrollPOS=0;
     private FrameLayout rootView;
+    private Boolean okhttp;
     CountDownTimer AutoSlider;
 
     @Override
@@ -211,6 +215,17 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
         pref = getApplicationContext().getSharedPreferences("HomeUI", MODE_PRIVATE);
         pref2 = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+
+        setttingPref=getApplication().getSharedPreferences("setting",MODE_PRIVATE);
+        okhttp = setttingPref.getBoolean("httpclient",false);
+
+        if (okhttp){
+            okhttp=false;
+        } else {
+            okhttp=true;
+        }
+
+
         editor = pref.edit();
         editor2=pref2.edit();
        // myrvYW = (RecyclerView) findViewById(R.id.li_lastwatching_channel);
@@ -267,25 +282,25 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         TextView username_welcome=(TextView)v.findViewById(R.id.welcome_user);
         ImageView profile_pic =(ImageView)v.findViewById(R.id.welcome_profile_pic);
 
-        Glide.with(this).load("https://www.ienglishstatus.com/wp-content/uploads/2018/04/Anonymous-Whatsapp-profile-picture.jpg").into(profile_pic);
-        username_welcome.setText(personID.toUpperCase());
+       // Glide.with(this).load("https://www.ienglishstatus.com/wp-content/uploads/2018/04/Anonymous-Whatsapp-profile-picture.jpg").into(profile_pic);
+      //  username_welcome.setText(personID.toUpperCase());
 
-       Toast toast=new Toast(getApplicationContext());
-       toast.setGravity(Gravity.TOP|Gravity.RIGHT,0,50);
-
-       toast.setDuration(Toast.LENGTH_LONG);
-       toast.setView(v);
-        new CountDownTimer(1500,1000) {
-            @Override
-            public void onTick(long l) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                toast.show();
-            }
-        }.start();
+//       Toast toast=new Toast(getApplicationContext());
+//       toast.setGravity(Gravity.TOP|Gravity.RIGHT,0,50);
+//
+//       toast.setDuration(Toast.LENGTH_LONG);
+//       toast.setView(v);
+//        new CountDownTimer(1500,1000) {
+//            @Override
+//            public void onTick(long l) {
+//
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                toast.show();
+//            }
+//        }.start();
 
        //  modeldevice.setText("via " + Build.MANUFACTURER + " " + Build.MODEL);
      //  appsVersion.setText("on Layar3 -" + version);
@@ -305,6 +320,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             e.printStackTrace();
         }
 
+
        changelogURL=server + "apps/update/update-changelog.json";
 
         AppUpdater appUpdater=new AppUpdater(newui_logout_main.this);
@@ -322,7 +338,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
                         String updateJSON= null;
                         try {
-                            updateJSON = wget.getURL(changelogURL);
+                            if (okhttp) {
+                                updateJSON = wget.getURL(changelogURL);
+                            } else {
+                                updateJSON = old_wget.getURL(changelogURL);
+                            }
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -720,13 +741,16 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
             try {
 
-                Jsonliveandevent = wget.getURL(server + "apps/home/getlive_event_json.php?user=" + tk);
-
+                if (okhttp) {
+                    Jsonliveandevent = wget.getURL(server + "apps/home/getlive_event_json2.php?user=" + tk);
+                }else {
+                    Jsonliveandevent=old_wget.getURL(server + "apps/home/getlive_event_json2.php?user=" + tk);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-          //  Log.d("Jsonliveandevent","L =" + Jsonliveandevent);
+
 
 
             if (Jsonliveandevent.equalsIgnoreCase("none")) {
@@ -735,9 +759,13 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
 
             } else {
 
+                String[] varntel = Jsonliveandevent.split(",");
+                 tk=varntel[1];
+               // String JsonStringNTEL=varntel[0];
+              //  Log.d("Jsonliveandevent","L =" + tk);
 
                 try {
-                    JSONObject objectPremium = new JSONObject(String.valueOf(Jsonliveandevent));
+                    JSONObject objectPremium = new JSONObject(d.decryptStr(String.valueOf(varntel[0])));
                     JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
 
                     BookLiveEvent=new ArrayList<>();
@@ -1222,9 +1250,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         protected String doInBackground(String... params) {
 
             try {
+                if (okhttp) {
+                    Json = wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk);
+                } else {
+                    Json = old_wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk);
 
-                Json = wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk);
-
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -1254,6 +1285,9 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             }
             else {
 
+              String[] neviljson=Json.split(",");
+              Json=d.decryptStr(neviljson[0]);
+              tk=neviljson[1];
 
               new newui_logout_main.loadrecentchannel().execute();
               editor.putString("last_watch", "false");
@@ -1286,7 +1320,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         protected String doInBackground(String... params) {
 
             try {
-                JsonRecentChannels=wget.getURL(server + "apps/home/getlastrecentchannel2.php?user="+tk);
+
+                if (okhttp) {
+                    JsonRecentChannels = wget.getURL(server + "apps/home/getlastrecentchannel2.php?user=" + tk);
+                } else {
+                    JsonRecentChannels = old_wget.getURL(server + "apps/home/getlastrecentchannel2.php?user=" + tk);
+                }
 
              } catch (IOException e) {
                 e.printStackTrace();
@@ -1410,7 +1449,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         protected String doInBackground(String... params) {
 
             try {
-                JsonTrendingChannel=wget.getURL(server + "apps/home/gettrendingchannel.php?user="+tk);
+                if (okhttp) {
+                    JsonTrendingChannel = wget.getURL(server + "apps/home/gettrendingchannel.php?user=" + tk);
+                } else {
+                    JsonTrendingChannel = old_wget.getURL(server + "apps/home/gettrendingchannel.php?user=" + tk);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -1500,8 +1544,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         protected String doInBackground(String... params) {
 
             try {
-                JsonMostPopular=wget.getURL(server + "apps/home/getmostpopularchannel.php?user="+tk);
+                if(okhttp) {
+                    JsonMostPopular = wget.getURL(server + "apps/home/getmostpopularchannel.php?user=" + tk);
+                } else {
+                    JsonMostPopular = old_wget.getURL(server + "apps/home/getmostpopularchannel.php?user=" + tk);
 
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

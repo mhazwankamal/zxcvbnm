@@ -209,7 +209,7 @@ app:use_controller="false"
 
         <LinearLayout
             android:id="@+id/categoryvod"
-            android:layout_width="300px"
+            android:layout_width="250px"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_marginLeft="10dp">
@@ -229,7 +229,7 @@ app:use_controller="false"
 
         <LinearLayout
             android:id="@+id/vodlisting"
-            android:layout_width="780px"
+            android:layout_width="800px"
             android:layout_marginLeft="20px"
             android:layout_height="match_parent"
             android:orientation="horizontal"

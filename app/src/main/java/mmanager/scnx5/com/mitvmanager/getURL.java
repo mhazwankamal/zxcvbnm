@@ -36,6 +36,7 @@ public class getURL {
                    .build();
 
             Request request = new Request.Builder()
+                    .header("User-Agent","3rayal")
                     .url(url)
                     .build();
 

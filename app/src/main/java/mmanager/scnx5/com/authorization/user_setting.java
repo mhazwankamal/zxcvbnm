@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -49,12 +50,14 @@ import mmanager.scnx5.com.mitvmanager.R;
 import mmanager.scnx5.com.mitvmanager.RedBoxGrid.redbox_grid_activity;
 import mmanager.scnx5.com.mitvmanager.getURL;
 import mmanager.scnx5.com.mitvmanager.log_;
+import mmanager.scnx5.com.mitvmanager.old_getURL;
 import mmanager.scnx5.com.vd452ax3;
 
 public class user_setting extends AppCompatActivity {
 
     private String username,remainningdays,server,personID;
     private getURL wget=new getURL();
+    private old_getURL old_wget=new old_getURL();
     private FrameLayout rootV;
     CircleImageView profile_image;
     private String tk;
@@ -62,10 +65,11 @@ public class user_setting extends AppCompatActivity {
     private String JsonUserSetting;
     private String password,expiry;
     private get_menu_classs_navigation menu_navigation=new get_menu_classs_navigation();
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
+    private SharedPreferences pref,settingPref;
+    private SharedPreferences.Editor editor,settingEditor;
     private Boolean loadingPage=false;
     private vd452ax3 b=new vd452ax3();
+    private Boolean okhttp=false;
 /*  private String Macaddress=MacAddress.getMacAddr();
   */
   private String Macaddress;
@@ -89,6 +93,18 @@ public class user_setting extends AppCompatActivity {
 
         }
 
+
+
+        settingPref=getApplication().getSharedPreferences("setting",MODE_PRIVATE);
+        settingEditor =settingPref.edit();
+        okhttp = settingPref.getBoolean("httpclient",false);
+
+        if (okhttp){
+            okhttp=false;
+        } else {
+            okhttp=true;
+        }
+
         rootV = (FrameLayout) findViewById(R.id.root);
         LinearLayout liveTV_menu=(LinearLayout)findViewById(R.id.menu_livetv);
         LinearLayout movie_menu=(LinearLayout)findViewById(R.id.home_menu_movie);
@@ -105,13 +121,18 @@ public class user_setting extends AppCompatActivity {
                     }
                 });
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
-        Glide.with(this).load("https://www.ienglishstatus.com/wp-content/uploads/2018/04/Anonymous-Whatsapp-profile-picture.jpg").into(profile_image);
+        Glide.with(this).load(server + "apps/home/profile-pic.png").into(profile_image);
 
 
         JsonUserSetting="none";
 
         try {
-            JsonUserSetting=wget.getURL(server + "apps/setting/getUserInfo.php?tk=" + tk);
+            if (okhttp) {
+                JsonUserSetting = wget.getURL(server + "apps/setting/getUserInfo.php?tk=" + tk);
+            } else {
+                JsonUserSetting = old_wget.getURL(server + "apps/setting/getUserInfo.php?tk=" + tk);
+
+            }
            // Json = wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk);
 
         } catch (IOException e) {
@@ -354,7 +375,12 @@ public class user_setting extends AppCompatActivity {
                     pdLoading.show();
 
                     try {
-                        logout=wget.getURL(server+"apps/exoplayer/update_offlinev4.php?username="+ username + "&mac_address=" + Macaddress);
+                        if(okhttp) {
+                            logout = wget.getURL(server + "apps/exoplayer/update_offlinev4.php?username=" + username + "&mac_address=" + Macaddress);
+                        } else {
+                            logout = old_wget.getURL(server + "apps/exoplayer/update_offlinev4.php?username=" + username + "&mac_address=" + Macaddress);
+
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -382,6 +408,58 @@ public class user_setting extends AppCompatActivity {
 
 
         }
+
+        SwitchCompat okhttp_switch=(SwitchCompat)findViewById(R.id.okhttp_switch);
+
+        if (settingPref.getBoolean("httpclient",false)){
+            okhttp_switch.setChecked(true);
+        } else {
+            okhttp_switch.setChecked(false);
+        }
+
+        okhttp_switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (okhttp_switch.isChecked()){
+                    settingEditor.putBoolean("httpclient",true);
+                    settingEditor.apply();
+                }  else {
+                    settingEditor.putBoolean("httpclient",false);
+                    settingEditor.apply();
+                }
+
+            }
+        });
+
+        SwitchCompat EPGSwitch=(SwitchCompat)findViewById(R.id.epg_switch);
+
+
+        if(settingPref.getBoolean("epgenable",true)){
+            EPGSwitch.setChecked(true);
+        } else {
+            EPGSwitch.setChecked(false);
+        }
+
+        EPGSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(EPGSwitch.isChecked()){
+                    settingEditor.putBoolean("epgenable",true);
+                    settingEditor.apply();
+
+                    Log.d("settingEPG",String.valueOf(settingPref.getBoolean("epgenable",false)));
+                } else {
+                    settingEditor.putBoolean("epgenable",false);
+                    settingEditor.apply();
+
+                    Log.d("settingEPG",String.valueOf(settingPref.getBoolean("epgenable",false)));
+                }
+
+            }
+        });
+
     }
 
     public static String currentVersion(){

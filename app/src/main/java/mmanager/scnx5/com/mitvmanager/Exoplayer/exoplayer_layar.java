@@ -99,6 +99,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -106,6 +115,10 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.TimeZone;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import at.huber.youtubeExtractor.VideoMeta;
 import at.huber.youtubeExtractor.YouTubeExtractor;
@@ -182,6 +195,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private String Model = Build.MODEL;
     private String Manufacturer = Build.MANUFACTURER;
     private String IPAddressV4;
+    private decrypt d=new decrypt();
     private String username, passwrd, updateinfo;
     private Boolean stoprunnable=false;
     private log_ dlog=new log_();
@@ -197,7 +211,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private TextView ChannelCategory,ChannelViews;
     private LinearLayout premiumText;
     private   getURL wget=new getURL();
-    private old_getURL oldwget=new old_getURL();
+    private old_getURL old_wget=new old_getURL();
     private String epgJson;
     private TextView nowShowingProgram,channeltimeline,channelNameTxt;
     private boolean epgframeopen=false;
@@ -206,7 +220,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private ImageView ChannelIcon;
     private CountDownTimer sourceerrorTimer;
     private SharedPreferences.Editor editor;
-    private SharedPreferences pref,connectPref;
+    private SharedPreferences pref,connectPref,setttingPref;
     private get_menu_classs_navigation menu_navigation=new get_menu_classs_navigation();
     private ImageView InternetSpeed;
     private String remainingdays,personID;
@@ -224,6 +238,8 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     private Boolean exoplayertimerun=false;
     private double width,height;
     private Boolean httperror=false;
+    private Boolean okhttp;
+    private Boolean EPGenable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -234,18 +250,21 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
         super.onCreate(savedInstanceState);
 
-        width= Resources.getSystem().getDisplayMetrics().widthPixels;
-        dlog.log_d(debug,"height",String.valueOf(width));
-        if (width > 1920){
+        height= Resources.getSystem().getDisplayMetrics().heightPixels;
+        dlog.log_d(debug,"height",String.valueOf(height));
+       // Toast.makeText(getApplicationContext(),String.valueOf(height),Toast.LENGTH_SHORT).show();
+        if (height > 1080){
             setContentView(R.layout.activity_exoplayer_layar_1440);
             dlog.log_d(debug,"contentView","1440");
-        } else if (width > 1280){
+         //   Toast.makeText(getApplicationContext(),"1440",Toast.LENGTH_SHORT).show();
+        } else if (height > 720){
           setContentView(R.layout.activity_exoplayer_layar_1080);
             dlog.log_d(debug,"contentView","1080");
-
+        //    Toast.makeText(getApplicationContext(),"1080",Toast.LENGTH_SHORT).show();
         } else {
             setContentView(R.layout.activity_exoplayer_layar_720);
             dlog.log_d(debug,"contentView","720");
+          //  Toast.makeText(getApplicationContext(),"720",Toast.LENGTH_SHORT).show();
         }
 
 
@@ -271,7 +290,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             personID=extras.getString("username");
             //  Toast.makeText(getApplicationContext(),uniqueID,Toast.LENGTH_LONG).show();
         }
-            dlog.log_d(debug,"premium",premium);
+
 
        // mAPIService = GetApiUtils.getAPIService("");
 
@@ -280,6 +299,23 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
         connectPref = getApplicationContext().getSharedPreferences("connection", MODE_PRIVATE);
 
+        setttingPref=getApplication().getSharedPreferences("setting",MODE_PRIVATE);
+        okhttp = setttingPref.getBoolean("httpclient",false);
+        EPGenable =setttingPref.getBoolean("epgenable",true);
+
+        if (okhttp){
+            okhttp=false;
+        } else {
+            okhttp=true;
+        }
+
+        if(EPGenable){
+            EPGenable=true;
+        } else {
+            EPGenable=false;
+        }
+
+       // Log.d("okhttp","get " + String.valueOf(okhttp));
 
         Macaddress = pref.getString("deviceID",null);
 
@@ -528,6 +564,21 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
     @Override
     public void onResume() {
         super.onResume();
+
+        okhttp = setttingPref.getBoolean("httpclient",false);
+        EPGenable =setttingPref.getBoolean("epgenable",true);
+
+        if (okhttp){
+            okhttp=false;
+        } else {
+            okhttp=true;
+        }
+
+        if(EPGenable){
+            EPGenable=true;
+        } else {
+            EPGenable=false;
+        }
 
         releaseall();
         initializePlayer();
@@ -881,8 +932,10 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
     private void setupProxy(boolean set) {
 
-        if (set) {
 
+
+        if (set) {
+            String puser,ppass;
 
                 abdyxoorp z = new abdyxoorp();
 
@@ -895,14 +948,25 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
                 String ch = null;
                 try {
-                    ch = wget.getURL(server + z.xyxoprup() + ".php?tk=" + tk + "&mac=" + Macaddress);
+                    if(okhttp) {
+                        ch = wget.getURL(server + z.xyxoprup() + ".php?tk=" + tk);
+                    } else {
+                        ch = old_wget.getURL(server + z.xyxoprup() + ".php?tk=" + tk);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 /*   ch = oldwget.getURL(server + z.xyxoprup() + ".php?tk=" + tk);*/
                 if (ch != null) {
+
+                    String[] rapes=ch.split(",");
+                    tk=rapes[1];
+                    ch=d.decryptStr(rapes[0]);
+
                     String[] separ = ch.split(":");
+//                    puser=separ[0];
+//                    ppass=separ[1];
                     host = separ[0];
                     port = separ[1];
                 } else {
@@ -912,10 +976,18 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 }
 
 
-                System.setProperty("http.proxyHost", host);
-                System.setProperty("http.proxyPort", port);
+                System.setProperty("https.proxyHost", "206.189.159.93");
+                System.setProperty("https.proxyPort", "1997");
 
+            try {
+                String Ip= wget.getURL("https://server1.layar3.com/test.php");
+                Log.d("IPaddress","x " + Ip);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
+            //               System.setProperty("https.proxyUser", puser);
+ //               System.setProperty("https.proxyPassword", ppass);
         }
             else {
                 System.setProperty("http.proxyHost", "");
@@ -1212,43 +1284,74 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
             String updateJSON = null;
             try {
-                updateJSON = wget.getURL(server + "apps/update/update-changelog.json");
+                if(okhttp) {
+                    updateJSON = wget.getURL(server + "apps/update/get_update_changelog.php?tk=" + tk);
+                } else {
+                    updateJSON = old_wget.getURL(server + "apps/update/get_update_changelog.php?tk=" + tk);
+                }
             } catch (IOException e) {
 
                 e.printStackTrace();
             }
 
+
+
             /* updateJSON = oldwget.getURL(server + "apps/update/update-changelog.json");
              */
             if(updateJSON != null) {
+
+                String[] atapdu=updateJSON.split(",");
+                tk=atapdu[1];
+           //     Log.d("tokenatapdu","v " + tk);
                 JSONObject GetDataJSONUpdate;
                 try {
-                    GetDataJSONUpdate = new JSONObject(String.valueOf(updateJSON));
+                    GetDataJSONUpdate = new JSONObject(String.valueOf(d.decryptStr(atapdu[0])));
                     Integer AppsVersion = GetDataJSONUpdate.getInt("latestVersionCode");
 
                     try {
                         PackageInfo pInfo = context.getPackageManager().getPackageInfo(getPackageName(), 0);
                         Integer version = pInfo.versionCode;
 
-                        if (AppsVersion > version) {
+                     //   if (AppsVersion > version) {
 
                             String forceUpdate = null;
                             try {
 
-                                forceUpdate = wget.getURL(server + "apps/exoplayer/force_update.php");
+                                if(okhttp) {
 
+                                    forceUpdate = wget.getURL(server + "apps/exoplayer/force_update2.php?tk=" + tk);
+                                } else {
+                                    forceUpdate = old_wget.getURL(server + "apps/exoplayer/force_update2.php?tk=" + tk);
+
+                                }
+                         //       Log.d("forceUpdate","Value " + forceUpdate);
+
+                                String[] fyes=forceUpdate.split(",");
+                                tk=fyes[1];
+                                forceUpdate=d.decryptStr(fyes[0]);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
 
                             /* forceUpdate = oldwget.getURL(server + "apps/exoplayer/force_update.php");
                              */
-                            if (forceUpdate.equalsIgnoreCase("yes")) {
-                                falseVersion = true;
+                            if (forceUpdate.equalsIgnoreCase("go")) {
+                                if (AppsVersion > version) {
+
+                                    falseVersion = true;
+                                }else {
+                                    falseVersion=false;
+                                }
+                            }
+
+                            if(forceUpdate.equalsIgnoreCase("stop")){
+
+                                falseVersion=true;
+
                             }
 
 
-                        }
+                      //  }
 
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
@@ -1350,8 +1453,13 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
             String checkMaxConnectionn = null;
             try {
-                checkMaxConnectionn = wget.getURL(server + "apps/exoplayer/update_onlinev4.php?mac_address=" + Macaddress + "&username=" + username + "&model=" + DeviceModel + "&channel=" + channelid + "&opt=livetv");
-            } catch (IOException e) {
+                if (okhttp) {
+                    checkMaxConnectionn = wget.getURL(server + "apps/exoplayer/update_onlinev5.php?mac_address=" + Macaddress + "&tk=" + tk + "&model=" + DeviceModel + "&channel=" + channelid + "&opt=livetv");
+                } else {
+                    checkMaxConnectionn = old_wget.getURL(server + "apps/exoplayer/update_onlinev5.php?mac_address=" + Macaddress + "&tk=" + tk + "&model=" + DeviceModel + "&channel=" + channelid + "&opt=livetv");
+
+                }
+                } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -1359,16 +1467,18 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
             /* checkMaxConnectionn = oldwget.getURL(server + "apps/exoplayer/update_onlinev4.php?mac_address=" + Macaddress + "&username=" + username + "&model=" + DeviceModel + "&channel=" + channelid + "&opt=livetv");
              */
 
-
-            dlog.log_d(debug, "serverString", server + "apps/exoplayer/update_onlinev3.php?mac_address=" + Macaddress + "&username=" + username + "&model=" + DeviceModel + "&channel=" + channelid + "&opt=livetv");
             firststart = false;
 
             if(checkMaxConnectionn != null) {
 
+           //     Log.d("jsonMax","V " + checkMaxConnectionn);
+
+                String[] cmax=checkMaxConnectionn.split(",");
+                tk=cmax[1];
                 JSONObject GetDataJSONOnline;
-                dlog.log_d(debug, "jsonMax", checkMaxConnectionn);
+              //  dlog.log_d(debug, "jsonMax", checkMaxConnectionn);
                 try {
-                    GetDataJSONOnline = new JSONObject(String.valueOf(checkMaxConnectionn));
+                    GetDataJSONOnline = new JSONObject(String.valueOf(d.decryptStr(cmax[0])));
                     String onlineStatus = GetDataJSONOnline.getString("token");
 
                     if (onlineStatus.equalsIgnoreCase("max")) {
@@ -1553,27 +1663,43 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
 
 
-         if(!switchChannelExoPlayer) {
+         if(!switchChannelExoPlayer && EPGenable) {
                 epgJson=null;
              try {
-                 epgJson = wget.getURL(server + "apps/epg/all_epg.txt");
+                 if (okhttp) {
+                     epgJson = wget.getURL(server + "apps/epg/all_epg.txt");
+                 } else {
+                     epgJson = old_wget.getURL(server + "apps/epg/all_epg.txt");
 
+                 }
 
              } catch (IOException e) {
                  e.printStackTrace();
              }
          }
+
+         if (!EPGenable){
+             epgJson="disable";
+         }
+
+
            /* epgJson = oldwget.getURL(server + "apps/epg/all_epg.txt");
 */
 
             if (Sypnopsis.equalsIgnoreCase("REDBOX")) {
                 try {
-                    json = wget.getURL("http://163.172.181.152:8030/rbtv/token21.php");
+                    if(okhttp) {
+                        json = wget.getURL("http://163.172.181.152:8030/rbtv/token21.php");
+                    } else {
+                        json = old_wget.getURL("http://163.172.181.152:8030/rbtv/token21.php");
+
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else if (Sypnopsis.equalsIgnoreCase("LIVENET")) {
                 try {
+
                     json = wget.getURL("http://212.83.158.140:6060/aves.nettv/");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -1742,7 +1868,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
 
 
-                dlog.log_d(debug,"Json",combineUrl);
+             //   dlog.log_d(debug,"Json",combineUrl);
             //   startActivity(Intent.createChooser(intent, "Complete action using"));
             // Produces DataSource instances through which media data is loaded.
 //            dataSourceFactory = new DefaultDataSourceFactory(context, Util.getUserAgent(context, getPackageName()));
@@ -1780,7 +1906,8 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 }
 
 
-            videoSource = null;
+
+                videoSource = null;
               //  videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
             switch (type) {
                 case C.TYPE_DASH:
@@ -1936,7 +2063,7 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
 
     public void switchChannel(String url,String channelName,String imgUrl,String premium,String channelid,String program,String playStart,String playEnd,Integer cposition,String SwitchCategory,String sypnop){
 
-        dlog.log_d(debug,"playUrlother",url);
+    //    dlog.log_d(debug,"playUrlother",url);
 
     /*    try {
           //  String switchoutchannel=wget.getURL(server + "apps/exoplayer/switchout_channel.php?channelid="+ this.channelid);
@@ -2226,9 +2353,12 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                 try {
                     JSONObject objectPremium = new JSONObject(String.valueOf(json));
                     JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
+                    JSONArray EPGdata=null;
 
-                    JSONObject objectPremium2 = new JSONObject(String.valueOf(epgJson));
-                    JSONArray EPGdata = (JSONArray) objectPremium2.getJSONArray("data");
+                    if (!epgJson.equalsIgnoreCase("disable")) {
+                        JSONObject objectPremium2 = new JSONObject(String.valueOf(epgJson));
+                        EPGdata = (JSONArray) objectPremium2.getJSONArray("data");
+                    }
 
                     SETVODJsonCategory = new LinkedHashSet<String>();
                     VODJsonId = new ArrayList<String>();
@@ -2262,6 +2392,10 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                         prinfo2 = "No working EPGhazwan-hazwan-";
 
                         if (Epgid != 0) {
+
+                            if (!epgJson.equalsIgnoreCase("disable")) {
+
+
 
                             for (int j = 0; j < EPGdata.length(); j++) {
 
@@ -2364,6 +2498,10 @@ public class exoplayer_layar extends ConnectionAppCompactActivity implements Pla
                                 }
                                 if (found)
                                     break;
+                               }
+                            } else {
+                                prinfo = "No working EPGhazwan-hazwan-";
+                                prinfo2 = "No working EPGhazwan-hazwan-";
                             }
 
                         } else {

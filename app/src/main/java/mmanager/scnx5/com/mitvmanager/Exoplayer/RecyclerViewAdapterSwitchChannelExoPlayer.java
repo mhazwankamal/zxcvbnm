@@ -54,6 +54,7 @@ public class RecyclerViewAdapterSwitchChannelExoPlayer extends RecyclerView.Adap
 
         }else {
             view = mInflater.inflate(R.layout.exoplayer_channel_switch_720, parent, false);
+
         }
         return new RecyclerViewAdapterSwitchChannelExoPlayer.MyViewHolderRB(view);
     }
