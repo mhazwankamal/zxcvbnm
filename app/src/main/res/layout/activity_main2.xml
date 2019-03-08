@@ -34,7 +34,7 @@
             android:layout_height="35dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            android:text="Sign in with your Layar3 account"
+            android:text="@string/hd_ms"
             android:textColor="#fff"
             android:textSize="15dp" />
 
@@ -155,7 +155,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ceiling price for Layar3 is RM 20 per month. Please kindly report to portallayartiga@gmail.com if you pay above this value per month."
+            android:text="@string/ms_lan"
             android:layout_marginTop="50dp"
             android:textAlignment="center"
             android:textColor="#fff"

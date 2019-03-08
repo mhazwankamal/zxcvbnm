@@ -55,7 +55,7 @@ public class CustomDialogClass extends Dialog implements
 
             @Override
             public void onFinish() {
-                c.finish();
+                ((exoplayer_layar)c).properlyLogout();
             }
         }.start();
     }

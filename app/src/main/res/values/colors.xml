@@ -20,7 +20,7 @@
     <color name="livecard_focus">#D00015</color>
     <color name="livecard_press">#D00015</color>
 
-    <color name="vodcard_default">#80000000</color>
+    <color name="vodcard_default">#ffffff</color>
     <color name="vodcard_focus">#FF0000</color>
     <color name="vodcard_press">#FF0000</color>
 

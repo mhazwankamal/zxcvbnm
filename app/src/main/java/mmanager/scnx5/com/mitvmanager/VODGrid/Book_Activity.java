@@ -9,6 +9,7 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -31,8 +32,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import mmanager.scnx5.com.mitvmanager.Exoplayer.VLC_VOD_RTMP;
+import mmanager.scnx5.com.mitvmanager.Exoplayer.exoplayer_layar_vod_new_code;
 import mmanager.scnx5.com.mitvmanager.R;
 import mmanager.scnx5.com.mitvmanager.getURL;
+import mmanager.scnx5.com.mitvmanager.setViewSizeByReso;
 
 import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
@@ -42,7 +45,9 @@ public class Book_Activity extends AppCompatActivity {
     private TextView tvtitle,tvdescription,tvcategory;
     private ImageView img;
     private FrameLayout bookbackground;
-    private String Url,category,sypnopsis, Title,tk,backdrop,server;
+    private String movieId,Url,category,sypnopsis, Title,tk,backdrop,server;
+    private setViewSizeByReso setView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE); // for hiding title
@@ -57,6 +62,8 @@ public class Book_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vod_preview_page);
 
+        setView=new setViewSizeByReso();
+
         tvtitle = (TextView) findViewById(R.id.txttitle);
         tvdescription = (TextView) findViewById(R.id.txtDesc);
         tvcategory = (TextView) findViewById(R.id.txtCat);
@@ -65,6 +72,7 @@ public class Book_Activity extends AppCompatActivity {
 
         // Recieve data
         Intent intent = getIntent();
+        movieId=intent.getExtras().getString("movieId");
          Title = intent.getExtras().getString("Title");
          Url = intent.getExtras().getString("Url");
          sypnopsis=intent.getExtras().getString("Sypnopsis");
@@ -77,11 +85,12 @@ public class Book_Activity extends AppCompatActivity {
         final String liveTV=intent.getExtras().getString("liveTV");
         // Setting values
 
-        tvtitle.setText(Title);
-        sypnopsis= String.valueOf(Html.fromHtml(sypnopsis));
-        if(sypnopsis.length() > 150){
 
-            sypnopsis=sypnopsis.substring(0,150);
+
+        sypnopsis= String.valueOf(Html.fromHtml(sypnopsis));
+        if(sypnopsis.length() > 250){
+
+            sypnopsis=sypnopsis.substring(0,250);
 
             tvdescription.setText(sypnopsis + " ...."); //url
         }else {
@@ -97,7 +106,12 @@ public class Book_Activity extends AppCompatActivity {
         });
 
         // img.setImageBitmap(image);
+        tvtitle.setText(Title);
         tvcategory.setText(category);
+        tvtitle.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.06));
+        tvcategory.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.03));
+        tvdescription.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.035));
+
 
 /*
         final ImageView img = new ImageView(this);
@@ -155,15 +169,17 @@ public class Book_Activity extends AppCompatActivity {
                     //startActivity(Intent.createChooser(intent, "Complete action using"));
 */
 
-                    Intent intent = new Intent(Book_Activity.this, VLC_VOD_RTMP.class);
+                    Intent intent = new Intent(Book_Activity.this, exoplayer_layar_vod_new_code.class);
 
                     // passing data to the book activity
 
+                    intent.putExtra("movieId",movieId);
                     intent.putExtra("Url", Url);
                     intent.putExtra("Channel", Title);
                     intent.putExtra("tk",tk);
                     intent.putExtra("category",category);
                     intent.putExtra("server",server);
+                    intent.putExtra("thumbnail",Picurl);
 
                     //  Toast.makeText(mContext,"test",Toast.LENGTH_LONG).show();
                     // start the activity

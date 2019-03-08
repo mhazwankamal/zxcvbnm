@@ -15,10 +15,10 @@
             android:gravity="left"
             android:background="#CC000000"
             android:padding="40dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="350dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_gravity="top" >
@@ -30,7 +30,7 @@
                     android:text="Book Title"
                     android:layout_marginTop="0dp"
                     android:fontFamily="@font/roboto_bold"
-                    android:textSize="28sp"
+                    android:textSize="38sp"
                     android:textColor="#ffffff"
                     android:textStyle="bold"/>
 
@@ -40,37 +40,42 @@
                     android:layout_height="wrap_content"
                     android:text="Category"
                     android:textColor="#FF0000"
+                    android:textSize="20sp"
                     android:fontFamily="@font/roboto_bold"
                     android:layout_marginTop="5dp"/>
 
                 <TextView
                     android:id="@+id/txtDesc"
-                    android:textSize="14sp"
+                    android:textSize="20sp"
                     android:textColor="#C0C0C0"
-                    android:layout_marginTop="9dp"
+
+                    android:layout_marginTop="5sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
                     android:text="Description"/>
 
-                <ImageButton
-                    android:id="@+id/playvodbttn"
-                    android:layout_width="80dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/playvlcbutton_focus"
-                    android:padding="5dp"
-                    android:textSize="14dp"
-                    style="@style/ExoMediaButton.Play"
-                    android:layout_marginTop="15dp"
-
-                    />
-
-
-
-
             </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="top" >
 
+        <ImageButton
+            android:id="@+id/playvodbttn"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:background="@drawable/playvlcbutton_focus"
+            android:padding="5dp"
+            android:textSize="14dp"
+            style="@style/ExoMediaButton.Play"
+            android:layout_marginTop="15dp"
+
+            />
+
+    </LinearLayout>
 
 
         </LinearLayout>

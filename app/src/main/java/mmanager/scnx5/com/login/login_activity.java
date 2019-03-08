@@ -1,5 +1,6 @@
 package mmanager.scnx5.com.login;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.alkathirikhalid.util.ConnectionAppCompactActivity;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,10 +110,14 @@ public class login_activity extends ConnectionAppCompactActivity {
 
 
         try {
-            server=wget.getURL("http://178.128.80.43:8080/serverlist.php?server=1");
+            server=wget.getURL("https://server1.layar3.com/serverlist.php?id=1");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+
+
 
         pref = getApplicationContext().getSharedPreferences("LoginInfo", MODE_PRIVATE);
         editor = pref.edit();
@@ -136,7 +147,18 @@ public class login_activity extends ConnectionAppCompactActivity {
 ////                        String access=userpass+","+androidId+email;
 ////                        String encraccess= e.encryptStr(access);
 
-                           new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
+                        Dexter.withActivity(login_activity.this)
+                                .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                .withListener(new PermissionListener() {
+                                    @Override public void onPermissionGranted(PermissionGrantedResponse response) {
+
+                                        new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
+
+                                    }
+                                    @Override public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
+                                    @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+                                }).check();
+
 
 
                         // new AsyncLogin().execute(a.xyoprup() + b.rabcauthabc() + ".php" ,userpass);
@@ -158,6 +180,9 @@ public class login_activity extends ConnectionAppCompactActivity {
         loginB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
+
 
                 email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
@@ -181,9 +206,21 @@ public class login_activity extends ConnectionAppCompactActivity {
 
 
                  //   dLog.log_d(debug,"server",userpass);
+                    Dexter.withActivity(login_activity.this)
+                            .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .withListener(new PermissionListener() {
+                                @Override public void onPermissionGranted(PermissionGrantedResponse response) {
+
+                                    new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
+
+                                }
+                                @Override public void onPermissionDenied(PermissionDeniedResponse response) {
+                                    Toast.makeText(getApplicationContext(),"Please allow access to storage location to proceed with log in!",Toast.LENGTH_LONG);
+                                }
+                                @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+                            }).check();
 
 
-                    new AsyncLogin().execute(server + b.rabcauthabc() + ".php", userpass);
 
 
 

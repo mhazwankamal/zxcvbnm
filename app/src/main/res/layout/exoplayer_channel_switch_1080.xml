@@ -29,9 +29,9 @@
             android:paddingBottom="8px"
             android:background="@drawable/ll_channel_switch_selector">
             <FrameLayout
-
-                android:layout_width="300px"
-                android:layout_height="200px"
+                android:id="@+id/imageFrame"
+                android:layout_width="120dp"
+                android:layout_height="95dp"
                 android:focusable="false"
                 android:clickable="false"
                 android:background="@drawable/ll_switch_channel_default">
@@ -39,17 +39,17 @@
                 <ImageView
                     android:id="@+id/exo_channel_image"
                     android:layout_width="match_parent"
-                    android:layout_height="150px"
-                    android:layout_gravity="top"
+                    android:layout_height="65dp"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true" />
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="top" />
                 <TextView
                     android:id="@+id/channelname_switch"
-                    android:layout_width="300px"
-                    android:layout_height="50px"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
                     android:layout_gravity="bottom|center_horizontal"
                     android:gravity="center"
-                    android:textSize="34px"
+                    android:textSize="12dp"
                     android:text="Channel name"
                     android:textColor="@color/white"/>
 
@@ -57,14 +57,15 @@
             </FrameLayout>
 
             <LinearLayout
-                android:layout_width="530px"
-                android:layout_height="200px"
+                android:id="@+id/epg_prog1"
+                android:layout_width="240dp"
+                android:layout_height="95dp"
                 android:layout_marginLeft="2dp"
                 android:padding="5dp"
                 android:background="@drawable/ll_top_bottom_border"
                 android:orientation="vertical">
                 <TextView
-
+                    android:id="@+id/nowPlaying1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:shadowDx="1.5"
@@ -73,8 +74,9 @@
                     android:fontFamily="@font/roboto_regular"
                     android:textColor="#EEEEEE"
                     android:text="Now Showing"
-                    android:textSize="32px"
-
+                    android:layout_gravity="center_vertical"
+                    android:textSize="14dp"
+                    android:textStyle="bold"
                     />
                 <TextView
                     android:id="@+id/timestapnow"
@@ -86,8 +88,9 @@
                     android:shadowRadius="1.6"
                     android:fontFamily="@font/roboto_regular"
                     android:textColor="#F1F1F1"
+                    android:layout_gravity="center_vertical"
                     android:text="10:00 - 12:00"
-                    android:textSize="28px"  />
+                    android:textSize="12dp"  />
                 <TextView
                     android:id="@+id/programnow"
                     android:layout_marginTop="1dp"
@@ -98,17 +101,20 @@
                     android:shadowRadius="1.6"
                     android:fontFamily="@font/roboto_regular"
                     android:textColor="#ffffff"
+                    android:layout_gravity="center_vertical"
                     android:text="Isteri bukan untuk disewa"
-                    android:textSize="32px"  />
+                    android:textSize="14dp"  />
             </LinearLayout>
             <LinearLayout
-                android:layout_width="530px"
-                android:layout_height="200px"
+                android:id="@+id/epg_prog2"
+                android:layout_width="240dp"
+                android:layout_height="95dp"
                 android:layout_marginLeft="2dp"
                 android:padding="5dp"
                 android:background="@drawable/ll_top_bottom_border"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/nowPlaying2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:shadowDx="1.5"
@@ -117,10 +123,12 @@
                     android:fontFamily="@font/roboto_regular"
                     android:textColor="#EEEEEE"
                     android:text="Next Show"
-                    android:textSize="32px"
+                    android:textSize="14dp"
+                    android:textStyle="bold"
 
                     />
                 <TextView
+
                     android:id="@+id/timestapnext"
                     android:layout_marginTop="1dp"
                     android:layout_width="wrap_content"
@@ -131,7 +139,7 @@
                     android:fontFamily="@font/roboto_regular"
                     android:textColor="#F1F1F1"
                     android:text="12:00 - 14:00"
-                    android:textSize="28px"  />
+                    android:textSize="12dp"  />
                 <TextView
                     android:id="@+id/programnext"
                     android:layout_marginTop="1dp"
@@ -143,7 +151,7 @@
                     android:fontFamily="@font/roboto_regular"
                     android:textColor="#ffffff"
                     android:text="Isteri bukan untuk disewa"
-                    android:textSize="32px"  />
+                    android:textSize="14dp"  />
             </LinearLayout>
 
 

@@ -10,18 +10,19 @@ public class VODBook {
     private String Sypnopsis;
     private String Thumbnail ;
     private String Backdrop ;
+    private String Id;
 
     public VODBook() {
     }
 
-    public VODBook(String title, String category, String url, String thumbnail, String sypnopsis,String backdrop) {
+    public VODBook(String id,String title, String category, String url, String thumbnail, String sypnopsis,String backdrop) {
         Title = title;
         Category = category;
         Url = url;
         Thumbnail = thumbnail;
         Sypnopsis = sypnopsis;
         Backdrop = backdrop;
-
+        Id=id;
     }
 
 
@@ -49,6 +50,7 @@ public class VODBook {
         return Backdrop;
     }
 
+    public String getId() {        return Id;    }
 
     public void setTitle(String title) {
         Title = title;
@@ -69,6 +71,8 @@ public class VODBook {
     public void setThumbnail(String thumbnail) {
         Thumbnail = thumbnail;
     }
+
+    public void setId(String id) { Id=id;}
 
     public void setBackdrop(String backdrop) {
         Backdrop = backdrop;

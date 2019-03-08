@@ -60,15 +60,15 @@
         <activity
             android:name=".VODGrid.Book_Activity"
             android:configChanges="orientation|screenSize|layoutDirection"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".RedBoxGrid.redbox_grid_activity"
             android:configChanges="orientation|screenSize|layoutDirection"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".livetv_menu"
             android:configChanges="orientation|screenSize|layoutDirection"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".Exoplayer.exoplayer_layar"
             android:configChanges="orientation|screenSize|layoutDirection"
@@ -89,6 +89,10 @@
             android:name=".Exoplayer.VLC_VOD_RTMP"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:screenOrientation="landscape" />
+        <activity
+            android:name=".Exoplayer.exoplayer_layar_vod_new_code"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:screenOrientation="sensorLandscape" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import java.util.TimeZone;
 import mmanager.scnx5.com.mitvmanager.R;
 import mmanager.scnx5.com.mitvmanager.RedBoxGrid.LiveBook;
 import mmanager.scnx5.com.mitvmanager.getURL;
+import mmanager.scnx5.com.mitvmanager.setViewSizeByReso;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -45,17 +47,20 @@ public class RecyclerViewAdapterSwitchChannelExoPlayer extends RecyclerView.Adap
 
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
-        double width = Resources.getSystem().getDisplayMetrics().widthPixels;
-         if (width > 2200 && width < 3000){
-            view = mInflater.inflate(R.layout.exoplayer_channel_switch_1440, parent, false);
 
-        }else if (width > 1280 && width < 2200){
-            view = mInflater.inflate(R.layout.exoplayer_channel_switch_1080, parent, false);
+        view = mInflater.inflate(R.layout.exoplayer_channel_switch_1080, parent, false);
 
-        }else {
-            view = mInflater.inflate(R.layout.exoplayer_channel_switch_720, parent, false);
-
-        }
+//        double width = Resources.getSystem().getDisplayMetrics().widthPixels;
+//         if (width > 2200 && width < 3000){
+//            view = mInflater.inflate(R.layout.exoplayer_channel_switch_1440, parent, false);
+//
+//        }else if (width > 1280 && width < 2200){
+//            view = mInflater.inflate(R.layout.exoplayer_channel_switch_1080, parent, false);
+//
+//        }else {
+//            view = mInflater.inflate(R.layout.exoplayer_channel_switch_720, parent, false);
+//
+//        }
         return new RecyclerViewAdapterSwitchChannelExoPlayer.MyViewHolderRB(view);
     }
 
@@ -197,21 +202,27 @@ public class RecyclerViewAdapterSwitchChannelExoPlayer extends RecyclerView.Adap
     }
 
     public static class MyViewHolderRB extends RecyclerView.ViewHolder {
-
+        setViewSizeByReso setView=new setViewSizeByReso();
         TextView tv_book_title;
         ImageView img_book_thumbnail;
         TextView programnow;
         TextView timenow;
         TextView programnext;
         TextView timenext;
-
+        TextView nowplay1,nowplay2;
+        FrameLayout imageFrame;
         //CardView cardView ;
         LinearLayout cardView ;
+        LinearLayout epgProg1,epgProg2;
         public MyViewHolderRB(View itemView) {
             super(itemView);
 
             tv_book_title = (TextView) itemView.findViewById(R.id.channelname_switch) ;
-
+            imageFrame=(FrameLayout)itemView.findViewById(R.id.imageFrame);
+            nowplay1=(TextView)itemView.findViewById(R.id.nowPlaying1);
+            nowplay2=(TextView)itemView.findViewById(R.id.nowPlaying2);
+            epgProg1=(LinearLayout)itemView.findViewById(R.id.epg_prog1);
+            epgProg2=(LinearLayout)itemView.findViewById(R.id.epg_prog2);
             img_book_thumbnail = (ImageView) itemView.findViewById(R.id.exo_channel_image);
             cardView = (LinearLayout)itemView.findViewById(R.id.top_layout);
             programnow=(TextView)itemView.findViewById(R.id.programnow);
@@ -220,6 +231,17 @@ public class RecyclerViewAdapterSwitchChannelExoPlayer extends RecyclerView.Adap
             timenext=(TextView)itemView.findViewById(R.id.timestapnext);
 //            cardView = (CardView) itemView.findViewById(R.id.cardview_id);
          //   cardView = (LinearLayout) itemView.findViewById(R.id.cardview_id);
+
+            setView.setSize(imageFrame,0.19,0.19);
+            setView.setSize(img_book_thumbnail,-1,0.15);
+            setView.setSize(epgProg1,0.3,0.19);
+            setView.setSize(epgProg2,0.3,0.19);
+            nowplay1.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.031));
+            nowplay2.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.031));
+            timenow.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.0287));
+            timenext.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.0287));
+            programnow.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.0297));
+            programnext.setTextSize(TypedValue.COMPLEX_UNIT_PX,setView.getPixelByReso(0.0297));
 
 
         }

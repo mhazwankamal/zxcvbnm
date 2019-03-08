@@ -2,11 +2,15 @@ package mmanager.scnx5.com.mitvmanager.VODGrid;
 
 import android.app.ProgressDialog;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +28,10 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Space;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,12 +41,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import mmanager.scnx5.com.authorization.newui_logout_main;
 import mmanager.scnx5.com.mitvmanager.R;
 import mmanager.scnx5.com.mitvmanager.getURL;
 
 public class vod_grid_activity extends AppCompatActivity {
     public List<VODBook> lstBook;
     public List<VODBook> VOD;
+    public List<String> VODJsonId;
     public List<String> VODJsonName;
     public List<String> VODJsonLogoPath;
     public List<String> VODJsonUrl;
@@ -50,6 +60,7 @@ public class vod_grid_activity extends AppCompatActivity {
     public RecyclerView myrv;
     public ListView listView;
     private String tk,server;
+    private LinearLayout VOD_root;
 
    // public String[] VODCat;
     public ArrayList<String> VODCat;
@@ -89,7 +100,7 @@ public class vod_grid_activity extends AppCompatActivity {
         //set correct width based on resolution
         Double ratio;
         width= vod_grid_activity.getScreenWidth();
-        ratio = width * 0.28;
+        ratio = width * 0.2;
 
         int correctWidth;
 
@@ -97,12 +108,25 @@ public class vod_grid_activity extends AppCompatActivity {
         LinearLayout categoryLI =(LinearLayout)findViewById(R.id.categoryvod);
         categoryLI.getLayoutParams().width=correctWidth;
 
-        ratio = width * 0.7;
+        ratio = width * 0.8;
 
         correctWidth = Integer.valueOf(ratio.intValue());
 
         LinearLayout vodlistingLI =(LinearLayout)findViewById(R.id.vodlisting);
         vodlistingLI.getLayoutParams().width=correctWidth;
+
+
+        VOD_root=(LinearLayout)findViewById(R.id.VOD_rootview);
+
+        Glide.with(vod_grid_activity.this)
+                .asBitmap()
+                .load("https://layar3.com/apps/home/l3_background_new.jpg")
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        VOD_root.setBackground(new BitmapDrawable(resource));
+                    }
+                });
 
         /*
         getURL wget=new getURL();
@@ -228,6 +252,7 @@ public class vod_grid_activity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.vodcategorlist);
 
 
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -293,7 +318,7 @@ public class vod_grid_activity extends AppCompatActivity {
             for(int j=0;j<VODJsonCategory.size();j++){
 
                 if (selectedCategory.equalsIgnoreCase(VODJsonCategory.get(j).toString())){
-                    NewVOD.add(new VODBook(VODJsonName.get(j).toString(),VODJsonCategory.get(j).toString(),VODJsonUrl.get(j).toString(),VODJsonLogoPath.get(j).toString(),VODJsonsypnopsis.get(j).toString(),VODJsonbackdrop.get(j).toString()));
+                    NewVOD.add(new VODBook(VODJsonId.get(j).toString(),VODJsonName.get(j).toString(),VODJsonCategory.get(j).toString(),VODJsonUrl.get(j).toString(),VODJsonLogoPath.get(j).toString(),VODJsonsypnopsis.get(j).toString(),VODJsonbackdrop.get(j).toString()));
                 }
 
 
@@ -338,12 +363,13 @@ public class vod_grid_activity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
 
-            String name,logoPath,url,category,sypnopsis,firstCat,backdrop;
+            String id,name,logoPath,url,category,sypnopsis,firstCat,backdrop;
 
             getURL wget=new getURL();
             String json= null;
             try {
-                json = wget.getURL(server + "apps/vod/getvodlist.php");
+                json = wget.getURL(server + "apps/vod/getvodlist.php?tk="+ tk);
+               // Log.d("vod",json);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -353,6 +379,7 @@ public class vod_grid_activity extends AppCompatActivity {
                 JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
 
                 SETVODJsonCategory = new LinkedHashSet<String>();
+                VODJsonId = new ArrayList<String>();
                 VODJsonName = new ArrayList<String>();
                 VODJsonLogoPath = new ArrayList<String>();
                 VODJsonUrl = new ArrayList<String>();
@@ -360,9 +387,10 @@ public class vod_grid_activity extends AppCompatActivity {
                 VODJsonsypnopsis = new ArrayList<String>();
                 VODJsonbackdrop = new ArrayList<String>();
                 //Toast.makeText(getApplicationContext(),VODname,Toast.LENGTH_LONG).show();
-                String VODname,VODlogo,VODurl,VODcategory,VODsypnopsis,VODbackdrop;
+                String VODid,VODname,VODlogo,VODurl,VODcategory,VODsypnopsis,VODbackdrop;
 
                 for (int i = 0; i < VodData.length(); i++) {
+                    VODid=VodData.getJSONObject(i).getString("id");
                     VODname = VodData.getJSONObject(i).getString("name");
                     VODlogo = VodData.getJSONObject(i).getString("logoPath");
                     VODurl = VodData.getJSONObject(i).getString("playUrl");
@@ -370,7 +398,7 @@ public class vod_grid_activity extends AppCompatActivity {
                     VODsypnopsis = VodData.getJSONObject(i).getString("sypnopsis");
                     VODbackdrop= VodData.getJSONObject(i).getString("backdropPath");
                   //  VODbackdrop="picture.jpg";
-
+                    VODJsonId.add(VODid);
                     VODJsonName.add(VODname);
                     VODJsonLogoPath.add(VODlogo);
                     VODJsonUrl.add(VODurl);
@@ -392,7 +420,7 @@ public class vod_grid_activity extends AppCompatActivity {
             VODCat=new ArrayList<String>();
 
             for (String s : SETVODJsonCategory) {
-                Log.d("SETVODJsonCategory",s);
+              //  Log.d("SETVODJsonCategory",s);
 
                 VODCat.add(s);
 
@@ -411,6 +439,7 @@ public class vod_grid_activity extends AppCompatActivity {
 
             VOD=new ArrayList<>();
             for (int i=0;i<VODJsonName.size();i++){
+                id=VODJsonId.get(i).toString();
                 name=VODJsonName.get(i).toString();
                 category=VODJsonCategory.get(i).toString();
                 logoPath=VODJsonLogoPath.get(i).toString();
@@ -423,7 +452,7 @@ public class vod_grid_activity extends AppCompatActivity {
               //      e.printStackTrace();
               //  }
                if(firstCat.equalsIgnoreCase(category)){
-                   VOD.add(new VODBook(name, category, url, logoPath, sypnopsis,backdrop));
+                   VOD.add(new VODBook(id,name, category, url, logoPath, sypnopsis,backdrop));
                }
             }
 
@@ -452,11 +481,14 @@ public class vod_grid_activity extends AppCompatActivity {
             GridVOD=new GridLayoutManager(getApplicationContext(),4);
 
             myrv.setLayoutManager(GridVOD);
-        //    myrv.addItemDecoration(new GridSpacingItemDecoration(0,0));
+          //  myrv.addItemDecoration(new GridSpacingItemDecoration(4,0,false));
             myrv.setAdapter(myAdapter);
 
             SearchView SearchLiveTv=(SearchView)findViewById(R.id.SearchChannel);
-
+            SearchLiveTv.setIconified(true);
+            SearchLiveTv.setFocusable(true);
+            SearchLiveTv.clearFocus();
+            listView.requestFocus();
             SearchLiveTv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
                 ArrayList NewVOD=new ArrayList<>();
@@ -477,7 +509,7 @@ public class vod_grid_activity extends AppCompatActivity {
 
                         if (channel.toLowerCase().contains(inputUser)) {
 
-                            FilterChannel.add(new VODBook(VODJsonName.get(j).toString(), VODJsonCategory.get(j).toString(), VODJsonUrl.get(j).toString(), VODJsonLogoPath.get(j).toString(), VODJsonsypnopsis.get(j).toString(),VODJsonbackdrop.get(j).toString()));
+                            FilterChannel.add(new VODBook(VODJsonId.get(j).toString(),VODJsonName.get(j).toString(), VODJsonCategory.get(j).toString(), VODJsonUrl.get(j).toString(), VODJsonLogoPath.get(j).toString(), VODJsonsypnopsis.get(j).toString(),VODJsonbackdrop.get(j).toString()));
                         }
                         j++;
                     }

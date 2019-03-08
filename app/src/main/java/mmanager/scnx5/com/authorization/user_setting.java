@@ -65,12 +65,13 @@ public class user_setting extends AppCompatActivity {
     private String JsonUserSetting;
     private String password,expiry;
     private get_menu_classs_navigation menu_navigation=new get_menu_classs_navigation();
-    private SharedPreferences pref,settingPref;
-    private SharedPreferences.Editor editor,settingEditor;
+    private SharedPreferences pref,settingPref,appupdater;
+    private SharedPreferences.Editor editor,settingEditor,appupdateredit;
     private Boolean loadingPage=false;
     private vd452ax3 b=new vd452ax3();
     private Boolean okhttp=false;
-/*  private String Macaddress=MacAddress.getMacAddr();
+    private   LinearLayout showUpdateLinear;
+    /*  private String Macaddress=MacAddress.getMacAddr();
   */
   private String Macaddress;
   private log_ dlog=new log_();
@@ -98,6 +99,35 @@ public class user_setting extends AppCompatActivity {
         settingPref=getApplication().getSharedPreferences("setting",MODE_PRIVATE);
         settingEditor =settingPref.edit();
         okhttp = settingPref.getBoolean("httpclient",false);
+
+        showUpdateLinear=(LinearLayout)findViewById(R.id.showupdate_linearl);
+
+        appupdater=getApplication().getSharedPreferences(user_setting.this.getPackageName() + "_preferences",MODE_PRIVATE);
+        appupdateredit=appupdater.edit();
+        Boolean showUpdate=appupdater.getBoolean("prefAppUpdaterShow",true);
+
+        if (showUpdate){
+            showUpdateLinear.setVisibility(View.GONE);
+            Log.d("update","show");
+        } else {
+            showUpdateLinear.setVisibility(View.VISIBLE);
+            SwitchCompat showUpdateSwitch=(SwitchCompat)findViewById(R.id.showupdate_switch);
+
+            showUpdateSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    appupdateredit.putBoolean("prefAppUpdaterShow",true);
+                    appupdateredit.apply();
+                }
+            });
+
+            Log.d("update","hide");
+        }
+
+
+
+
+
 
         if (okhttp){
             okhttp=false;
@@ -385,6 +415,18 @@ public class user_setting extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
+                    SharedPreferences jsonDownloaded =getApplication().getSharedPreferences("JsonHomePage",MODE_PRIVATE);
+                    SharedPreferences.Editor jsonDownloadedEdit=jsonDownloaded.edit();
+
+                    jsonDownloadedEdit.putString("jsondownloded_livenevent_json","none");
+                    jsonDownloadedEdit.putString("jsondownloded_json","none");
+                    jsonDownloadedEdit.putString("jsondownloded_json_code","none");
+                    jsonDownloadedEdit.putString("jsondownloded_recentchannel_json","none");
+                    jsonDownloadedEdit.putString("jsondownloded_trendingchannel_json","none");
+                    jsonDownloadedEdit.putString("jsondownloded_mostpopular_json","none");
+                    jsonDownloadedEdit.putLong("time_json_downloaded",0);
+                    jsonDownloadedEdit.apply();
+
                     if (logout.equalsIgnoreCase("out")){
 
                         pdLoading.dismiss();
@@ -471,6 +513,7 @@ public class user_setting extends AppCompatActivity {
         else if(release<7)codeName="Marshmallow";
         else if(release<8)codeName="Nougat";
         else if(release<9)codeName="Oreo";
+        else if(release<10)codeName="Pie";
         return  "Android "+ codeName+" v"+release+", API Level: "+Build.VERSION.SDK_INT;
     }
 }

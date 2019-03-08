@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/VOD_rootview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".VODGrid.vod_grid_activity"
-    android:background="@drawable/main_menu_bg">
+    tools:context=".VODGrid.vod_grid_activity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,12 +15,15 @@
         android:layout_width="122px"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#ffffff">
+        android:background="#33000000">
 
         <SearchView
             android:id="@+id/SearchChannel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+
+            android:background="#B3ffffff"
+            >
 
         </SearchView>
 

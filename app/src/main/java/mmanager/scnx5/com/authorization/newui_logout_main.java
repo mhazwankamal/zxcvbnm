@@ -151,12 +151,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private LinearLayout scrollingview,lastWatching_ll,trending_channel_ll,most_popular_ll,ll_livenet_container;
     private Integer scrollPosLastWatching=0;
     private Boolean lastwatching_ll_focus=false;
-    private SharedPreferences pref,pref2,setttingPref;
+    private SharedPreferences pref,pref2,setttingPref,jsonDownloaded;
     private MKLoader threepulse0,threepulse1,threepulse2,threepulse3;
-    private SharedPreferences.Editor editor,editor2;
+    private SharedPreferences.Editor editor,editor2,jsonDownloadedEdit;
     private ScrollView home_scroll;
     private vd452ax3 b=new vd452ax3();
-    private String Json;
+    private String JsonLiveTV,Json;
     private get_menu_classs_navigation menu_navigation=new get_menu_classs_navigation();
     private String remainingdays="";
     public ImageView backgroundImage;
@@ -169,6 +169,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private Integer HomeScrollPOS=0;
     private FrameLayout rootView;
     private Boolean okhttp;
+    private Boolean downloadJsonAgain=false;
     CountDownTimer AutoSlider;
 
     @Override
@@ -721,7 +722,8 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         String TitleType, BackgroundImageUrl, Date, Time, Title;
         Integer id,direction=0;
         String httpconnectionreturn="run";
-
+        Long time_livenevent_json;
+        String jsondownloded_livenevent_json;
 
 
         @Override
@@ -735,19 +737,58 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             myrvMP.setVisibility(View.GONE);
             myrvrb.setVisibility(View.GONE);
             Jsonliveandevent="none";
+            JsonRecentChannels="none";
+            JsonTrendingChannel="none";
+            JsonMostPopular="none";
+
+
         }
         @Override
         protected String doInBackground(String... params) {
 
-            try {
+            jsonDownloaded =getApplication().getSharedPreferences("JsonHomePage",MODE_PRIVATE);
+            jsonDownloadedEdit=jsonDownloaded.edit();
 
-                if (okhttp) {
-                    Jsonliveandevent = wget.getURL(server + "apps/home/getlive_event_json2.php?user=" + tk);
-                }else {
-                    Jsonliveandevent=old_wget.getURL(server + "apps/home/getlive_event_json2.php?user=" + tk);
+            time_livenevent_json=jsonDownloaded.getLong("time_json_downloaded",0);
+          //  Log.d("savedin",String.valueOf(time_livenevent_json));
+            if (time_livenevent_json != 0){
+
+                Long currentTime= System.currentTimeMillis()/1000;
+
+                if(currentTime - time_livenevent_json > 900){
+
+                    downloadJsonAgain=true;
+
+                } else {
+                    Jsonliveandevent="cache";
+                    JsonRecentChannels="cache";
+                    JsonTrendingChannel="cache";
+                    JsonMostPopular="cache";
+
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+
+            } else {
+                downloadJsonAgain=true;
+            }
+
+          //  Log.d("Jsonliveandevent",String.valueOf(tk));
+
+            if(downloadJsonAgain) {
+                try {
+
+                    if (okhttp) {
+
+
+                        Jsonliveandevent = wget.getURL(server + "apps/home/getlive_event_json2.php?user=" + tk);
+
+
+                    } else {
+                        Jsonliveandevent = old_wget.getURL(server + "apps/home/getlive_event_json2.php?user=" + tk);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
 
@@ -758,6 +799,17 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 return httpconnectionreturn="stop";
 
             } else {
+                long currentTime = System.currentTimeMillis()/1000;
+
+                if(!downloadJsonAgain){
+                    Jsonliveandevent=jsonDownloaded.getString("jsondownloded_livenevent_json","none");
+                } else {
+                    jsonDownloadedEdit.putString("jsondownloded_livenevent_json", Jsonliveandevent);
+                    jsonDownloadedEdit.putLong("time_json_downloaded", currentTime);
+                    jsonDownloadedEdit.apply();
+                }
+             //   Log.d("savedin",String.valueOf(Jsonliveandevent));
+
 
                 String[] varntel = Jsonliveandevent.split(",");
                  tk=varntel[1];
@@ -1232,7 +1284,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
     private class loadJsonLiveTV extends AsyncTask<String,String,String>
     {
 
-       String httpconnectionreturn="run";
+       String httpconnectionreturn="run",JsonCode;
 
 
 
@@ -1244,23 +1296,36 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             myrvTC.setVisibility(View.GONE);
             myrvMP.setVisibility(View.GONE);
             myrvrb.setVisibility(View.GONE);
-            Json="none";
+            JsonLiveTV="none";
         }
         @Override
         protected String doInBackground(String... params) {
 
-            try {
-                if (okhttp) {
-                    Json = wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk);
-                } else {
-                    Json = old_wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk);
+            JsonCode=jsonDownloaded.getString("jsondownloded_json_code","none");
 
+           // Log.d("JsonLiveTV",String.valueOf(JsonCode));
+           // Log.d("JsonLiveTV",String.valueOf(tk));
+                try {
+                    if (okhttp) {
+                        JsonLiveTV = wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk + "&jsoncode=" + JsonCode);
+//                        int maxLogSize = 1000;
+//                        for(int i = 0; i <= JsonLiveTV.length() / maxLogSize; i++) {
+//                            int start = i * maxLogSize;
+//                            int end = (i+1) * maxLogSize;
+//                            end = end > JsonLiveTV.length() ? JsonLiveTV.length() : end;
+//                            Log.d("JsonLiveTVJSONIn", JsonLiveTV.substring(start, end));
+//                        }
+                       // Log.d("JsonLiveTVJSONIn",String.valueOf(Json));
+                    } else {
+                        Json = old_wget.getURL(server + b.rvd452ax3() + ".php?tk=" + tk + "&jsoncode=" + JsonCode);
+
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-           if (Json.equalsIgnoreCase("none")) {
+       //    Log.d("JsonLiveTVJSON",String.valueOf(JsonLiveTV));
+           if (JsonLiveTV.equalsIgnoreCase("none")) {
 
                 return httpconnectionreturn="stop";
 
@@ -1284,10 +1349,30 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
               return;
             }
             else {
+            //  Log.d("jsondownloded_json",String.valueOf(JsonLiveTV));
+              if(JsonLiveTV.equalsIgnoreCase("cache")) {
+                  JsonLiveTV = jsonDownloaded.getString("jsondownloded_json", "none");
 
-              String[] neviljson=Json.split(",");
+              }
+         //     Log.d("jsondownloded_json",String.valueOf(JsonLiveTV));
+
+              String[] neviljson=JsonLiveTV.split(",");
               Json=d.decryptStr(neviljson[0]);
               tk=neviljson[1];
+              JsonCode=neviljson[2];
+
+//              int maxLogSize = 1000;
+//              for(int i = 0; i <= Json.length() / maxLogSize; i++) {
+//                  int start = i * maxLogSize;
+//                  int end = (i+1) * maxLogSize;
+//                  end = end > Json.length() ? Json.length() : end;
+//                  Log.d("JsonLiveTV", Json.substring(start, end));
+//              }
+
+            //  Log.d("JsonLiveTV",String.valueOf(Json));
+              jsonDownloadedEdit.putString("jsondownloded_json", JsonLiveTV);
+              jsonDownloadedEdit.putString("jsondownloded_json_code", JsonCode);
+              jsonDownloadedEdit.apply();
 
               new newui_logout_main.loadrecentchannel().execute();
               editor.putString("last_watch", "false");
@@ -1319,18 +1404,21 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         @Override
         protected String doInBackground(String... params) {
 
-            try {
 
-                if (okhttp) {
-                    JsonRecentChannels = wget.getURL(server + "apps/home/getlastrecentchannel2.php?user=" + tk);
-                } else {
-                    JsonRecentChannels = old_wget.getURL(server + "apps/home/getlastrecentchannel2.php?user=" + tk);
+
+            if (downloadJsonAgain) {
+                try {
+
+                    if (okhttp) {
+                        JsonRecentChannels = wget.getURL(server + "apps/home/getlastrecentchannel2.php?user=" + tk);
+                    } else {
+                        JsonRecentChannels = old_wget.getURL(server + "apps/home/getlastrecentchannel2.php?user=" + tk);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-             } catch (IOException e) {
-                e.printStackTrace();
             }
-
           //  Log.d("JsonRecent","L =" + JsonRecentChannels);
 
             if (JsonRecentChannels.equalsIgnoreCase("none") ) {
@@ -1345,6 +1433,14 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
             }
 
               else {
+                if(!downloadJsonAgain){
+                    JsonRecentChannels=jsonDownloaded.getString("jsondownloded_recentchannel_json","none");
+                }else {
+                    jsonDownloadedEdit.putString("jsondownloded_recentchannel_json", JsonRecentChannels);
+                    jsonDownloadedEdit.apply();
+                }
+
+
                 try {
                     JSONObject objectPremium = new JSONObject(String.valueOf(JsonRecentChannels));
                     JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
@@ -1443,27 +1539,35 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            JsonTrendingChannel="none";
+          // JsonTrendingChannel="none";
         }
         @Override
         protected String doInBackground(String... params) {
 
-            try {
-                if (okhttp) {
-                    JsonTrendingChannel = wget.getURL(server + "apps/home/gettrendingchannel.php?user=" + tk);
-                } else {
-                    JsonTrendingChannel = old_wget.getURL(server + "apps/home/gettrendingchannel.php?user=" + tk);
+            if(downloadJsonAgain) {
+
+                try {
+                    if (okhttp) {
+                        JsonTrendingChannel = wget.getURL(server + "apps/home/gettrendingchannel.php?user=" + tk);
+                    } else {
+                        JsonTrendingChannel = old_wget.getURL(server + "apps/home/gettrendingchannel.php?user=" + tk);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-
             if (JsonTrendingChannel.equalsIgnoreCase("none")) {
 
                 return httpconnectionreturn="stop";
 
             } else {
+                if(!downloadJsonAgain){
+                    JsonTrendingChannel=jsonDownloaded.getString("jsondownloded_trendingchannel_json","none");
+                } else {
+                    jsonDownloadedEdit.putString("jsondownloded_trendingchannel_json", JsonTrendingChannel);
+                    jsonDownloadedEdit.apply();
+                }
                 try {
                     JSONObject objectPremium = new JSONObject(String.valueOf(JsonTrendingChannel));
                     JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");
@@ -1538,7 +1642,7 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            JsonMostPopular="none";
+          //  JsonMostPopular="none";
         }
         @Override
         protected String doInBackground(String... params) {
@@ -1560,6 +1664,12 @@ public class newui_logout_main extends ConnectionAppCompactActivity {
                 return httpconnectionreturn="stop";
 
             } else {
+                if(!downloadJsonAgain){
+                    JsonMostPopular=jsonDownloaded.getString("jsondownloded_mostpopular_json","none");
+                } else {
+                    jsonDownloadedEdit.putString("jsondownloded_mostpopular_json", JsonMostPopular);
+                    jsonDownloadedEdit.apply();
+                }
                 try {
                     JSONObject objectPremium = new JSONObject(String.valueOf(JsonMostPopular));
                     JSONArray VodData = (JSONArray) objectPremium.getJSONArray("data");

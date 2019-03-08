@@ -2,21 +2,23 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:foreground="?android:attr/selectableItemBackground"
     android:id="@+id/cardidgrid"
-    android:layout_width="300px"
-    android:layout_height="350px"
+    android:layout_width="110dp"
+    android:layout_height="170dp"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="5dp"
+    android:layout_marginBottom="5dp"
     cardview:cardCornerRadius="4dp"
+    android:clickable="true"
+    android:focusable="true"
     >
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/cardview_id"
-        android:focusable="true"
-        android:clickable="true"
+        android:focusable="false"
+        android:clickable="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10px"
+        android:padding="0dp"
         android:background="@drawable/vodcardview_focus"
 
         >
@@ -28,9 +30,41 @@
             android:background="#2d2d2d"
             android:scaleType="fitXY" />
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/exoplayer_osd_background"
+            >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_gravity="bottom"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:id="@+id/movie_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_gravity="center"
+                android:textSize="16sp"
+                android:shadowDx="1.5"
+                android:shadowDy="1.3"
+                android:shadowRadius="1.6"
+                android:gravity="center"
+                android:text="Movie Name"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+
+        </FrameLayout>
 
 
-    </LinearLayout>
+
+    </FrameLayout>
 
 
 </android.support.v7.widget.CardView>
