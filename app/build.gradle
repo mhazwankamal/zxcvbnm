@@ -35,8 +35,8 @@ android {
             minSdkVersion 19
             applicationId 'mmanager.scnx5.com.mitvmanager'
             targetSdkVersion 27
-            versionCode 27
-            versionName '4.0.3'
+            versionCode 29
+            versionName '4.0.5'
             ndk {
                 abiFilters "armeabi-v7a", "x86"
             }
@@ -48,8 +48,8 @@ android {
             minSdkVersion 19
             applicationId 'mmanager.scnx5.com.mitvmanager'
             targetSdkVersion 27
-            versionCode 27
-            versionName '4.0.3'
+            versionCode 29
+            versionName '4.0.5'
             ndk {
                 abiFilter "armeabi-v7a"
             }
@@ -79,10 +79,10 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.github.javiersantos:AppUpdater:2.7'
     implementation 'com.google.android.exoplayer:exoplayer:2.9.2'
-    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+    implementation 'com.google.android.exoplayer:extension-okhttp:2.9.2'
+    implementation 'com.github.Commit451:YouTubeExtractor:2.1.0'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
-    implementation 'de.mrmaffen:vlc-android-sdk:2.0.6'
     implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'
     implementation 'com.andkulikov:transitionseverywhere:1.8.1'
     implementation 'com.tuyenmonkey:mkloader:1.4.0'
@@ -98,6 +98,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.karumi:dexter:5.0.0'
+    implementation 'dnsjava:dnsjava:2.1.8'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

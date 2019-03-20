@@ -3,12 +3,18 @@ package mmanager.scnx5.com.mitvmanager;
 import android.os.StrictMode;
 import android.widget.Toast;
 
+import org.xbill.DNS.ExtendedResolver;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SimpleResolver;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Dns;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -29,10 +35,21 @@ public class getURL {
             System.setProperty("http.proxyHost", "");
             System.setProperty("http.proxyPort", "");
 
+            Resolver defaultResolver = Lookup.getDefaultResolver();
+            Resolver cloudflareFirstResolver = new SimpleResolver("1.1.1.1");
+            Resolver cloudflareSecondResolver = new SimpleResolver("1.0.0.1");
+            Resolver googleFirstResolver = new SimpleResolver("8.8.8.8");
+            Resolver googleSecondResolver = new SimpleResolver("8.8.4.4");
+            Resolver layar3Dns=new SimpleResolver("178.128.80.43");
+
+            Lookup.setDefaultResolver(new ExtendedResolver(new Resolver[]{cloudflareFirstResolver,
+                    defaultResolver}));
+
             client = new OkHttpClient.Builder()
-                   .connectTimeout(10, TimeUnit.SECONDS)
-                   .writeTimeout(10, TimeUnit.SECONDS)
-                   .readTimeout(30, TimeUnit.SECONDS)
+                 //  .connectTimeout(10, TimeUnit.SECONDS)
+                   //.writeTimeout(10, TimeUnit.SECONDS)
+                  // .readTimeout(30, TimeUnit.SECONDS)
+                   .dns(new EasyDns())
                    .build();
 
             Request request = new Request.Builder()

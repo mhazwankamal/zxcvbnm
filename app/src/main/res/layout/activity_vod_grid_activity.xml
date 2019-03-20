@@ -17,6 +17,14 @@
         android:orientation="vertical"
         android:background="#33000000">
 
+        <LinearLayout
+            android:id="@+id/layoutSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@drawable/vod_category_focus">
+
         <SearchView
             android:id="@+id/SearchChannel"
             android:layout_width="match_parent"
@@ -27,6 +35,7 @@
 
         </SearchView>
 
+        </LinearLayout>
 
         <ListView
             android:id="@+id/vodcategorlist"

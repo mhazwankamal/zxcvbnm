@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.CaptioningManager;
+import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -53,6 +54,7 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -105,21 +107,22 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.TimeZone;
 
-import at.huber.youtubeExtractor.VideoMeta;
-import at.huber.youtubeExtractor.YouTubeExtractor;
-import at.huber.youtubeExtractor.YtFile;
+
 import mmanager.scnx5.com.abcyxoorp;
 import mmanager.scnx5.com.abdyxoorp;
 import mmanager.scnx5.com.abdyxoorpvod;
 import mmanager.scnx5.com.authorization.get_menu_classs_navigation;
 import mmanager.scnx5.com.decrypt.decrypt;
+import mmanager.scnx5.com.mitvmanager.EasyDns;
 import mmanager.scnx5.com.mitvmanager.R;
 import mmanager.scnx5.com.mitvmanager.RedBoxGrid.LiveBook;
 import mmanager.scnx5.com.mitvmanager.getURL;
+import mmanager.scnx5.com.mitvmanager.isUrlValid;
 import mmanager.scnx5.com.mitvmanager.log_;
 import mmanager.scnx5.com.mitvmanager.old_getURL;
 import mmanager.scnx5.com.mitvmanager.setViewSizeByReso;
 import mmanager.scnx5.com.vd452ax3;
+import okhttp3.OkHttpClient;
 
 import static android.view.View.VISIBLE;
 import static java.lang.Integer.parseInt;
@@ -200,8 +203,8 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
     private String firstDevice,SecounDevice;
     private ImageView ChannelIcon;
     private CountDownTimer sourceerrorTimer;
-    private SharedPreferences.Editor editor;
-    private SharedPreferences pref,connectPref,setttingPref;
+    private SharedPreferences.Editor editor,vodPrefEditor;
+    private SharedPreferences pref,connectPref,setttingPref,vodPref;
     private get_menu_classs_navigation menu_navigation=new get_menu_classs_navigation();
     private ImageView InternetSpeed;
     private String remainingdays,personID;
@@ -226,6 +229,8 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
     private TextView movieTitleDisplay;
     private Boolean setProxyUp=false;
     private setViewSizeByReso setView;
+    private long lastPlay=0;
+    private long currentSrubPos=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -288,6 +293,8 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
 
        // mAPIService = GetApiUtils.getAPIService("");
+        vodPref=getApplicationContext().getSharedPreferences("VODPreference",MODE_PRIVATE);
+        vodPrefEditor=vodPref.edit();
 
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
@@ -469,6 +476,9 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
 
         myTimeBar.addListener(new TimeBar.OnScrubListener() {
+            int weightSpeed,factor=10;
+            boolean right=false,left=false;
+
             @Override
             public void onScrubStart(TimeBar timeBar, long position) {
                 Log.d("ScrubStart","start");
@@ -477,7 +487,29 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
             @Override
             public void onScrubMove(TimeBar timeBar, long position) {
+                if(currentSrubPos <= position){
+                    if(!right){
+                        weightSpeed=1;
+                    } else {
+                        weightSpeed=weightSpeed+factor;
+                    }
+                    right=true;
+                    left=false;
+                    myTimeBar.setKeyTimeIncrement(3000 + (30 * weightSpeed));
+                } else {
+                    if (!left){
+                        weightSpeed=1;
+                    } else {
+                        weightSpeed=weightSpeed+factor;
+                    }
+                    left=true;
+                    right=false;
+                    myTimeBar.setKeyTimeIncrement(3000 + (30 * weightSpeed));
+                }
+                currentSrubPos=position;
+
                 Log.d("ScrubMove",String.valueOf(position));
+
                 setTimeBarTime(position);
             }
 
@@ -924,8 +956,8 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
             System.setProperty("http.proxyHost", host);
             System.setProperty("http.proxyPort", port);
-        //    Log.d("proxyHost",host);
-         //   Log.d("port",port);
+           // dlog.log_d(debug,"proxyHost",host);
+            //dlog.log_d(debug,"port",port);
 //            System.setProperty("http.proxyUser", "xxx");
 //            System.setProperty("http.proxyPassword", "xxxx");
                // Authenticator.setDefault(new ProxyAuthenticator("xxx","xxxx"));
@@ -1009,6 +1041,7 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
             counter = 0;
             allowOSD=true;
             Exoplayingstate=true;
+            dlog.log_d(debug,"Exoplayingstate",String.valueOf(Exoplayingstate));
             play.setVisibility(View.GONE);
             pause.setVisibility(View.VISIBLE);
             movieTitleDisplay.setText(channel);
@@ -1452,6 +1485,7 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
                     } else {
                         CurrentchannelViews = String.valueOf(GetDataJSONOnline.getInt("view"));
+                        lastPlay=GetDataJSONOnline.getLong("currentPlay");
                         setProxyUp = GetDataJSONOnline.getBoolean("proxy");
                         //CurrentchannelViews ="n/a";
                     }
@@ -1507,9 +1541,12 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
                     CustomDialogMaxConnection cdmC=new CustomDialogMaxConnection(exoplayer_layar_vod_new_code.this,firstDevice,SecounDevice);
                     cdmC.show();
                     return;
-                } else {
+                } else if(lastPlay > 5000) {
 
-                    new exoplayer_layar_vod_new_code.StartChannel().execute();
+                    CustomDialogClasscontinuePlay cdcContplay=new CustomDialogClasscontinuePlay(exoplayer_layar_vod_new_code.this,lastPlay);
+                    cdcContplay.show();
+                } else {
+                    new exoplayer_layar_vod_new_code.StartChannel().execute("0");
 
                 }
             }
@@ -1517,11 +1554,15 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
     }
 
+    public void continueToStartChannel (long playPosition){
+            new exoplayer_layar_vod_new_code.StartChannel().execute(String.valueOf(playPosition));
+    }
+
 
     private class StartChannel extends AsyncTask<String, String, String> {
 
         String json = "", customLoad;
-
+        String playPosition="";
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -1534,7 +1575,7 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
         @Override
         protected String doInBackground(String... params) {
-
+         playPosition=params[0];
             HLSWidth = 0;
             HLSHeight = 0;
 
@@ -1564,32 +1605,7 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
                 // Url="https://www.youtube.com/watch?v=kjFBbIwuDYU";
 
 
-                String getLiveYT = "youtube";
-                if (Url.toLowerCase().contains(getLiveYT.toLowerCase())) {
 
-                    String idPos = "?v=";
-
-                    Integer pos = Url.indexOf(idPos);
-                    getLiveYT = Url.substring(pos + 3);
-
-
-                    new YouTubeExtractor(exoplayer_layar_vod_new_code.this) {
-                        @Override
-                        public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
-                            if (ytFiles != null) {
-
-
-                                int itag = 22;
-                                String downloadUrl = ytFiles.get(17).getUrl();
-                                Toast.makeText(exoplayer_layar_vod_new_code.this, downloadUrl, Toast.LENGTH_LONG).show();
-                                Url = downloadUrl;
-
-                            }
-                        }
-                    }.extract(Url, true, true);
-
-
-                }
 
 
                 //  Url="http://www.youtube.com/api/manifest/dash/id/bf5bb2419360daf1/source/youtube?as=fmp4_audio_clear,fmp4_sd_hd_clear&sparams=ip,ipbits,expire,source,id,as&ip=0.0.0.0&ipbits=0&expire=19000000000&signature=51AF5F39AB0CEC3E5497CD9C900EBFEAECCCB5C7.8506521BFC350652163895D4C26DEE124209AA9E&key=ik0";
@@ -1701,8 +1717,14 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
          } catch (IOException e) {
              e.printStackTrace();
          }*/
-
-                dataSourceFactory = new DefaultDataSourceFactory(context, "VLC/3.0.0-git LibVLC/3.0.0-git", bandwidthMeter);
+                OkHttpClient client = new OkHttpClient.Builder()
+                        //  .connectTimeout(10, TimeUnit.SECONDS)
+                        //.writeTimeout(10, TimeUnit.SECONDS)
+                        // .readTimeout(30, TimeUnit.SECONDS)
+                        .dns(new EasyDns())
+                        .build();
+                 DefaultBandwidthMeter VODBandwithMetre = new DefaultBandwidthMeter();
+                dataSourceFactory =  new DefaultDataSourceFactory(context,  VODBandwithMetre,new OkHttpDataSourceFactory(client,"VLC/3.0.0-git LibVLC/3.0.0-git"));
 
 
                 /* dataSourceFactory = new DefaultDataSourceFactory(context, oldwget.getURL(server + x.abcxtengtyou() + EEE));
@@ -1715,8 +1737,6 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
                 int type = Util.inferContentType(videoUri);
 
-                String layar3 = "portal.layar3.com";
-                String layar3test = "ms1-int.layar3.com";
 
 
 
@@ -1750,11 +1770,7 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
                          videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
                        // videoSource = new HlsMediaSource.Factory(dataSourceFactory).setLoadErrorHandlingPolicy(df).createMediaSource(videoUri);
-                        //videoSource=new HlsMediaSource(videoUri,dataSourceFactory, handler, null);
 
-                        // Toast.makeText(exoplayer_layar.this,"HLS" + String.valueOf(type),Toast.LENGTH_SHORT).show();
-                      //  player.prepare(videoSource);
-                     //   player.setPlayWhenReady(true);
                         break;
                     case C.TYPE_OTHER:
                         videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).setExtractorsFactory(extractorsFactory).createMediaSource(videoUri);
@@ -1776,20 +1792,43 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
                     e.printStackTrace();
                 }
 
-                String srtUriString=newURL.getProtocol() + "://" +newURL.getHost()+":"+newURL.getPort()+ newURL.getFile().substring(0, newURL.getFile().lastIndexOf(".")) + ".srt";
+                String port;
+
+                if(newURL.getPort() <0){
+                    port="";
+                } else {
+                    port=":" + String.valueOf(newURL.getPort());
+                }
+
+                String srtUriString=newURL.getProtocol() + "://" +newURL.getHost()+port+ newURL.getFile().substring(0, newURL.getFile().lastIndexOf(".")) + ".srt";
                 Uri srtUri=Uri.parse(srtUriString);
-           //     Log.d("Subtitle",srtUriString);
+               // Log.d("Subtitle",srtUriString);
                 Format subtitleFormat=Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP,
                         null, Format.NO_VALUE, Format.NO_VALUE, "en", null, Format.OFFSET_SAMPLE_RELATIVE);
 
                 MediaSource textMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory)
                         .createMediaSource(srtUri, subtitleFormat, C.TIME_UNSET);
-                MergingMediaSource mediaSourceMerged = new MergingMediaSource(videoSource, textMediaSource);
+
+                MergingMediaSource mediaSourceMerged=null;
+
+                isUrlValid isThisUrl =new isUrlValid();
+
+                try {
+                    if(isThisUrl.isUrl(srtUriString)){
+                        mediaSourceMerged = new MergingMediaSource(videoSource, textMediaSource);
+
+                    } else {
+                        mediaSourceMerged = new MergingMediaSource(videoSource);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
                 player.prepare(mediaSourceMerged);
                 player.setPlayWhenReady(true);
-
-
+                long playPositiongLong=Long.parseLong(playPosition);
+                player.seekTo(playPositiongLong);
 
                 //  MediaSource videoSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(videoUri);
 
@@ -1816,7 +1855,7 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 //                }.start();
                 simpleExoPlayerView.getSubtitleView().setApplyEmbeddedStyles(false);
                 simpleExoPlayerView.getSubtitleView().setStyle(new CaptionStyleCompat(Color.WHITE,Color.TRANSPARENT,Color.TRANSPARENT,CaptionStyleCompat.EDGE_TYPE_OUTLINE,Color.BLACK,null));
-                simpleExoPlayerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_PX, setView.getPixelByReso(0.04));
+                simpleExoPlayerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_PX, setView.getPixelByReso(0.05));
                 simpleExoPlayerView.hideController();
                 simpleExoPlayerView.setControllerShowTimeoutMs(0);
 
@@ -1918,6 +1957,13 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
             long currentTime = System.currentTimeMillis()/1000;
 
 
+            if(Exoplayingstate){
+
+                new exoplayer_layar_vod_new_code.updateStillPlaying().execute(String.valueOf(player.getCurrentPosition()));
+                // vodPrefEditor.putLong("currentPosition")
+
+            }
+
             if(currentTime - lastPlay > 14400){
            //   if(currentTime - lastPlay > 5){
 
@@ -1926,14 +1972,32 @@ public class exoplayer_layar_vod_new_code extends ConnectionAppCompactActivity i
 
             }else {
 
-
-
                 handler.postDelayed(ExoPlayerTimer,300000);
                // handler.postDelayed(ExoPlayerTimer,5000);
             }
 
         }
     };
+
+    private class updateStillPlaying extends AsyncTask<String,String,String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String currentDuration=strings[0];
+            try {
+
+                if(okhttp) {
+                    wget.getURL(server + "apps/exoplayer/updateLastPlay1.php?tk=" + tk + "&lastplay=" + currentDuration + "&channelid=" + channelid);
+                } else {
+                    old_wget.getURL(server + "apps/exoplayer/updateLastPlay1.php?tk=" + tk + "&lastplay=" + currentDuration + "&channelid=" + channelid);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
 
     public void RunExoPlayerTimerBack(){
 

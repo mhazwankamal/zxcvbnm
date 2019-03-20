@@ -31,7 +31,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import mmanager.scnx5.com.mitvmanager.Exoplayer.VLC_VOD_RTMP;
+
 import mmanager.scnx5.com.mitvmanager.Exoplayer.exoplayer_layar_vod_new_code;
 import mmanager.scnx5.com.mitvmanager.R;
 import mmanager.scnx5.com.mitvmanager.getURL;

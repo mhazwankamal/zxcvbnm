@@ -9,9 +9,11 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import mmanager.scnx5.com.mitvmanager.R;
+import mmanager.scnx5.com.mitvmanager.setViewSizeByReso;
 
 public class CustomLatestApkVersion extends Dialog implements
         View.OnClickListener {
@@ -34,10 +36,11 @@ public class CustomLatestApkVersion extends Dialog implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_latest_appversion);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
+        FrameLayout flatestapk=(FrameLayout)findViewById(R.id.frame_latestapk);
         String displaymaxconnection="Please update to latest application version to continue.";
 
-
+        setViewSizeByReso setView=new setViewSizeByReso();
+        setView.setSize(flatestapk,1,1);
 
         TextView displayMax=(TextView)findViewById(R.id.message_max);
         displayMax.setText(displaymaxconnection);

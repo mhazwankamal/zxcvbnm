@@ -485,10 +485,29 @@ public class vod_grid_activity extends AppCompatActivity {
             myrv.setAdapter(myAdapter);
 
             SearchView SearchLiveTv=(SearchView)findViewById(R.id.SearchChannel);
+            LinearLayout SearchLiveTvLayout=(LinearLayout) findViewById(R.id.layoutSearch);
+
+            SearchLiveTvLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    SearchLiveTv.setIconified(true);
+                    SearchLiveTv.setIconified(false);
+
+
+
+
+
+                }
+            });
+
+
+
             SearchLiveTv.setIconified(true);
             SearchLiveTv.setFocusable(true);
-            SearchLiveTv.clearFocus();
-            listView.requestFocus();
+            SearchLiveTv.setClickable(true);
+            //SearchLiveTv.clearFocus();
+            //listView.requestFocus();
             SearchLiveTv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
                 ArrayList NewVOD=new ArrayList<>();

@@ -34,7 +34,6 @@ import net.cryptobrewery.macaddress.MacAddress;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.videolan.libvlc.Dialog;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
